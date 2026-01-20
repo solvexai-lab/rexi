@@ -1,0 +1,24 @@
+[
+  {
+    "id": "perpetual-ip-rights",
+    "name": "Perpetual IP Rights Transfer",
+    "category": "ip",
+    "severity": "critical",
+    "patterns": [
+      "perpetual\\s+(and\\s+)?irrevocable\\s+(license|rights?|ownership)",
+      "in\\s+perpetuity",
+      "forever\\s+(assign|transfer|grant)",
+      "all\\s+intellectual\\s+property\\s+(rights?\\s+)?(shall\\s+)?belong\\s+to",
+      "work\\s+for\\s+hire",
+      "assigns?\\s+all\\s+(right|title|interest)",
+      "exclusive\\s+worldwide\\s+license",
+      "irrevocable\\s+transfer"
+    ],
+    "description": "You're being asked to permanently transfer all intellectual property rights, potentially including pre-existing work or tools.",
+    "whyItMatters": "This could mean you can't reuse your own code, designs, or methods on future projects. It may even affect tools you built before this contract.",
+    "plainEnglish": "They want to own everything you create forever - and maybe even stuff you made before this job. You couldn't reuse any of your own work ever again.",
+    "howItShouldBe": "They should only own what you make specifically for them, not your existing tools or methods. For example: 'Client owns the final deliverables. Contractor keeps their existing tools and methods.'",
+    "negotiationScript": "I'm happy to transfer IP for the deliverables specific to this project. However, I'd like to retain rights to my pre-existing tools and methodologies. Can we add a clause preserving my background IP?",
+    "suggestedAlternative": "Client receives ownership of project deliverables upon final payment. Contractor retains rights to pre-existing materials, tools, and general methodologies."
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "id": "unlimited-liability",
+    "name": "Unlimited Liability",
+    "category": "liability",
+    "severity": "critical",
+    "patterns": [
+      "unlimited\\s+liability",
+      "liable\\s+for\\s+all\\s+(damages|losses)",
+      "responsible\\s+for\\s+any\\s+and\\s+all\\s+(damages|losses|claims|costs)",
+      "full\\s+and\\s+complete\\s+liability",
+      "no\\s+limit(ation)?\\s+(on|to)\\s+(the\\s+)?(contractor'?s?|your)\\s+liability",
+      "shall\\s+be\\s+(fully\\s+)?liable\\s+without\\s+limit",
+      "accept\\s+(full|complete|total)\\s+liability",
+      "assume\\s+all\\s+(risk|liability)",
+      "unlimited\\s+in\\s+scope\\s+and\\s+amount",
+      "total\\s+exposure\\s+is\\s+unlimited",
+      "not\\s+capped\\s+by\\s+any\\s+amount",
+      "liability\\s+shall\\s+be\\s+absolute",
+      "no\\s+provision\\s+herein\\s+shall\\s+limit",
+      "shall\\s+have\\s+no\\s+upper\\s+limit",
+      "notwithstanding\\s+anything\\s+to\\s+the\\s+contrary,\\s+liability\\s+is\\s+unlimited"
+    ],
+    "description": "The contract requires you to accept unlimited financial liability for any issues that arise.",
+    "whyItMatters": "Unlimited liability means you could be on the hook for damages far exceeding what you were paid. A single mistake could bankrupt you.",
+    "plainEnglish": "This means if anything goes wrong, you could owe them unlimited money - even millions of dollars. There's no cap on what you'd have to pay.",
+    "howItShouldBe": "Your responsibility should be limited to a fair amount, like the total you're being paid for the work. For example: 'Liability is limited to the amount paid under this contract.'",
+    "negotiationScript": "I'd be happy to accept reasonable liability terms. Could we cap liability at [the project fee / 2x the project fee]? This is standard practice and protects both parties fairly.",
+    "suggestedAlternative": "Liability shall be limited to the total fees paid under this agreement, or [specific amount]."
+  },
+  {
+    "id": "indemnification-broad",
+    "name": "Broad Indemnification Clause",
+    "category": "liability",
+    "severity": "critical",
+    "patterns": [
+      "indemnify\\s+(and\\s+)?hold\\s+harmless",
+      "defend,?\\s+indemnify",
+      "indemnif(y|ication)\\s+(client|company)\\s+(for|against|from)\\s+all",
+      "any\\s+and\\s+all\\s+claims?,?\\s+damages?,?\\s+(and\\s+)?liabilit(y|ies)",
+      "responsible\\s+for\\s+(all|any)\\s+(third[- ]party\\s+)?claims?",
+      "hold\\s+harmless\\s+from\\s+all",
+      "indemnify\\s+against\\s+any\\s+loss"
+    ],
+    "description": "You must cover all legal costs and damages, even for things outside your control.",
+    "whyItMatters": "You could be legally and financially responsible for claims arising from the client's use of your work, even if they used it improperly.",
+    "plainEnglish": "If anyone sues them for anything related to your work, you have to pay all their legal bills and damages - even if it wasn't your fault.",
+    "howItShouldBe": "You should only be responsible for problems you actually caused. For example: 'You only cover legal costs if you were clearly at fault or negligent.'",
+    "negotiationScript": "I'm happy to take responsibility for my own work, but the current indemnification is quite broad. Could we limit it to claims directly arising from my negligence or breach of contract?",
+    "suggestedAlternative": "Contractor shall indemnify Client only for claims directly resulting from Contractor's gross negligence or willful misconduct."
+  }
+]

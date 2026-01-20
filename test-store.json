@@ -1,0 +1,7 @@
+{
+  "source": "analyze",
+  "rawText": "Test contract document for testing purposes",
+  "analysisResult": {"test": true},
+  "fileName": "test.txt",
+  "documentType": "Test Contract"
+}

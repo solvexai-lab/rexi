@@ -1,0 +1,44 @@
+[
+  {
+    "id": "unilateral-termination",
+    "name": "Unilateral Termination Rights",
+    "category": "termination",
+    "severity": "high",
+    "patterns": [
+      "client\\s+may\\s+terminate\\s+(this\\s+)?(agreement\\s+)?at\\s+any\\s+time",
+      "terminate\\s+(immediately\\s+)?without\\s+(cause|reason|notice)",
+      "sole\\s+discretion\\s+to\\s+terminate",
+      "right\\s+to\\s+cancel\\s+at\\s+any\\s+time",
+      "terminate\\s+for\\s+(any|no)\\s+reason",
+      "may\\s+terminate\\s+immediately",
+      "instant\\s+termination"
+    ],
+    "description": "The client can end the contract at any time without reason, but you may not have the same right.",
+    "whyItMatters": "You could be left without income mid-project with no compensation for work already completed or opportunities you turned down.",
+    "plainEnglish": "They can fire you anytime they want, for no reason at all. But you might still be stuck with obligations to them.",
+    "howItShouldBe": "Both sides should have equal rights to end the contract, with proper notice. For example: 'Either side can end this with 14 days notice. Work done until then gets paid.'",
+    "negotiationScript": "I understand the need for flexibility. Could we add a mutual termination clause with [14/30] days notice? I'd also like to ensure payment for work completed up to termination.",
+    "suggestedAlternative": "Either party may terminate with 14 days written notice. Upon termination, Client shall pay for all work completed to date."
+  },
+  {
+    "id": "auto-renewal",
+    "name": "Automatic Renewal Without Notice",
+    "category": "termination",
+    "severity": "medium",
+    "patterns": [
+      "automatically\\s+renew",
+      "auto[- ]?renewal",
+      "shall\\s+renew\\s+(automatically|without\\s+notice)",
+      "unless\\s+(written\\s+)?notice\\s+is\\s+(given|provided)\\s+\\d+\\s+days?\\s+prior",
+      "continues?\\s+indefinitely\\s+unless",
+      "evergreen\\s+contract",
+      "rolling\\s+renewal"
+    ],
+    "description": "The contract automatically renews, potentially locking you in without explicit consent.",
+    "whyItMatters": "You could be committed to another term without realizing it, preventing you from renegotiating rates or taking other opportunities.",
+    "plainEnglish": "The contract keeps going forever unless you remember to cancel. You could be stuck for another year without agreeing to it.",
+    "howItShouldBe": "Both sides should agree to continue. For example: 'Contract ends on X date. To renew, both sides must agree in writing.'",
+    "negotiationScript": "I'd prefer contracts that require mutual agreement to renew. Could we change this to require written agreement from both parties before renewal?",
+    "suggestedAlternative": "This agreement expires on [date]. Renewal requires written agreement from both parties at least 30 days before expiration."
+  }
+]

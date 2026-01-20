@@ -1,0 +1,33 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0f172a"/>
+  
+  <!-- Background gradient circles -->
+  <circle cx="200" cy="100" r="300" fill="#1e293b" opacity="0.5"/>
+  <circle cx="1000" cy="530" r="400" fill="#1e293b" opacity="0.3"/>
+  
+  <!-- Logo -->
+  <g transform="translate(100, 240)">
+    <rect width="80" height="80" rx="20" fill="white"/>
+    <g transform="translate(10, 12.5)">
+      <path d="M30 5L30 15" stroke="#0f172a" stroke-width="3.75" stroke-linecap="round"/>
+      <circle cx="30" cy="3.75" r="3.75" fill="#0f172a"/>
+      <path d="M10 20H50" stroke="#0f172a" stroke-width="3.75" stroke-linecap="round"/>
+      <path d="M10 20L5 40" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+      <path d="M50 20L55 40" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+      <ellipse cx="5" cy="43.75" rx="8.75" ry="3.75" fill="#0f172a" opacity="0.9"/>
+      <ellipse cx="55" cy="43.75" rx="8.75" ry="3.75" fill="#0f172a" opacity="0.9"/>
+    </g>
+  </g>
+  
+  <!-- Text -->
+  <text x="200" y="290" font-family="Georgia, serif" font-size="72" font-weight="bold" fill="white">REXI</text>
+  
+  <text x="100" y="380" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="bold" fill="white">Know exactly what</text>
+  <text x="100" y="450" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="bold" fill="white">you're signing.</text>
+  
+  <text x="100" y="530" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#94a3b8">AI-powered legal document analysis for everyone</text>
+  
+  <!-- CTA Badge -->
+  <rect x="900" y="500" width="200" height="50" rx="25" fill="white"/>
+  <text x="1000" y="533" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="#0f172a">Analyze Free</text>
+</svg>

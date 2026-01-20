@@ -1,0 +1,54 @@
+[
+  {
+    "id": "saas-unlimited-indemnity-1",
+    "name": "Unlimited Third-Party Indemnification",
+    "category": "liability",
+    "severity": "critical",
+    "description": "Provider is required to indemnify the customer for any third-party claims without any financial cap.",
+    "why_it_matters": "One large lawsuit could bankrupt the company if there is no limit on indemnity obligations.",
+    "plain_english": "We pay for all legal costs if someone sues you, no matter how much it costs.",
+    "how_it_should_be": "Indemnity should be capped at a reasonable multiple of fees paid (e.g., 2x or 3x).",
+    "negotiation_script": "We need to align our risk with the value of the contract. Let's cap this at 2x annual fees.",
+    "suggested_alternative": "Provider's total liability under this section shall not exceed 200% of the total fees paid in the 12 months preceding the claim.",
+    "embedding": []
+  },
+  {
+    "id": "saas-data-ownership-ambiguity-1",
+    "name": "Ambiguous Data Ownership",
+    "category": "ip",
+    "severity": "high",
+    "description": "The contract does not explicitly state that the Customer owns their input data.",
+    "why_it_matters": "If you don't own your data, the provider might claim rights to it or prevent you from moving to another service.",
+    "plain_english": "It's not clear who owns the information you upload to the system.",
+    "how_it_should_be": "Customer should explicitly own all 'Customer Data'.",
+    "negotiation_script": "We must ensure we retain full ownership of our proprietary data uploaded to your platform.",
+    "suggested_alternative": "As between the parties, Customer owns all right, title, and interest in and to the Customer Data.",
+    "embedding": []
+  },
+  {
+    "id": "real-estate-hidden-maintenance-fees-1",
+    "name": "Unlimited CAM Expense Pass-Through",
+    "category": "payment",
+    "severity": "high",
+    "description": "Landlord can pass through any Common Area Maintenance (CAM) costs without a cap on year-over-year increases.",
+    "why_it_matters": "Operating expenses can skyrocket unexpectedly, making the lease unaffordable.",
+    "plain_english": "The landlord can charge you extra for building repairs whenever they want.",
+    "how_it_should_be": "CAM increases should be capped (e.g., 5% per year).",
+    "negotiation_script": "We need budget predictability. Can we cap the controllable CAM increases at 5% annually?",
+    "suggested_alternative": "Controllable Operating Expenses shall not increase by more than 5% over the amount for the immediately preceding calendar year.",
+    "embedding": []
+  },
+  {
+    "id": "employment-non-compete-broad-1",
+    "name": "Overly Broad Non-Compete",
+    "category": "other",
+    "severity": "high",
+    "description": "Prevents the employee from working for any competitor in any capacity for 2 years globally.",
+    "why_it_matters": "This can effectively prevent an employee from finding a new job in their field.",
+    "plain_english": "You can't work for any similar company anywhere in the world for two years after you leave.",
+    "how_it_should_be": "Non-competes should be limited in time (e.g., 6 months) and geography.",
+    "negotiation_script": "This scope is too broad. Can we limit this to direct competitors within 50 miles for 6 months?",
+    "suggested_alternative": "Employee shall not work for a Direct Competitor in the Greater London area for a period of 6 months following termination.",
+    "embedding": []
+  }
+]
