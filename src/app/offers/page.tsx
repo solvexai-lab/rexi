@@ -58,6 +58,7 @@ import {
   getLivabilityColor,
   getClawbackRiskColor,
 } from "@/lib/salary-engine";
+import { ShareOfferButton } from "@/components/share-offer-button";
 
 type ViewMode = "upload" | "single" | "compare";
 
@@ -80,19 +81,18 @@ function InfoTooltip({ tooltipKey, className = "", variant = "light" }: { toolti
       <PopoverTrigger asChild>
         <button
           onClick={(e) => e.stopPropagation()}
-          className={`w-5 h-5 rounded-full flex items-center justify-center transition-all hover:scale-110 shrink-0 outline-none focus:ring-2 focus:ring-indigo-500/50 ${
-            variant === "dark" 
-              ? "bg-white/10 hover:bg-white/20 border border-white/10" 
+          className={`w-5 h-5 rounded-full flex items-center justify-center transition-all hover:scale-110 shrink-0 outline-none focus:ring-2 focus:ring-indigo-500/50 ${variant === "dark"
+              ? "bg-white/10 hover:bg-white/20 border border-white/10"
               : "bg-slate-100/80 hover:bg-slate-200 border border-slate-200/50"
-          } ${className}`}
+            } ${className}`}
           aria-label="More information"
         >
           <Info className={`w-3 h-3 ${variant === "dark" ? "text-white/70" : "text-slate-500"}`} />
         </button>
       </PopoverTrigger>
-      <PopoverContent 
-        side="top" 
-        align="center" 
+      <PopoverContent
+        side="top"
+        align="center"
         sideOffset={8}
         className="w-80 p-4 bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-700 z-[100] animate-in fade-in zoom-in-95 duration-200"
       >
@@ -169,9 +169,9 @@ export default function OffersPage() {
     }));
   };
 
-    const calculateTaxSavings = (income: number, regime: "old" | "new") => {
-      return calculateTaxForRegime(income, regime);
-    };
+  const calculateTaxSavings = (income: number, regime: "old" | "new") => {
+    return calculateTaxForRegime(income, regime);
+  };
 
   const calculateCommuteTax = (hourlyRate: number, hours: number) => {
     return hourlyRate * hours * 22; // 22 working days
@@ -214,77 +214,77 @@ export default function OffersPage() {
 
       if (!extractedText.trim()) throw new Error("Could not extract text from file");
 
-const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 120000);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000);
 
-        let analyzeResponse;
-        try {
-          analyzeResponse = await fetch("/api/analyze-offer", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: extractedText, fileName: file.name }),
-            signal: controller.signal,
-          });
-          clearTimeout(timeoutId);
-        } catch (fetchError: any) {
-          clearTimeout(timeoutId);
-          if (fetchError.name === 'AbortError') {
-            throw new Error("Analysis is taking longer than expected. Please try again with a smaller document.");
-          }
-          throw new Error("Network error. Please check your connection and try again.");
-        }
-
-        if (!analyzeResponse.ok) {
-          const errorData = await analyzeResponse.json().catch(() => ({}));
-          throw new Error(errorData.error || "Failed to analyze offer. The document might be too complex or in an unsupported format.");
-        }
-
-        const analysisResult: OfferAnalysisResponse = await analyzeResponse.json();
-        
-        // Phase 1: Data Contribution
-        if (allowDataContribution) {
-          try {
-            await fetch("/api/contribute-data", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                role: analysisResult.offer.role,
-                company: analysisResult.offer.company,
-                location: analysisResult.offer.location,
-                base_salary: analysisResult.offer.baseSalary,
-                total_ctc: analysisResult.offer.salaryBreakdown?.totalCTC || analysisResult.offer.baseSalary,
-                bonus: analysisResult.offer.bonus || 0,
-                equity_value: analysisResult.offer.equity?.amount || 0,
-                currency: analysisResult.offer.currency,
-                confidence_score: 1.0 // Verified from real document
-              }),
-            });
-          } catch (contribError) {
-            console.error("Failed to contribute data:", contribError);
-          }
-        }
-
-        fetch("/api/store-analysis", {
+      let analyzeResponse;
+      try {
+        analyzeResponse = await fetch("/api/analyze-offer", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            source: "offers",
-            rawText: extractedText,
-            analysisResult: analysisResult,
-            fileName: file.name,
-            documentType: "Offer Letter",
-            metadata: { 
-              fileSize: file.size, 
-              fileType: file.type,
-              company: analysisResult.offer.company,
-              role: analysisResult.offer.role,
-            },
-          }),
-        }).catch(console.error);
+          body: JSON.stringify({ text: extractedText, fileName: file.name }),
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+      } catch (fetchError: any) {
+        clearTimeout(timeoutId);
+        if (fetchError.name === 'AbortError') {
+          throw new Error("Analysis is taking longer than expected. Please try again with a smaller document.");
+        }
+        throw new Error("Network error. Please check your connection and try again.");
+      }
 
-        setOffers((prev) => [...prev, analysisResult]);
-        setSelectedOffer(analysisResult);
-        setViewMode("single");
+      if (!analyzeResponse.ok) {
+        const errorData = await analyzeResponse.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to analyze offer. The document might be too complex or in an unsupported format.");
+      }
+
+      const analysisResult: OfferAnalysisResponse = await analyzeResponse.json();
+
+      // Phase 1: Data Contribution
+      if (allowDataContribution) {
+        try {
+          await fetch("/api/contribute-data", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              role: analysisResult.offer.role,
+              company: analysisResult.offer.company,
+              location: analysisResult.offer.location,
+              base_salary: analysisResult.offer.baseSalary,
+              total_ctc: analysisResult.offer.salaryBreakdown?.totalCTC || analysisResult.offer.baseSalary,
+              bonus: analysisResult.offer.bonus || 0,
+              equity_value: analysisResult.offer.equity?.amount || 0,
+              currency: analysisResult.offer.currency,
+              confidence_score: 1.0 // Verified from real document
+            }),
+          });
+        } catch (contribError) {
+          console.error("Failed to contribute data:", contribError);
+        }
+      }
+
+      fetch("/api/store-analysis", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source: "offers",
+          rawText: extractedText,
+          analysisResult: analysisResult,
+          fileName: file.name,
+          documentType: "Offer Letter",
+          metadata: {
+            fileSize: file.size,
+            fileType: file.type,
+            company: analysisResult.offer.company,
+            role: analysisResult.offer.role,
+          },
+        }),
+      }).catch(console.error);
+
+      setOffers((prev) => [...prev, analysisResult]);
+      setSelectedOffer(analysisResult);
+      setViewMode("single");
     } catch (error: any) {
       console.error("Error:", error);
       alert(error.message || "Failed to process offer letter");
@@ -419,7 +419,7 @@ const controller = new AbortController();
       <main className="max-w-7xl mx-auto px-3 sm:px-6 pt-16 sm:pt-24 pb-24 sm:pb-20">
         {/* Hidden file input - always rendered */}
         <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} accept=".pdf,.docx,.txt" />
-        
+
         {/* Breadcrumbs / Multi-offer Toggle - Mobile Optimized */}
         {offers.length > 0 && (
           <div className="mb-6 sm:mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
@@ -430,21 +430,18 @@ const controller = new AbortController();
                   <div
                     key={offer.offer.id}
                     onClick={() => { setSelectedOffer(offer); setViewMode("single"); }}
-                    className={`group relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl border transition-all duration-300 cursor-pointer shrink-0 ${
-                      selectedOffer?.offer.id === offer.offer.id && viewMode === "single"
+                    className={`group relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl border transition-all duration-300 cursor-pointer shrink-0 ${selectedOffer?.offer.id === offer.offer.id && viewMode === "single"
                         ? "bg-slate-900 text-white border-slate-900 shadow-xl shadow-slate-200 scale-105 z-10"
                         : "bg-white border-slate-100 hover:border-slate-300 text-slate-600 hover:translate-y-[-2px]"
-                    }`}
+                      }`}
                   >
-                    <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-lg text-[9px] sm:text-[10px] font-bold flex items-center justify-center ${
-                      selectedOffer?.offer.id === offer.offer.id && viewMode === "single" ? "bg-indigo-500 text-white" : "bg-slate-100 text-slate-500"
-                    }`}>0{index + 1}</div>
+                    <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-lg text-[9px] sm:text-[10px] font-bold flex items-center justify-center ${selectedOffer?.offer.id === offer.offer.id && viewMode === "single" ? "bg-indigo-500 text-white" : "bg-slate-100 text-slate-500"
+                      }`}>0{index + 1}</div>
                     <span className="text-xs sm:text-sm font-semibold tracking-tight whitespace-nowrap">{offer.offer.company}</span>
                     <button
                       onClick={(e) => { e.stopPropagation(); removeOffer(offer.offer.id); }}
-                      className={`p-0.5 sm:p-1 rounded-full hover:bg-white/20 transition-colors ${
-                        selectedOffer?.offer.id === offer.offer.id && viewMode === "single" ? "text-white/60" : "text-slate-300"
-                      }`}
+                      className={`p-0.5 sm:p-1 rounded-full hover:bg-white/20 transition-colors ${selectedOffer?.offer.id === offer.offer.id && viewMode === "single" ? "text-white/60" : "text-slate-300"
+                        }`}
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -463,11 +460,10 @@ const controller = new AbortController();
                 <button
                   onClick={() => handleCompare()}
                   disabled={isComparing}
-                  className={`relative overflow-hidden group px-4 sm:px-6 py-2.5 rounded-xl sm:rounded-2xl font-semibold text-sm transition-all w-full sm:w-auto sm:self-end ${
-                    viewMode === "compare"
+                  className={`relative overflow-hidden group px-4 sm:px-6 py-2.5 rounded-xl sm:rounded-2xl font-semibold text-sm transition-all w-full sm:w-auto sm:self-end ${viewMode === "compare"
                       ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200"
                       : "bg-white text-slate-900 border border-slate-200 hover:border-indigo-200 hover:shadow-lg shadow-slate-100"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-center gap-2 relative z-10">
                     {isComparing ? (
@@ -477,14 +473,14 @@ const controller = new AbortController();
                     )}
                     Compare All Offers
                   </div>
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-violet-600 opacity-0 group-hover:opacity-10 transition-opacity" />
-              </button>
-            )}
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-violet-600 opacity-0 group-hover:opacity-10 transition-opacity" />
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Views */}
+        {/* Views */}
         {viewMode === "upload" && offers.length === 0 && !isAnalyzing ? (
           <div className="max-w-4xl mx-auto pt-4 sm:pt-10">
             <div className="text-center mb-8 sm:mb-16 space-y-3 sm:space-y-4">
@@ -494,22 +490,21 @@ const controller = new AbortController();
               <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-slate-900 tracking-tight leading-[1.1] animate-in fade-in slide-in-from-bottom-4 duration-700 px-2">
                 Analyze your offer <br className="hidden sm:block" /> with <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Studio Precision.</span>
               </h1>
-                <p className="text-slate-500 text-sm sm:text-lg max-w-xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 px-4">
-                  Upload any employment document or offer letter. We'll reveal hidden risks and prepare your negotiation strategy.
-                </p>
+              <p className="text-slate-500 text-sm sm:text-lg max-w-xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 px-4">
+                Upload any employment document or offer letter. We'll reveal hidden risks and prepare your negotiation strategy.
+              </p>
             </div>
 
             <div
               onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
               onDragLeave={() => setIsDragging(false)}
               onDrop={handleDrop}
-              className={`group relative rounded-2xl sm:rounded-[2rem] p-1 text-center transition-all duration-500 ${
-                isDragging ? "bg-gradient-to-r from-indigo-500 to-violet-500 scale-[1.02]" : "bg-slate-100 hover:bg-slate-200"
-              }`}
+              className={`group relative rounded-2xl sm:rounded-[2rem] p-1 text-center transition-all duration-500 ${isDragging ? "bg-gradient-to-r from-indigo-500 to-violet-500 scale-[1.02]" : "bg-slate-100 hover:bg-slate-200"
+                }`}
             >
               <div className="bg-white rounded-xl sm:rounded-[1.85rem] p-8 sm:p-16 border border-white/40 shadow-sm relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(99,102,241,0.05),transparent)] pointer-events-none" />
-                
+
                 <div className="relative z-10 space-y-4 sm:space-y-6">
                   <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-50 rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-inner">
                     <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-500" />
@@ -531,11 +526,10 @@ const controller = new AbortController();
 
                   <div className="flex items-center justify-center gap-3 py-2">
                     <label className="flex items-center gap-2 cursor-pointer group">
-                      <div 
+                      <div
                         onClick={() => setAllowDataContribution(!allowDataContribution)}
-                        className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
-                          allowDataContribution ? "bg-indigo-600 border-indigo-600" : "bg-white border-slate-300 group-hover:border-indigo-400"
-                        }`}
+                        className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${allowDataContribution ? "bg-indigo-600 border-indigo-600" : "bg-white border-slate-300 group-hover:border-indigo-400"
+                          }`}
                       >
                         {allowDataContribution && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
                       </div>
@@ -545,32 +539,32 @@ const controller = new AbortController();
                     </label>
                   </div>
 
-<div className="flex items-center justify-center gap-4 sm:gap-6 pt-4 sm:pt-6 grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700">
-                      <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-semibold text-slate-500">
-                        <Lock className="w-3 h-3 text-emerald-500" /> Private
-                      </div>
-                      <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-slate-200" />
-                      <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-semibold text-slate-500">
-                        <Zap className="w-3 h-3 text-amber-500" /> Instant
-                      </div>
-                      <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-slate-200" />
-                      <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-semibold text-slate-500">
-                        <ShieldCheck className="w-3 h-3 text-indigo-500" /> Secure
-                      </div>
+                  <div className="flex items-center justify-center gap-4 sm:gap-6 pt-4 sm:pt-6 grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700">
+                    <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-semibold text-slate-500">
+                      <Lock className="w-3 h-3 text-emerald-500" /> Private
+                    </div>
+                    <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-slate-200" />
+                    <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-semibold text-slate-500">
+                      <Zap className="w-3 h-3 text-amber-500" /> Instant
+                    </div>
+                    <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-slate-200" />
+                    <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-semibold text-slate-500">
+                      <ShieldCheck className="w-3 h-3 text-indigo-500" /> Secure
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div className="mt-6 text-center">
-                <p className="text-sm text-slate-500">
-                  Not an offer letter?{" "}
-                  <Link href="/analyze" className="text-indigo-600 font-semibold hover:text-indigo-700 underline underline-offset-2">
-                    Use Document Studio
-                  </Link>
-                    {" "}for NDAs, leases, and general documents.
-                </p>
-              </div>
+            <div className="mt-6 text-center">
+              <p className="text-sm text-slate-500">
+                Not an offer letter?{" "}
+                <Link href="/analyze" className="text-indigo-600 font-semibold hover:text-indigo-700 underline underline-offset-2">
+                  Use Document Studio
+                </Link>
+                {" "}for NDAs, leases, and general documents.
+              </p>
+            </div>
           </div>
         ) : isAnalyzing ? (
           <div className="max-w-md mx-auto text-center py-16 sm:py-32 space-y-6 sm:space-y-8 animate-pulse">
@@ -591,6 +585,10 @@ const controller = new AbortController();
             <div className="lg:col-span-8 space-y-4 sm:space-y-8">
               {/* Top Summary Card - Mobile Optimized */}
               <div className="bg-white rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-8 border border-slate-100 shadow-sm relative overflow-hidden">
+                {/* Share Button */}
+                <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20">
+                  <ShareOfferButton analysis={selectedOffer} variant="compact" />
+                </div>
                 {/* Score Circle - Repositioned for mobile */}
                 <div className="flex flex-col-reverse sm:flex-row sm:items-start justify-between gap-4 sm:gap-0">
                   <div className="relative z-10 sm:max-w-[70%]">
@@ -607,7 +605,7 @@ const controller = new AbortController();
                       {selectedOffer.summary}
                     </p>
                   </div>
-                  
+
                   {/* Score Circle */}
                   <div className="self-end sm:self-start sm:p-0">
                     <div className="relative w-16 h-16 sm:w-24 sm:h-24">
@@ -636,14 +634,14 @@ const controller = new AbortController();
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
                 {[
                   { label: "Base Salary", value: formatCurrency(selectedOffer.offer.baseSalary, selectedOffer.offer.currency), icon: DollarSign, color: "text-emerald-500", bg: "bg-emerald-50" },
-                  { 
-                    label: "Bonus", 
+                  {
+                    label: "Bonus",
                     value: (() => {
                       const bonusPct = selectedOffer.offer.bonusPercentage;
                       const bonusAmt = selectedOffer.offer.bonus;
                       const baseSalary = selectedOffer.offer.baseSalary;
                       const isVariable = selectedOffer.offer.bonusIsVariable;
-                      
+
                       if (bonusPct && bonusPct > 0) {
                         const calculatedBonus = bonusAmt && bonusAmt > 0 ? bonusAmt : Math.round(baseSalary * bonusPct / 100);
                         const prefix = isVariable ? "Up to " : "";
@@ -659,7 +657,7 @@ const controller = new AbortController();
                       const bonusCondition = selectedOffer.offer.bonusCondition;
                       const bonusPct = selectedOffer.offer.bonusPercentage;
                       const isVariable = selectedOffer.offer.bonusIsVariable;
-                      
+
                       if (bonusCondition) {
                         return bonusCondition;
                       }
@@ -668,7 +666,7 @@ const controller = new AbortController();
                       }
                       return undefined;
                     })(),
-                    icon: TrendingUp, 
+                    icon: TrendingUp,
                     color: "text-indigo-500",
                     bg: "bg-indigo-50"
                   },
@@ -686,24 +684,23 @@ const controller = new AbortController();
                 ))}
               </div>
 
-                {/* Deep Analysis Tabs - Mobile Optimized */}
-                <div className="bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
-                  {/* Horizontal scroll tabs on mobile */}
-                  <div className="flex border-b border-slate-50 px-1 sm:px-2 pt-1 sm:pt-2 overflow-x-auto scrollbar-hide">
-                    {[
-                      { id: "realvalue", label: "Real Value", fullLabel: "Real Value Analysis", icon: TrendingUp },
-                      { id: "breakdown", label: "Breakdown", fullLabel: "Salary Breakdown", icon: Wallet },
-                      { id: "benefits", label: "Benefits", fullLabel: "Benefits & Perks", icon: Heart },
-                      { id: "equity", label: "Equity", fullLabel: "Equity Breakdown", icon: BarChart3, hidden: !selectedOffer.offer.equity },
-                      { id: "covenants", label: "Clauses", fullLabel: "Restrictive Clauses", icon: Lock },
-                      { id: "strategy", label: "Negotiate", fullLabel: "Negotiation Plan", icon: Zap },
-                    ].filter(t => !t.hidden).map((tab) => (
+              {/* Deep Analysis Tabs - Mobile Optimized */}
+              <div className="bg-white rounded-2xl sm:rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+                {/* Horizontal scroll tabs on mobile */}
+                <div className="flex border-b border-slate-50 px-1 sm:px-2 pt-1 sm:pt-2 overflow-x-auto scrollbar-hide">
+                  {[
+                    { id: "realvalue", label: "Real Value", fullLabel: "Real Value Analysis", icon: TrendingUp },
+                    { id: "breakdown", label: "Breakdown", fullLabel: "Salary Breakdown", icon: Wallet },
+                    { id: "benefits", label: "Benefits", fullLabel: "Benefits & Perks", icon: Heart },
+                    { id: "equity", label: "Equity", fullLabel: "Equity Breakdown", icon: BarChart3, hidden: !selectedOffer.offer.equity },
+                    { id: "covenants", label: "Clauses", fullLabel: "Restrictive Clauses", icon: Lock },
+                    { id: "strategy", label: "Negotiate", fullLabel: "Negotiation Plan", icon: Zap },
+                  ].filter(t => !t.hidden).map((tab) => (
                     <button
                       key={tab.id}
                       onClick={() => setExpandedSection(tab.id)}
-                      className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-bold transition-all relative whitespace-nowrap shrink-0 ${
-                        expandedSection === tab.id ? "text-indigo-600" : "text-slate-400 hover:text-slate-600"
-                      }`}
+                      className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-bold transition-all relative whitespace-nowrap shrink-0 ${expandedSection === tab.id ? "text-indigo-600" : "text-slate-400 hover:text-slate-600"
+                        }`}
                     >
                       <tab.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       <span className="sm:hidden">{tab.label}</span>
@@ -713,346 +710,340 @@ const controller = new AbortController();
                       )}
                     </button>
                   ))}
-                  </div>
+                </div>
 
-                  <div className="p-4 sm:p-8">
-                    {expandedSection === "realvalue" && (
-                      <div className="space-y-6">
-                        {selectedOffer.offer.economicAnalysis ? (
-                          <>
-                              {/* Year 1 vs Year 2 Comparison */}
-                              <div className="grid md:grid-cols-2 gap-4">
-                                <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl p-6 text-white relative overflow-hidden group">
-                                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                                    <Sparkles className="w-16 h-16" />
-                                  </div>
-                                  <div className="relative z-10 space-y-4">
-                                    <div className="flex items-center gap-2 text-indigo-200 text-xs font-bold uppercase tracking-widest">
-                                      <Calendar className="w-4 h-4" /> Year 1 (with bonuses)
-                                      <InfoTooltip tooltipKey="year1CTC" variant="dark" />
-                                    </div>
-                                  <div className="text-3xl font-black">
-                                    {formatINR(selectedOffer.offer.economicAnalysis.year1EffectiveCTC)}
-                                  </div>
-                                  <div className="flex items-center gap-4 text-sm">
-                                    <div>
-                                      <div className="text-indigo-200 text-[10px] uppercase tracking-wider">Monthly</div>
-                                      <div className="font-bold">{formatINR(selectedOffer.offer.economicAnalysis.year1MonthlyEffective)}</div>
-                                    </div>
-                                    <div className="h-8 w-px bg-indigo-400/30" />
-                                    <div>
-                                      <div className="text-indigo-200 text-[10px] uppercase tracking-wider">Savings Rate</div>
-                                      <div className="font-bold">{selectedOffer.offer.economicAnalysis.savingsRateYear1}%</div>
-                                    </div>
-                                  </div>
-                                </div>
+                <div className="p-4 sm:p-8">
+                  {expandedSection === "realvalue" && (
+                    <div className="space-y-6">
+                      {selectedOffer.offer.economicAnalysis ? (
+                        <>
+                          {/* Year 1 vs Year 2 Comparison */}
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl p-6 text-white relative overflow-hidden group">
+                              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                                <Sparkles className="w-16 h-16" />
                               </div>
-
-                              <div className="bg-slate-900 rounded-2xl p-6 text-white relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                                  <TrendingDown className="w-16 h-16" />
+                              <div className="relative z-10 space-y-4">
+                                <div className="flex items-center gap-2 text-indigo-200 text-xs font-bold uppercase tracking-widest">
+                                  <Calendar className="w-4 h-4" /> Year 1 (with bonuses)
+                                  <InfoTooltip tooltipKey="year1CTC" variant="dark" />
                                 </div>
-                                <div className="relative z-10 space-y-4">
-                                  <div className="flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-widest">
-                                    <Calendar className="w-4 h-4" /> Year 2+ (Steady State)
+                                <div className="text-3xl font-black">
+                                  {formatINR(selectedOffer.offer.economicAnalysis.year1EffectiveCTC)}
+                                </div>
+                                <div className="flex items-center gap-4 text-sm">
+                                  <div>
+                                    <div className="text-indigo-200 text-[10px] uppercase tracking-wider">Monthly</div>
+                                    <div className="font-bold">{formatINR(selectedOffer.offer.economicAnalysis.year1MonthlyEffective)}</div>
                                   </div>
-                                  <div className="text-3xl font-black">
-                                    {formatINR(selectedOffer.offer.economicAnalysis.year2SteadyCTC)}
-                                  </div>
-                                  <div className="flex items-center gap-4 text-sm">
-                                    <div>
-                                      <div className="text-slate-400 text-[10px] uppercase tracking-wider">Monthly</div>
-                                      <div className="font-bold">{formatINR(selectedOffer.offer.economicAnalysis.year2MonthlyEffective)}</div>
-                                    </div>
-                                    <div className="h-8 w-px bg-slate-700" />
-                                    <div>
-                                      <div className="text-slate-400 text-[10px] uppercase tracking-wider">Savings Rate</div>
-                                      <div className="font-bold">{selectedOffer.offer.economicAnalysis.savingsRateYear2}%</div>
-                                    </div>
+                                  <div className="h-8 w-px bg-indigo-400/30" />
+                                  <div>
+                                    <div className="text-indigo-200 text-[10px] uppercase tracking-wider">Savings Rate</div>
+                                    <div className="font-bold">{selectedOffer.offer.economicAnalysis.savingsRateYear1}%</div>
                                   </div>
                                 </div>
                               </div>
                             </div>
 
-                            {/* One-Time Benefits Breakdown */}
-                            {selectedOffer.offer.oneTimeBenefits && (selectedOffer.offer.oneTimeBenefits.joiningBonus > 0 || selectedOffer.offer.oneTimeBenefits.relocationAllowance > 0) && (
-                              <div className="bg-amber-50 rounded-2xl p-6 border border-amber-100">
-                                <h4 className="text-sm font-bold text-amber-900 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                  <Sparkles className="w-4 h-4 text-amber-500" /> One-Time Benefits (Year 1 Only)
-                                </h4>
-                                <div className="grid sm:grid-cols-3 gap-4">
-                                  {selectedOffer.offer.oneTimeBenefits.joiningBonus > 0 && (
-                                    <div className="bg-white rounded-xl p-4 border border-amber-100">
-                                      <div className="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Joining Bonus</div>
-                                      <div className="text-lg font-black text-slate-900">{formatINR(selectedOffer.offer.oneTimeBenefits.joiningBonus)}</div>
-                                      <div className="text-[10px] text-amber-700 mt-1">Clawback: {selectedOffer.offer.oneTimeBenefits.joiningBonusClawbackMonths} months</div>
-                                    </div>
-                                  )}
-                                  {selectedOffer.offer.oneTimeBenefits.relocationAllowance > 0 && (
-                                    <div className="bg-white rounded-xl p-4 border border-amber-100">
-                                      <div className="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Relocation</div>
-                                      <div className="text-lg font-black text-slate-900">{formatINR(selectedOffer.offer.oneTimeBenefits.relocationAllowance)}</div>
-                                      <div className="text-[10px] text-amber-700 mt-1 capitalize">{selectedOffer.offer.oneTimeBenefits.relocationType?.replace('_', ' ') || 'Lump sum'}</div>
-                                    </div>
-                                  )}
-                                  {selectedOffer.offer.oneTimeBenefits.noticeBuyout > 0 && (
-                                    <div className="bg-white rounded-xl p-4 border border-amber-100">
-                                      <div className="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Notice Buyout</div>
-                                      <div className="text-lg font-black text-slate-900">{formatINR(selectedOffer.offer.oneTimeBenefits.noticeBuyout)}</div>
-                                    </div>
-                                  )}
-                                </div>
+                            <div className="bg-slate-900 rounded-2xl p-6 text-white relative overflow-hidden group">
+                              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                                <TrendingDown className="w-16 h-16" />
                               </div>
-                            )}
-
-                            {/* City Economics & Livability */}
-                            <div className="grid md:grid-cols-2 gap-4">
-                              {/* City Cost Card */}
-                              <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-                                <h4 className="text-sm font-bold text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                  <Home className="w-4 h-4 text-indigo-500" /> City Economics
-                                  <InfoTooltip tooltipKey="cityEconomics" className="ml-1" />
-                                </h4>
-                                <div className="space-y-4">
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
-                                        <MapPin className="w-5 h-5 text-slate-600" />
-                                      </div>
-                                      <div>
-                                        <div className="font-bold text-slate-900">{selectedOffer.offer.economicAnalysis.cityEconomics.city}</div>
-                                        <div className="text-[10px] text-slate-500">Cluster {selectedOffer.offer.economicAnalysis.cityEconomics.cluster} • {selectedOffer.offer.economicAnalysis.cityEconomics.clusterName}</div>
-                                      </div>
-                                    </div>
+                              <div className="relative z-10 space-y-4">
+                                <div className="flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-widest">
+                                  <Calendar className="w-4 h-4" /> Year 2+ (Steady State)
+                                </div>
+                                <div className="text-3xl font-black">
+                                  {formatINR(selectedOffer.offer.economicAnalysis.year2SteadyCTC)}
+                                </div>
+                                <div className="flex items-center gap-4 text-sm">
+                                  <div>
+                                    <div className="text-slate-400 text-[10px] uppercase tracking-wider">Monthly</div>
+                                    <div className="font-bold">{formatINR(selectedOffer.offer.economicAnalysis.year2MonthlyEffective)}</div>
                                   </div>
-                                  <div className="grid grid-cols-2 gap-3">
-                                    <div className="bg-slate-50 rounded-xl p-3">
-                                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Base Cost</div>
-                                      <div className="text-sm font-bold text-slate-900">{formatINR(selectedOffer.offer.economicAnalysis.cityEconomics.baseMonthlyCost)}/mo</div>
-                                    </div>
-                                    <div className="bg-slate-50 rounded-xl p-3">
-                                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Adjusted Cost</div>
-                                      <div className="text-sm font-bold text-slate-900">{formatINR(selectedOffer.offer.economicAnalysis.cityEconomics.adjustedMonthlyCost)}/mo</div>
-                                    </div>
-                                    <div className="bg-slate-50 rounded-xl p-3">
-                                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Inflation</div>
-                                      <div className="text-sm font-bold text-slate-900">{selectedOffer.offer.economicAnalysis.cityEconomics.inflationRate}%</div>
-                                    </div>
-                                    <div className="bg-slate-50 rounded-xl p-3">
-                                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Work Mode</div>
-                                      <div className="text-sm font-bold text-slate-900">{selectedOffer.offer.workMode || 'Office'}</div>
-                                    </div>
+                                  <div className="h-8 w-px bg-slate-700" />
+                                  <div>
+                                    <div className="text-slate-400 text-[10px] uppercase tracking-wider">Savings Rate</div>
+                                    <div className="font-bold">{selectedOffer.offer.economicAnalysis.savingsRateYear2}%</div>
                                   </div>
                                 </div>
                               </div>
+                            </div>
+                          </div>
 
-                              {/* Livability Meter */}
-                              <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-                                <h4 className="text-sm font-bold text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                  <Users className="w-4 h-4 text-emerald-500" /> Livability Index
-                                  <InfoTooltip tooltipKey="livabilityIndex" className="ml-1" />
-                                </h4>
-                                <div className="space-y-4">
-                                  <div className="flex items-center justify-between">
-                                    <div className="text-4xl font-black text-slate-900">
-                                      {selectedOffer.offer.economicAnalysis.livabilityIndex.toFixed(2)}x
-                                    </div>
-                                    <div className={`px-4 py-2 rounded-xl font-bold text-sm ${
-                                      selectedOffer.offer.economicAnalysis.livabilityGrade === 'Comfortable' ? 'bg-emerald-50 text-emerald-700' :
-                                      selectedOffer.offer.economicAnalysis.livabilityGrade === 'Manageable' ? 'bg-amber-50 text-amber-700' :
-                                      selectedOffer.offer.economicAnalysis.livabilityGrade === 'Tight' ? 'bg-orange-50 text-orange-700' :
-                                      'bg-rose-50 text-rose-700'
-                                    }`}>
-                                      {selectedOffer.offer.economicAnalysis.livabilityGrade}
-                                    </div>
+                          {/* One-Time Benefits Breakdown */}
+                          {selectedOffer.offer.oneTimeBenefits && (selectedOffer.offer.oneTimeBenefits.joiningBonus > 0 || selectedOffer.offer.oneTimeBenefits.relocationAllowance > 0) && (
+                            <div className="bg-amber-50 rounded-2xl p-6 border border-amber-100">
+                              <h4 className="text-sm font-bold text-amber-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 text-amber-500" /> One-Time Benefits (Year 1 Only)
+                              </h4>
+                              <div className="grid sm:grid-cols-3 gap-4">
+                                {selectedOffer.offer.oneTimeBenefits.joiningBonus > 0 && (
+                                  <div className="bg-white rounded-xl p-4 border border-amber-100">
+                                    <div className="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Joining Bonus</div>
+                                    <div className="text-lg font-black text-slate-900">{formatINR(selectedOffer.offer.oneTimeBenefits.joiningBonus)}</div>
+                                    <div className="text-[10px] text-amber-700 mt-1">Clawback: {selectedOffer.offer.oneTimeBenefits.joiningBonusClawbackMonths} months</div>
                                   </div>
-                                  <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
-                                    <div 
-                                      className={`h-full rounded-full transition-all duration-1000 ${
-                                        selectedOffer.offer.economicAnalysis.livabilityGrade === 'Comfortable' ? 'bg-emerald-500' :
-                                        selectedOffer.offer.economicAnalysis.livabilityGrade === 'Manageable' ? 'bg-amber-500' :
-                                        selectedOffer.offer.economicAnalysis.livabilityGrade === 'Tight' ? 'bg-orange-500' :
-                                        'bg-rose-500'
-                                      }`}
-                                      style={{ width: `${Math.min(100, (selectedOffer.offer.economicAnalysis.livabilityIndex / 3) * 100)}%` }}
-                                    />
+                                )}
+                                {selectedOffer.offer.oneTimeBenefits.relocationAllowance > 0 && (
+                                  <div className="bg-white rounded-xl p-4 border border-amber-100">
+                                    <div className="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Relocation</div>
+                                    <div className="text-lg font-black text-slate-900">{formatINR(selectedOffer.offer.oneTimeBenefits.relocationAllowance)}</div>
+                                    <div className="text-[10px] text-amber-700 mt-1 capitalize">{selectedOffer.offer.oneTimeBenefits.relocationType?.replace('_', ' ') || 'Lump sum'}</div>
                                   </div>
-                                  <div className="flex justify-between text-[10px] font-bold text-slate-400 uppercase">
-                                    <span>Challenging (&lt;1.5x)</span>
-                                    <span>Comfortable (&gt;2.5x)</span>
+                                )}
+                                {selectedOffer.offer.oneTimeBenefits.noticeBuyout > 0 && (
+                                  <div className="bg-white rounded-xl p-4 border border-amber-100">
+                                    <div className="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Notice Buyout</div>
+                                    <div className="text-lg font-black text-slate-900">{formatINR(selectedOffer.offer.oneTimeBenefits.noticeBuyout)}</div>
                                   </div>
-                                  <div className="p-4 bg-slate-50 rounded-xl">
-                                    <div className="text-xs text-slate-600 leading-relaxed">
-                                      <strong>Analysis Mode:</strong> {selectedOffer.offer.economicAnalysis.analysisMode}
-                                      <br />
-                                      Your take-home is <strong>{selectedOffer.offer.economicAnalysis.livabilityIndex.toFixed(2)}x</strong> the estimated monthly cost of living in {selectedOffer.offer.economicAnalysis.cityEconomics.city}.
-                                    </div>
-                                  </div>
-                                </div>
+                                )}
                               </div>
+                            </div>
+                          )}
 
-                              {/* Tax Optimization Engine */}
-                              <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-6">
+                          {/* City Economics & Livability */}
+                          <div className="grid md:grid-cols-2 gap-4">
+                            {/* City Cost Card */}
+                            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                              <h4 className="text-sm font-bold text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <Home className="w-4 h-4 text-indigo-500" /> City Economics
+                                <InfoTooltip tooltipKey="cityEconomics" className="ml-1" />
+                              </h4>
+                              <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                  <h4 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-2">
-                                    <Receipt className="w-4 h-4 text-emerald-500" /> Tax Optimization
-                                  </h4>
-                                  <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
-                                    <button 
-                                      onClick={() => setTaxRegime("old")}
-                                      className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${taxRegime === "old" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"}`}
-                                    >
-                                      Old
-                                    </button>
-                                    <button 
-                                      onClick={() => setTaxRegime("new")}
-                                      className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${taxRegime === "new" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"}`}
-                                    >
-                                      New
-                                    </button>
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
+                                      <MapPin className="w-5 h-5 text-slate-600" />
+                                    </div>
+                                    <div>
+                                      <div className="font-bold text-slate-900">{selectedOffer.offer.economicAnalysis.cityEconomics.city}</div>
+                                      <div className="text-[10px] text-slate-500">Cluster {selectedOffer.offer.economicAnalysis.cityEconomics.cluster} • {selectedOffer.offer.economicAnalysis.cityEconomics.clusterName}</div>
+                                    </div>
                                   </div>
                                 </div>
-                                
-                                <div className="space-y-4">
-                                  {(() => {
-                                    const annualCTC = selectedOffer.offer.salaryBreakdown?.totalCTC || selectedOffer.offer.baseSalary;
-                                    const taxNew = calculateTaxSavings(annualCTC, "new");
-                                    const taxOld = calculateTaxSavings(annualCTC, "old");
-                                    const savings = taxOld - taxNew;
-                                    const betterRegime = savings > 0 ? "New Regime" : "Old Regime";
-                                    
-                                    return (
-                                      <>
-                                        <div className="flex items-end justify-between">
-                                          <div>
-                                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Est. Annual Tax</div>
-                                            <div className="text-2xl font-black text-slate-900">{formatINR(taxRegime === "new" ? taxNew : taxOld)}</div>
-                                          </div>
-                                          <div className={`px-3 py-1 rounded-lg text-[10px] font-bold ${savings > 0 ? "bg-emerald-50 text-emerald-600" : "bg-indigo-50 text-indigo-600"}`}>
-                                            {betterRegime} is better
-                                          </div>
-                                        </div>
-                                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                          <p className="text-[10px] text-slate-500 leading-relaxed font-medium">
-                                            Switching to the <strong>{betterRegime}</strong> could save you <strong>{formatINR(Math.abs(savings))}</strong> annually in taxes.
-                                          </p>
-                                        </div>
-                                      </>
-                                    );
-                                  })()}
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div className="bg-slate-50 rounded-xl p-3">
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Base Cost</div>
+                                    <div className="text-sm font-bold text-slate-900">{formatINR(selectedOffer.offer.economicAnalysis.cityEconomics.baseMonthlyCost)}/mo</div>
+                                  </div>
+                                  <div className="bg-slate-50 rounded-xl p-3">
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Adjusted Cost</div>
+                                    <div className="text-sm font-bold text-slate-900">{formatINR(selectedOffer.offer.economicAnalysis.cityEconomics.adjustedMonthlyCost)}/mo</div>
+                                  </div>
+                                  <div className="bg-slate-50 rounded-xl p-3">
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Inflation</div>
+                                    <div className="text-sm font-bold text-slate-900">{selectedOffer.offer.economicAnalysis.cityEconomics.inflationRate}%</div>
+                                  </div>
+                                  <div className="bg-slate-50 rounded-xl p-3">
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Work Mode</div>
+                                    <div className="text-sm font-bold text-slate-900">{selectedOffer.offer.workMode || 'Office'}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Livability Meter */}
+                            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                              <h4 className="text-sm font-bold text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <Users className="w-4 h-4 text-emerald-500" /> Livability Index
+                                <InfoTooltip tooltipKey="livabilityIndex" className="ml-1" />
+                              </h4>
+                              <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                  <div className="text-4xl font-black text-slate-900">
+                                    {selectedOffer.offer.economicAnalysis.livabilityIndex.toFixed(2)}x
+                                  </div>
+                                  <div className={`px-4 py-2 rounded-xl font-bold text-sm ${selectedOffer.offer.economicAnalysis.livabilityGrade === 'Comfortable' ? 'bg-emerald-50 text-emerald-700' :
+                                      selectedOffer.offer.economicAnalysis.livabilityGrade === 'Manageable' ? 'bg-amber-50 text-amber-700' :
+                                        selectedOffer.offer.economicAnalysis.livabilityGrade === 'Tight' ? 'bg-orange-50 text-orange-700' :
+                                          'bg-rose-50 text-rose-700'
+                                    }`}>
+                                    {selectedOffer.offer.economicAnalysis.livabilityGrade}
+                                  </div>
+                                </div>
+                                <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                                  <div
+                                    className={`h-full rounded-full transition-all duration-1000 ${selectedOffer.offer.economicAnalysis.livabilityGrade === 'Comfortable' ? 'bg-emerald-500' :
+                                        selectedOffer.offer.economicAnalysis.livabilityGrade === 'Manageable' ? 'bg-amber-500' :
+                                          selectedOffer.offer.economicAnalysis.livabilityGrade === 'Tight' ? 'bg-orange-500' :
+                                            'bg-rose-500'
+                                      }`}
+                                    style={{ width: `${Math.min(100, (selectedOffer.offer.economicAnalysis.livabilityIndex / 3) * 100)}%` }}
+                                  />
+                                </div>
+                                <div className="flex justify-between text-[10px] font-bold text-slate-400 uppercase">
+                                  <span>Challenging (&lt;1.5x)</span>
+                                  <span>Comfortable (&gt;2.5x)</span>
+                                </div>
+                                <div className="p-4 bg-slate-50 rounded-xl">
+                                  <div className="text-xs text-slate-600 leading-relaxed">
+                                    <strong>Analysis Mode:</strong> {selectedOffer.offer.economicAnalysis.analysisMode}
+                                    <br />
+                                    Your take-home is <strong>{selectedOffer.offer.economicAnalysis.livabilityIndex.toFixed(2)}x</strong> the estimated monthly cost of living in {selectedOffer.offer.economicAnalysis.cityEconomics.city}.
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Tax Optimization Engine */}
+                            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-6">
+                              <div className="flex items-center justify-between">
+                                <h4 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                                  <Receipt className="w-4 h-4 text-emerald-500" /> Tax Optimization
+                                </h4>
+                                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
+                                  <button
+                                    onClick={() => setTaxRegime("old")}
+                                    className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${taxRegime === "old" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"}`}
+                                  >
+                                    Old
+                                  </button>
+                                  <button
+                                    onClick={() => setTaxRegime("new")}
+                                    className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${taxRegime === "new" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"}`}
+                                  >
+                                    New
+                                  </button>
                                 </div>
                               </div>
 
-                              {/* Hidden Costs (Commute Time Tax) */}
-                              <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-6">
-                                <h4 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-2">
-                                  <AlertCircle className="w-4 h-4 text-rose-500" /> The "Time Tax" (Commute)
-                                </h4>
-                                
-                                <div className="space-y-4">
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs font-bold text-slate-600">Daily Commute</span>
-                                    <div className="flex items-center gap-3">
-                                      <input 
-                                        type="range" min="0" max="4" step="0.5" 
-                                        value={commuteTime} 
-                                        onChange={(e) => setCommuteTime(parseFloat(e.target.value))}
-                                        className="w-24 accent-indigo-600"
-                                      />
-                                      <span className="text-xs font-black text-slate-900 w-12 text-right">{commuteTime} hrs</span>
-                                    </div>
-                                  </div>
+                              <div className="space-y-4">
+                                {(() => {
+                                  const annualCTC = selectedOffer.offer.salaryBreakdown?.totalCTC || selectedOffer.offer.baseSalary;
+                                  const taxNew = calculateTaxSavings(annualCTC, "new");
+                                  const taxOld = calculateTaxSavings(annualCTC, "old");
+                                  const savings = taxOld - taxNew;
+                                  const betterRegime = savings > 0 ? "New Regime" : "Old Regime";
 
-                                  {(() => {
-                                    const annualCTC = selectedOffer.offer.salaryBreakdown?.totalCTC || selectedOffer.offer.baseSalary;
-                                    const hourlyRate = annualCTC / (22 * 8 * 12); // Assuming 22 days, 8 hours
-                                    const monthlyTimeTax = calculateCommuteTax(hourlyRate, commuteTime);
-                                    const effectiveTakeHome = (selectedOffer.offer.salaryBreakdown?.monthlyTakeHome || (annualCTC * 0.7 / 12)) - monthlyTimeTax;
-                                    
-                                    return (
-                                      <div className="space-y-3">
-                                        <div className="flex justify-between items-center">
-                                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Monthly Time Cost</span>
-                                          <span className="text-sm font-bold text-rose-600">-{formatINR(monthlyTimeTax)}</span>
+                                  return (
+                                    <>
+                                      <div className="flex items-end justify-between">
+                                        <div>
+                                          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Est. Annual Tax</div>
+                                          <div className="text-2xl font-black text-slate-900">{formatINR(taxRegime === "new" ? taxNew : taxOld)}</div>
                                         </div>
-                                        <div className="h-px bg-slate-50" />
-                                        <div className="flex justify-between items-center">
-                                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Effective Monthly Value</span>
-                                          <span className="text-lg font-black text-slate-900">{formatINR(effectiveTakeHome)}</span>
+                                        <div className={`px-3 py-1 rounded-lg text-[10px] font-bold ${savings > 0 ? "bg-emerald-50 text-emerald-600" : "bg-indigo-50 text-indigo-600"}`}>
+                                          {betterRegime} is better
                                         </div>
-                                        <p className="text-[10px] text-slate-500 leading-relaxed font-medium italic">
-                                          Your commute is equivalent to a <strong>{((monthlyTimeTax / (annualCTC / 12)) * 100).toFixed(1)}% tax</strong> on your gross monthly income.
+                                      </div>
+                                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                        <p className="text-[10px] text-slate-500 leading-relaxed font-medium">
+                                          Switching to the <strong>{betterRegime}</strong> could save you <strong>{formatINR(Math.abs(savings))}</strong> annually in taxes.
                                         </p>
                                       </div>
-                                    );
-                                  })()}
-                                </div>
+                                    </>
+                                  );
+                                })()}
                               </div>
                             </div>
 
-                              {/* Clawback Risk Warning */}
-                              {selectedOffer.offer.economicAnalysis.clawbackRisk && (
-                                <div className={`rounded-2xl p-6 border ${
-                                  selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'high' ? 'bg-rose-50 border-rose-200' :
-                                  selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'medium' ? 'bg-amber-50 border-amber-200' :
-                                  'bg-emerald-50 border-emerald-200'
-                                }`}>
-                                  <div className="flex items-start gap-4">
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                                      selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'high' ? 'bg-rose-100 text-rose-600' :
-                                      selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'medium' ? 'bg-amber-100 text-amber-600' :
-                                      'bg-emerald-100 text-emerald-600'
-                                    }`}>
-                                      <AlertTriangle className="w-5 h-5" />
-                                    </div>
-                                    <div className="flex-1 space-y-3">
-                                      <div>
-                                        <h4 className={`text-sm font-bold uppercase tracking-widest flex items-center gap-2 ${
-                                          selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'high' ? 'text-rose-900' :
-                                          selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'medium' ? 'text-amber-900' :
-                                          'text-emerald-900'
-                                        }`}>
-                                          Clawback Risk: {selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel.toUpperCase()}
-                                          <InfoTooltip tooltipKey="clawbackRisk" />
-                                        </h4>
-                                      <p className={`text-sm mt-1 ${
-                                        selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'high' ? 'text-rose-700' :
-                                        selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'medium' ? 'text-amber-700' :
-                                        'text-emerald-700'
-                                      }`}>
-                                        {selectedOffer.offer.economicAnalysis.clawbackRisk.warningMessage}
+                            {/* Hidden Costs (Commute Time Tax) */}
+                            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-6">
+                              <h4 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                                <AlertCircle className="w-4 h-4 text-rose-500" /> The "Time Tax" (Commute)
+                              </h4>
+
+                              <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-bold text-slate-600">Daily Commute</span>
+                                  <div className="flex items-center gap-3">
+                                    <input
+                                      type="range" min="0" max="4" step="0.5"
+                                      value={commuteTime}
+                                      onChange={(e) => setCommuteTime(parseFloat(e.target.value))}
+                                      className="w-24 accent-indigo-600"
+                                    />
+                                    <span className="text-xs font-black text-slate-900 w-12 text-right">{commuteTime} hrs</span>
+                                  </div>
+                                </div>
+
+                                {(() => {
+                                  const annualCTC = selectedOffer.offer.salaryBreakdown?.totalCTC || selectedOffer.offer.baseSalary;
+                                  const hourlyRate = annualCTC / (22 * 8 * 12); // Assuming 22 days, 8 hours
+                                  const monthlyTimeTax = calculateCommuteTax(hourlyRate, commuteTime);
+                                  const effectiveTakeHome = (selectedOffer.offer.salaryBreakdown?.monthlyTakeHome || (annualCTC * 0.7 / 12)) - monthlyTimeTax;
+
+                                  return (
+                                    <div className="space-y-3">
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Monthly Time Cost</span>
+                                        <span className="text-sm font-bold text-rose-600">-{formatINR(monthlyTimeTax)}</span>
+                                      </div>
+                                      <div className="h-px bg-slate-50" />
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Effective Monthly Value</span>
+                                        <span className="text-lg font-black text-slate-900">{formatINR(effectiveTakeHome)}</span>
+                                      </div>
+                                      <p className="text-[10px] text-slate-500 leading-relaxed font-medium italic">
+                                        Your commute is equivalent to a <strong>{((monthlyTimeTax / (annualCTC / 12)) * 100).toFixed(1)}% tax</strong> on your gross monthly income.
                                       </p>
                                     </div>
-                                    <div className="flex flex-wrap gap-2">
-                                      {selectedOffer.offer.economicAnalysis.clawbackRisk.exitScenarios.slice(0, 4).map((scenario, idx) => (
-                                        <div key={idx} className="bg-white rounded-lg px-3 py-2 text-xs">
-                                          <span className="font-bold">Month {scenario.month}:</span>{' '}
-                                          <span className="text-rose-600">Owe {formatINR(scenario.owed)}</span>
-                                        </div>
-                                      ))}
-                                    </div>
-                                    <div className="text-xs font-bold">
-                                      Full freedom after: <span className="text-indigo-600">{selectedOffer.offer.economicAnalysis.clawbackRisk.freedomMonth} months</span>
-                                    </div>
+                                  );
+                                })()}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Clawback Risk Warning */}
+                          {selectedOffer.offer.economicAnalysis.clawbackRisk && (
+                            <div className={`rounded-2xl p-6 border ${selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'high' ? 'bg-rose-50 border-rose-200' :
+                                selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'medium' ? 'bg-amber-50 border-amber-200' :
+                                  'bg-emerald-50 border-emerald-200'
+                              }`}>
+                              <div className="flex items-start gap-4">
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'high' ? 'bg-rose-100 text-rose-600' :
+                                    selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'medium' ? 'bg-amber-100 text-amber-600' :
+                                      'bg-emerald-100 text-emerald-600'
+                                  }`}>
+                                  <AlertTriangle className="w-5 h-5" />
+                                </div>
+                                <div className="flex-1 space-y-3">
+                                  <div>
+                                    <h4 className={`text-sm font-bold uppercase tracking-widest flex items-center gap-2 ${selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'high' ? 'text-rose-900' :
+                                        selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'medium' ? 'text-amber-900' :
+                                          'text-emerald-900'
+                                      }`}>
+                                      Clawback Risk: {selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel.toUpperCase()}
+                                      <InfoTooltip tooltipKey="clawbackRisk" />
+                                    </h4>
+                                    <p className={`text-sm mt-1 ${selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'high' ? 'text-rose-700' :
+                                        selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'medium' ? 'text-amber-700' :
+                                          'text-emerald-700'
+                                      }`}>
+                                      {selectedOffer.offer.economicAnalysis.clawbackRisk.warningMessage}
+                                    </p>
+                                  </div>
+                                  <div className="flex flex-wrap gap-2">
+                                    {selectedOffer.offer.economicAnalysis.clawbackRisk.exitScenarios.slice(0, 4).map((scenario, idx) => (
+                                      <div key={idx} className="bg-white rounded-lg px-3 py-2 text-xs">
+                                        <span className="font-bold">Month {scenario.month}:</span>{' '}
+                                        <span className="text-rose-600">Owe {formatINR(scenario.owed)}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <div className="text-xs font-bold">
+                                    Full freedom after: <span className="text-indigo-600">{selectedOffer.offer.economicAnalysis.clawbackRisk.freedomMonth} months</span>
                                   </div>
                                 </div>
                               </div>
-                            )}
-                          </>
-                        ) : (
-                          <div className="py-12 text-center space-y-4">
-                            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto border border-slate-100">
-                              <TrendingUp className="w-8 h-8 text-slate-300" />
                             </div>
-                            <p className="text-sm text-slate-500 font-medium max-w-xs mx-auto">
-                              Economic analysis not available. Ensure the offer includes location and salary information.
-                            </p>
+                          )}
+                        </>
+                      ) : (
+                        <div className="py-12 text-center space-y-4">
+                          <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto border border-slate-100">
+                            <TrendingUp className="w-8 h-8 text-slate-300" />
                           </div>
-                        )}
-                      </div>
-                    )}
+                          <p className="text-sm text-slate-500 font-medium max-w-xs mx-auto">
+                            Economic analysis not available. Ensure the offer includes location and salary information.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
-                    {expandedSection === "breakdown" && (
+                  {expandedSection === "breakdown" && (
                     <div className="space-y-6">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl">
@@ -1085,14 +1076,13 @@ const controller = new AbortController();
                               {selectedOffer.offer.salaryBreakdown.components.map((comp, idx) => (
                                 <div key={idx} className="flex items-center justify-between p-3 rounded-xl border border-slate-50 hover:bg-slate-50 transition-colors group">
                                   <div className="flex items-center gap-3">
-                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                                      comp.type === "fixed" ? "bg-emerald-50 text-emerald-600" :
-                                      comp.type === "variable" ? "bg-indigo-50 text-indigo-600" :
-                                      comp.type === "deduction" ? "bg-rose-50 text-rose-600" : "bg-slate-50 text-slate-600"
-                                    }`}>
+                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${comp.type === "fixed" ? "bg-emerald-50 text-emerald-600" :
+                                        comp.type === "variable" ? "bg-indigo-50 text-indigo-600" :
+                                          comp.type === "deduction" ? "bg-rose-50 text-rose-600" : "bg-slate-50 text-slate-600"
+                                      }`}>
                                       {comp.type === "fixed" ? <DollarSign className="w-4 h-4" /> :
-                                       comp.type === "variable" ? <TrendingUp className="w-4 h-4" /> :
-                                       comp.type === "deduction" ? <Minus className="w-4 h-4" /> : <PieChart className="w-4 h-4" />}
+                                        comp.type === "variable" ? <TrendingUp className="w-4 h-4" /> :
+                                          comp.type === "deduction" ? <Minus className="w-4 h-4" /> : <PieChart className="w-4 h-4" />}
                                     </div>
                                     <div>
                                       <div className="text-sm font-bold text-slate-900">{comp.name}</div>
@@ -1336,18 +1326,18 @@ One point I'd like to discuss is the one-time joining bonus. Considering the ${s
 Looking forward to your thoughts.`,
                               },
                               {
-                                  id: "script-risk",
-                                  title: "Address High-Risk Clause",
-                                  content: `Subject: Clarification on Document Clauses - ${selectedOffer.offer.role}
-  
+                                id: "script-risk",
+                                title: "Address High-Risk Clause",
+                                content: `Subject: Clarification on Document Clauses - ${selectedOffer.offer.role}
+
   Hi [Name],
-  
-  While reviewing the document, I noticed a clause regarding "${selectedRisk?.title || 'Restrictive Covenants'}". 
-  
+
+  While reviewing the document, I noticed a clause regarding "${selectedRisk?.title || 'Restrictive Covenants'}".
+
   The current language seems a bit broad, specifically [mention clause]. To ensure a mutually beneficial partnership, would you be open to narrowing the scope to [proposed change] or adding a carve-out for [specific area]?
-  
+
   I want to ensure absolute clarity as I transition into the team.`,
-                                }
+                              }
                             ].map((script) => (
                               <div key={script.id} className="bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3">
                                 <div className="flex items-center justify-between">
@@ -1356,9 +1346,8 @@ Looking forward to your thoughts.`,
                                     onClick={() => copyToClipboard(script.content, script.id)}
                                     size="sm"
                                     variant="ghost"
-                                    className={`h-7 px-2 text-[10px] font-bold uppercase tracking-widest ${
-                                      copiedScript === script.id ? "text-emerald-500" : "text-indigo-600 hover:text-indigo-700"
-                                    }`}
+                                    className={`h-7 px-2 text-[10px] font-bold uppercase tracking-widest ${copiedScript === script.id ? "text-emerald-500" : "text-indigo-600 hover:text-indigo-700"
+                                      }`}
                                   >
                                     {copiedScript === script.id ? "Copied!" : "Copy Draft"}
                                   </Button>
@@ -1444,11 +1433,10 @@ Looking forward to your thoughts.`,
                           <button
                             key={risk.id || `risk-${index}`}
                             onClick={() => setSelectedRisk(risk)}
-                            className={`group w-full flex items-center gap-3 sm:gap-4 px-3 sm:px-5 py-3 sm:py-4 rounded-2xl sm:rounded-3xl text-left transition-all duration-300 ${
-                              isSelected 
-                                ? "bg-white text-slate-900 shadow-xl" 
+                            className={`group w-full flex items-center gap-3 sm:gap-4 px-3 sm:px-5 py-3 sm:py-4 rounded-2xl sm:rounded-3xl text-left transition-all duration-300 ${isSelected
+                                ? "bg-white text-slate-900 shadow-xl"
                                 : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-300"
-                            }`}
+                              }`}
                           >
                             <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0 ${config.dot} ${isSelected ? "animate-pulse" : "opacity-60"}`} />
                             <div className="flex-1 min-w-0">
@@ -1487,7 +1475,7 @@ Looking forward to your thoughts.`,
                           <p className="text-slate-600 text-xs sm:text-sm font-medium leading-relaxed italic border-l-2 border-slate-100 pl-3 sm:pl-4">
                             "{selectedRisk.description}"
                           </p>
-                          
+
                           {selectedRisk.clause && (
                             <div className="space-y-1.5 sm:space-y-2">
                               <span className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">Found in Clause</span>
@@ -1560,9 +1548,9 @@ Looking forward to your thoughts.`,
                         })()}
                       </div>
                       <div className="h-3 bg-white rounded-full overflow-hidden p-0.5 border border-slate-200 relative">
-                        <div 
-                          className="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full transition-all duration-1000" 
-                          style={{ width: selectedOffer.marketComparison.salaryPercentile }} 
+                        <div
+                          className="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full transition-all duration-1000"
+                          style={{ width: selectedOffer.marketComparison.salaryPercentile }}
                         />
                         <div className="absolute inset-0 flex items-center justify-between px-1 text-[7px] font-bold text-slate-400">
                           <span>Low</span>
@@ -1576,18 +1564,17 @@ Looking forward to your thoughts.`,
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-bold text-slate-700">What others are getting paid</span>
-                          <span className={`text-[9px] font-bold px-2 py-1 rounded-full flex items-center gap-1 ${
-                            selectedOffer.marketComparison.benchmarks.confidence === 'High' ? 'bg-emerald-50 text-emerald-600' :
-                            selectedOffer.marketComparison.benchmarks.confidence === 'Medium' ? 'bg-amber-50 text-amber-600' :
-                            'bg-rose-50 text-rose-600'
-                          }`}>
+                          <span className={`text-[9px] font-bold px-2 py-1 rounded-full flex items-center gap-1 ${selectedOffer.marketComparison.benchmarks.confidence === 'High' ? 'bg-emerald-50 text-emerald-600' :
+                              selectedOffer.marketComparison.benchmarks.confidence === 'Medium' ? 'bg-amber-50 text-amber-600' :
+                                'bg-rose-50 text-rose-600'
+                            }`}>
                             <Info className="w-3 h-3" />
                             {selectedOffer.marketComparison.benchmarks.confidence === 'High' ? 'Reliable data' :
-                             selectedOffer.marketComparison.benchmarks.confidence === 'Medium' ? 'Some data available' :
-                             'Limited data'}
+                              selectedOffer.marketComparison.benchmarks.confidence === 'Medium' ? 'Some data available' :
+                                'Limited data'}
                           </span>
                         </div>
-                        
+
                         <div className="grid grid-cols-3 gap-2">
                           <div className="bg-slate-50 p-3 rounded-xl text-center space-y-1 border border-slate-100">
                             <div className="text-[9px] font-bold text-slate-500">Entry Level</div>
@@ -1606,7 +1593,7 @@ Looking forward to your thoughts.`,
                             <div className="text-[8px] text-slate-400">Top 25%</div>
                           </div>
                         </div>
-                        
+
                         <div className="p-3 bg-amber-50/50 rounded-xl border border-amber-100/50">
                           <div className="flex items-start gap-2">
                             <Lightbulb className="w-3.5 h-3.5 text-amber-500 mt-0.5 shrink-0" />
@@ -1668,11 +1655,10 @@ Looking forward to your thoughts.`,
                     key={p.id}
                     onClick={() => changePerspective(p.id as any)}
                     disabled={isComparing}
-                    className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
-                      perspective === p.id
+                    className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${perspective === p.id
                         ? "bg-white text-slate-900 shadow-xl scale-105"
                         : "text-slate-500 hover:text-slate-800 hover:bg-white/50"
-                    } ${isComparing ? "opacity-50" : ""}`}
+                      } ${isComparing ? "opacity-50" : ""}`}
                   >
                     <p.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     {p.label}
@@ -1693,7 +1679,7 @@ Looking forward to your thoughts.`,
                     <p className="text-xs text-slate-500 font-medium">Model salary negotiations and see the impact on REXI scores.</p>
                   </div>
                 </div>
-                <Button 
+                <Button
                   onClick={() => setSimulatedValues({})}
                   variant="outline" size="sm" className="text-[10px] font-bold uppercase tracking-widest h-8"
                 >
@@ -1706,7 +1692,7 @@ Looking forward to your thoughts.`,
                   const currentSim = simulatedValues[offer.offerId] || { base: offer.baseSalary, bonus: offer.bonus };
                   const basePercent = ((currentSim.base - offer.baseSalary) / offer.baseSalary) * 100;
                   const bonusPercent = offer.bonus > 0 ? ((currentSim.bonus - offer.bonus) / offer.bonus) * 100 : 0;
-                  
+
                   return (
                     <div key={offer.offerId} className="space-y-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
                       <div className="flex items-center justify-between mb-2">
@@ -1715,7 +1701,7 @@ Looking forward to your thoughts.`,
                           {Math.round(offer.overallScore + (basePercent * 0.5) + (bonusPercent * 0.1))}% Score
                         </span>
                       </div>
-                      
+
                       <div className="space-y-3">
                         <div className="space-y-1.5">
                           <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-slate-400">
@@ -1724,7 +1710,7 @@ Looking forward to your thoughts.`,
                               {basePercent > 0 ? "+" : ""}{basePercent.toFixed(0)}%
                             </span>
                           </div>
-                          <input 
+                          <input
                             type="range" min={offer.baseSalary * 0.8} max={offer.baseSalary * 1.5} step={50000}
                             value={currentSim.base}
                             onChange={(e) => updateSimulation(offer.offerId, 'base', parseInt(e.target.value))}
@@ -1740,7 +1726,7 @@ Looking forward to your thoughts.`,
                               {bonusPercent > 0 ? "+" : ""}{bonusPercent.toFixed(0)}%
                             </span>
                           </div>
-                          <input 
+                          <input
                             type="range" min={0} max={offer.baseSalary * 0.5} step={25000}
                             value={currentSim.bonus}
                             onChange={(e) => updateSimulation(offer.offerId, 'bonus', parseInt(e.target.value))}
@@ -1760,11 +1746,11 @@ Looking forward to your thoughts.`,
               {(() => {
                 const winnerId = comparison.recommendation.bestOverall;
                 const winnerOffer = offers.find(o => o.offer.id === winnerId);
-                const reason = perspective === "money" ? "Highest financial return over 2 years." : 
-                               perspective === "stability" ? "Lowest risk profile and best job security." :
-                               perspective === "growth" ? "Superior equity upside and role trajectory." :
-                               "Best balance of compensation, risks, and quality of life.";
-                
+                const reason = perspective === "money" ? "Highest financial return over 2 years." :
+                  perspective === "stability" ? "Lowest risk profile and best job security." :
+                    perspective === "growth" ? "Superior equity upside and role trajectory." :
+                      "Best balance of compensation, risks, and quality of life.";
+
                 return (
                   <div className="bg-gradient-to-br from-slate-900 to-indigo-950 rounded-[2.5rem] p-6 sm:p-10 text-white relative overflow-hidden shadow-2xl border border-white/10 group">
                     <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:scale-110 transition-transform duration-700">
@@ -1782,7 +1768,7 @@ Looking forward to your thoughts.`,
                           {reason} Based on your **{perspective}** preference, this offer outperforms the others by {Math.round(comparison.offers.find(o => o.offerId === winnerId)?.overallScore || 0) - Math.round(Math.min(...comparison.offers.map(o => o.overallScore)))} points.
                         </p>
                         <div className="flex items-center gap-4 pt-2">
-                          <Button 
+                          <Button
                             onClick={() => { setSelectedOffer(winnerOffer || null); setViewMode("single"); }}
                             className="bg-white text-slate-900 hover:bg-indigo-50 h-12 px-8 rounded-2xl font-bold transition-all"
                           >
@@ -1841,29 +1827,29 @@ Looking forward to your thoughts.`,
             <div className="bg-white rounded-2xl sm:rounded-[3rem] border border-slate-100 shadow-2xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse min-w-[500px]">
-                    <thead>
-                      <tr>
-                        <th className="px-4 sm:px-8 py-6 sm:py-10 text-left bg-white sticky left-0 z-20 border-r border-slate-100">
-                          <div className="text-lg sm:text-3xl font-black text-slate-900 tracking-tighter">Categories</div>
-                          <div className="text-[10px] sm:text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest hidden sm:block">Weighted Criteria</div>
-                        </th>
-                        {comparison.offers.map((offer, idx) => (
-                          <th key={offer.offerId} className="px-4 sm:px-8 py-6 sm:py-10 text-left border-l border-slate-100 min-w-[180px] sm:min-w-[200px] bg-white">
-                            <div className="flex flex-col gap-2 sm:gap-3">
-                              <div className="flex items-center gap-1.5 sm:gap-2">
-                                <span className="w-5 h-5 sm:w-6 sm:h-6 bg-slate-900 text-white rounded-md sm:rounded-lg text-[9px] sm:text-[10px] font-black flex items-center justify-center shrink-0">0{idx + 1}</span>
-                                <span className="text-sm sm:text-xl font-bold text-slate-900 tracking-tight truncate">{offer.company}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest ${getScoreBg(offer.overallScore)} text-white`}>
-                                  {Math.round(offer.overallScore)}%
-                                </span>
-                              </div>
+                  <thead>
+                    <tr>
+                      <th className="px-4 sm:px-8 py-6 sm:py-10 text-left bg-white sticky left-0 z-20 border-r border-slate-100">
+                        <div className="text-lg sm:text-3xl font-black text-slate-900 tracking-tighter">Categories</div>
+                        <div className="text-[10px] sm:text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest hidden sm:block">Weighted Criteria</div>
+                      </th>
+                      {comparison.offers.map((offer, idx) => (
+                        <th key={offer.offerId} className="px-4 sm:px-8 py-6 sm:py-10 text-left border-l border-slate-100 min-w-[180px] sm:min-w-[200px] bg-white">
+                          <div className="flex flex-col gap-2 sm:gap-3">
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                              <span className="w-5 h-5 sm:w-6 sm:h-6 bg-slate-900 text-white rounded-md sm:rounded-lg text-[9px] sm:text-[10px] font-black flex items-center justify-center shrink-0">0{idx + 1}</span>
+                              <span className="text-sm sm:text-xl font-bold text-slate-900 tracking-tight truncate">{offer.company}</span>
                             </div>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
+                            <div className="flex items-center gap-2">
+                              <span className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest ${getScoreBg(offer.overallScore)} text-white`}>
+                                {Math.round(offer.overallScore)}%
+                              </span>
+                            </div>
+                          </div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
                   <tbody className="divide-y divide-slate-50">
                     {comparison.comparisonMatrix.map((row, i) => (
                       <tr key={i} className="hover:bg-slate-50/30 transition-colors group">
@@ -1899,9 +1885,9 @@ Looking forward to your thoughts.`,
                               <span className="text-2xl sm:text-4xl font-black">{Math.round(offer.overallScore)}<span className="text-sm sm:text-xl text-slate-500 ml-0.5 sm:ml-1">/100</span></span>
                             </div>
                             <div className="h-1.5 sm:h-2 bg-slate-800 rounded-full overflow-hidden p-0.5">
-                              <div 
-                                className={`h-full rounded-full transition-all duration-1000 ${getScoreBg(offer.overallScore)}`} 
-                                style={{ width: `${offer.overallScore}%` }} 
+                              <div
+                                className={`h-full rounded-full transition-all duration-1000 ${getScoreBg(offer.overallScore)}`}
+                                style={{ width: `${offer.overallScore}%` }}
                               />
                             </div>
                           </div>
