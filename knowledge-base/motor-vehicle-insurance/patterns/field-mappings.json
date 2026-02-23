@@ -1,0 +1,125 @@
+{
+  "version": "1.0",
+  "generated_date": "2026-02-06T17:53:12.781Z",
+  "insurers_analyzed": [
+    "Cholamandalam MS General Insurance Company Limited"
+  ],
+  "pdfs_processed": 1,
+  "field_patterns": {
+    "document_type": {
+      "field": "document_type",
+      "variations": [
+        "Terms & Conditions (Policy Wording)"
+      ],
+      "sample_values": [],
+      "insurers": [
+        "Cholamandalam MS General Insurance Company Limited"
+      ]
+    },
+    "discovered_fields": {
+      "field": "discovered_fields",
+      "variations": [
+        "Insurer Name",
+        "Registered Office Address",
+        "Toll Free Number",
+        "Phone Number",
+        "Fax Number",
+        "Email",
+        "Website",
+        "PAN",
+        "CIN",
+        "IRDAI Registration Number",
+        "Policy Name",
+        "IRDAI Reference Number",
+        "Policy Preamble (Proposal and Declaration Date)",
+        "Premium Amount (referenced in Schedule)",
+        "Vehicle Type (e.g., motor cycle, scooter, auto cycle)",
+        "Section I Coverage (Perils Covered)",
+        "Depreciation Rates for Rubber/Nylon/Plastic Parts, Tyres, Tubes, and Batteries",
+        "Depreciation Rates for Fibre Glass Components",
+        "Depreciation Rates for Glass Parts",
+        "Age-wise Depreciation Schedule for Other Parts (including wooden parts)",
+        "Depreciation Rate for Painting (Material Cost)",
+        "Exclusions under Section I (e.g., consequential loss, wear and tear, mechanical breakdown)",
+        "Liability for Tyres and Tubes Damage",
+        "Exclusion for Accessories Loss/Theft",
+        "Exclusion for Intoxicating Liquor or Drugs",
+        "Cost of Protection and Removal (Limit: Rs. 300)",
+        "Authorized Repair Conditions (Limit: Rs. 150)",
+        "Definition of Insured’s Declared Value (IDV)",
+        "IDV Calculation Basis (Manufacturer’s Listed Selling Price)",
+        "Age-wise Depreciation Schedule for IDV (Total Loss/Constructive Total Loss Claims)",
+        "Market Value Definition for Policy Period",
+        "Constructive Total Loss (CTL) Threshold (75% of IDV)",
+        "Section II Coverage (Third-Party Liability)",
+        "Limits of Liability (referenced in Schedule)",
+        "Coverage for Death or Bodily Injury to Third Parties",
+        "Exclusion for Occupants Carried for Hire or Reward",
+        "Coverage for Damage to Third-Party Property",
+        "Exclusion for Property Belonging to Insured or Held in Trust",
+        "Geographical Limits for Coverage (Carriageway/Thoroughfare)",
+        "Indemnity for Costs and Expenses (with Company’s Written Consent)",
+        "Indemnity for Authorized Drivers",
+        "Indemnity in Event of Death of Insured"
+      ],
+      "sample_values": [
+        "Insurer Name",
+        "Registered Office Address",
+        "Toll Free Number",
+        "Phone Number",
+        "Fax Number",
+        "Email",
+        "Website",
+        "PAN",
+        "CIN",
+        "IRDAI Registration Number"
+      ],
+      "insurers": [
+        "Cholamandalam MS General Insurance Company Limited"
+      ]
+    },
+    "sections": {
+      "field": "sections",
+      "variations": [
+        "Insurer Details",
+        "Policy Preamble",
+        "Section I – Loss of or Damage to the Vehicle Insured",
+        "Depreciation Rates for Parts Replaced",
+        "Exclusions under Section I",
+        "Sum Insured – Insured’s Declared Value (IDV)",
+        "Schedule of Depreciation for Fixing IDV of the Vehicle",
+        "Section II – Liability to Third Parties",
+        "General Conditions and Exclusions"
+      ],
+      "sample_values": [
+        "Insurer Details",
+        "Policy Preamble",
+        "Section I – Loss of or Damage to the Vehicle Insured",
+        "Depreciation Rates for Parts Replaced",
+        "Exclusions under Section I",
+        "Sum Insured – Insured’s Declared Value (IDV)",
+        "Schedule of Depreciation for Fixing IDV of the Vehicle",
+        "Section II – Liability to Third Parties",
+        "General Conditions and Exclusions"
+      ],
+      "insurers": [
+        "Cholamandalam MS General Insurance Company Limited"
+      ]
+    },
+    "summary": {
+      "field": "summary",
+      "variations": [
+        "This document is the policy wording for a bundled motor two-wheeler insurance policy issued by Cholamandalam MS General Insurance Company Limited. It outlines the terms, conditions, coverage, exclusions, and obligations under two primary sections: Section I (Loss of or Damage to the Vehicle Insured) and Section II (Liability to Third Parties). The document includes details on depreciation rates for parts and painting, IDV calculation, exclusions, and conditions for claims. It also specifies the insurer's contact details, regulatory information, and policy reference numbers."
+      ],
+      "sample_values": [
+        "This document is the policy wording for a bundled motor two-wheeler insurance policy issued by Cholamandalam MS General Insurance Company Limited. It outlines the terms, conditions, coverage, exclusions, and obligations under two primary sections: Section I (Loss of or Damage to the Vehicle Insured) and Section II (Liability to Third Parties). The document includes details on depreciation rates for parts and painting, IDV calculation, exclusions, and conditions for claims. It also specifies the insurer's contact details, regulatory information, and policy reference numbers."
+      ],
+      "insurers": [
+        "Cholamandalam MS General Insurance Company Limited"
+      ]
+    }
+  },
+  "confidence_scores": {
+    "Cholamandalam MS General Insurance Company Limited": 90
+  }
+}

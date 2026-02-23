@@ -44,6 +44,7 @@ import {
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/logo";
 import {
   Popover,
   PopoverContent,
@@ -59,6 +60,7 @@ import {
   getClawbackRiskColor,
 } from "@/lib/salary-engine";
 import { ShareOfferButton } from "@/components/share-offer-button";
+import { RexiChatWidget } from "@/components/insurance/RexiChatWidget";
 
 type ViewMode = "upload" | "single" | "compare";
 
@@ -82,8 +84,8 @@ function InfoTooltip({ tooltipKey, className = "", variant = "light" }: { toolti
         <button
           onClick={(e) => e.stopPropagation()}
           className={`w-5 h-5 rounded-full flex items-center justify-center transition-all hover:scale-110 shrink-0 outline-none focus:ring-2 focus:ring-indigo-500/50 ${variant === "dark"
-              ? "bg-white/10 hover:bg-white/20 border border-white/10"
-              : "bg-slate-100/80 hover:bg-slate-200 border border-slate-200/50"
+            ? "bg-white/10 hover:bg-white/20 border border-white/10"
+            : "bg-slate-100/80 hover:bg-slate-200 border border-slate-200/50"
             } ${className}`}
           aria-label="More information"
         >
@@ -157,6 +159,7 @@ export default function OffersPage() {
   const [taxRegime, setTaxRegime] = useState<"old" | "new">("new");
   const [commuteTime, setCommuteTime] = useState<number>(1); // hours per day
   const [simulatedValues, setSimulatedValues] = useState<Record<string, { base: number, bonus: number }>>({});
+  const [currentAnalysisId, setCurrentAnalysisId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const updateSimulation = (offerId: string, type: 'base' | 'bonus', value: number) => {
@@ -264,23 +267,32 @@ export default function OffersPage() {
         }
       }
 
-      fetch("/api/store-analysis", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          source: "offers",
-          rawText: extractedText,
-          analysisResult: analysisResult,
-          fileName: file.name,
-          documentType: "Offer Letter",
-          metadata: {
-            fileSize: file.size,
-            fileType: file.type,
-            company: analysisResult.offer.company,
-            role: analysisResult.offer.role,
-          },
-        }),
-      }).catch(console.error);
+      try {
+        const storeResponse = await fetch("/api/store-analysis", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            source: "offers",
+            rawText: extractedText,
+            analysisResult: analysisResult,
+            fileName: file.name,
+            documentType: "Offer Letter",
+            metadata: {
+              fileSize: file.size,
+              fileType: file.type,
+              company: analysisResult.offer.company,
+              role: analysisResult.offer.role,
+            },
+          }),
+        });
+
+        const storeData = await storeResponse.json();
+        if (storeData.id) {
+          setCurrentAnalysisId(storeData.id);
+        }
+      } catch (storeError) {
+        console.error("Failed to store analysis:", storeError);
+      }
 
       setOffers((prev) => [...prev, analysisResult]);
       setSelectedOffer(analysisResult);
@@ -391,10 +403,8 @@ export default function OffersPage() {
       <nav className="fixed top-0 left-0 right-0 z-[60] px-2 sm:px-4 pt-2 sm:pt-4 pointer-events-none">
         <div className="max-w-7xl mx-auto flex items-center justify-between pointer-events-auto">
           <div className="flex items-center gap-2 sm:gap-3 bg-white/80 backdrop-blur-xl border border-white/40 shadow-sm rounded-xl sm:rounded-2xl px-2.5 sm:px-4 py-1.5 sm:py-2">
-            <Link href="/" className="flex items-center gap-1.5 sm:gap-2 group">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-slate-900 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                <Scale className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-              </div>
+            <Link href="/" className="flex items-center gap-2 group">
+              <Logo className="w-7 h-7 sm:w-8 sm:h-8" iconOnly />
               <span className="font-semibold text-slate-900 tracking-tight text-sm sm:text-base">REXI <span className="text-indigo-500">STUDIO</span></span>
             </Link>
             <div className="h-4 w-px bg-slate-200 mx-0.5 sm:mx-1 hidden sm:block" />
@@ -431,8 +441,8 @@ export default function OffersPage() {
                     key={offer.offer.id}
                     onClick={() => { setSelectedOffer(offer); setViewMode("single"); }}
                     className={`group relative flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl border transition-all duration-300 cursor-pointer shrink-0 ${selectedOffer?.offer.id === offer.offer.id && viewMode === "single"
-                        ? "bg-slate-900 text-white border-slate-900 shadow-xl shadow-slate-200 scale-105 z-10"
-                        : "bg-white border-slate-100 hover:border-slate-300 text-slate-600 hover:translate-y-[-2px]"
+                      ? "bg-slate-900 text-white border-slate-900 shadow-xl shadow-slate-200 scale-105 z-10"
+                      : "bg-white border-slate-100 hover:border-slate-300 text-slate-600 hover:translate-y-[-2px]"
                       }`}
                   >
                     <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-md sm:rounded-lg text-[9px] sm:text-[10px] font-bold flex items-center justify-center ${selectedOffer?.offer.id === offer.offer.id && viewMode === "single" ? "bg-indigo-500 text-white" : "bg-slate-100 text-slate-500"
@@ -461,8 +471,8 @@ export default function OffersPage() {
                   onClick={() => handleCompare()}
                   disabled={isComparing}
                   className={`relative overflow-hidden group px-4 sm:px-6 py-2.5 rounded-xl sm:rounded-2xl font-semibold text-sm transition-all w-full sm:w-auto sm:self-end ${viewMode === "compare"
-                      ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200"
-                      : "bg-white text-slate-900 border border-slate-200 hover:border-indigo-200 hover:shadow-lg shadow-slate-100"
+                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200"
+                    : "bg-white text-slate-900 border border-slate-200 hover:border-indigo-200 hover:shadow-lg shadow-slate-100"
                     }`}
                 >
                   <div className="flex items-center justify-center gap-2 relative z-10">
@@ -502,7 +512,7 @@ export default function OffersPage() {
               className={`group relative rounded-2xl sm:rounded-[2rem] p-1 text-center transition-all duration-500 ${isDragging ? "bg-gradient-to-r from-indigo-500 to-violet-500 scale-[1.02]" : "bg-slate-100 hover:bg-slate-200"
                 }`}
             >
-              <div className="bg-white rounded-xl sm:rounded-[1.85rem] p-8 sm:p-16 border border-white/40 shadow-sm relative overflow-hidden">
+              <div className="bg-white rounded-xl sm:rounded-[1.85rem] p-6 sm:p-16 border border-white/40 shadow-sm relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(99,102,241,0.05),transparent)] pointer-events-none" />
 
                 <div className="relative z-10 space-y-4 sm:space-y-6">
@@ -607,7 +617,7 @@ export default function OffersPage() {
                   </div>
 
                   {/* Score Circle */}
-                  <div className="self-end sm:self-start sm:p-0">
+                  <div className="self-start sm:self-start sm:p-0">
                     <div className="relative w-16 h-16 sm:w-24 sm:h-24">
                       <svg className="w-full h-full transform -rotate-90">
                         <circle cx="50%" cy="50%" r="35%" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-50" />
@@ -712,14 +722,14 @@ export default function OffersPage() {
                   ))}
                 </div>
 
-                <div className="p-4 sm:p-8">
+                <div className="p-4 sm:p-6 lg:p-8">
                   {expandedSection === "realvalue" && (
                     <div className="space-y-6">
                       {selectedOffer.offer.economicAnalysis ? (
                         <>
                           {/* Year 1 vs Year 2 Comparison */}
                           <div className="grid md:grid-cols-2 gap-4">
-                            <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl p-6 text-white relative overflow-hidden group">
+                            <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl p-5 sm:p-6 text-white relative overflow-hidden group">
                               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
                                 <Sparkles className="w-16 h-16" />
                               </div>
@@ -728,15 +738,15 @@ export default function OffersPage() {
                                   <Calendar className="w-4 h-4" /> Year 1 (with bonuses)
                                   <InfoTooltip tooltipKey="year1CTC" variant="dark" />
                                 </div>
-                                <div className="text-3xl font-black">
+                                <div className="text-2xl sm:text-3xl font-black">
                                   {formatINR(selectedOffer.offer.economicAnalysis.year1EffectiveCTC)}
                                 </div>
-                                <div className="flex items-center gap-4 text-sm">
+                                <div className="flex flex-wrap items-center gap-4 text-sm">
                                   <div>
                                     <div className="text-indigo-200 text-[10px] uppercase tracking-wider">Monthly</div>
                                     <div className="font-bold">{formatINR(selectedOffer.offer.economicAnalysis.year1MonthlyEffective)}</div>
                                   </div>
-                                  <div className="h-8 w-px bg-indigo-400/30" />
+                                  <div className="hidden sm:block h-8 w-px bg-indigo-400/30" />
                                   <div>
                                     <div className="text-indigo-200 text-[10px] uppercase tracking-wider">Savings Rate</div>
                                     <div className="font-bold">{selectedOffer.offer.economicAnalysis.savingsRateYear1}%</div>
@@ -745,7 +755,7 @@ export default function OffersPage() {
                               </div>
                             </div>
 
-                            <div className="bg-slate-900 rounded-2xl p-6 text-white relative overflow-hidden group">
+                            <div className="bg-slate-900 rounded-2xl p-5 sm:p-6 text-white relative overflow-hidden group">
                               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
                                 <TrendingDown className="w-16 h-16" />
                               </div>
@@ -753,15 +763,15 @@ export default function OffersPage() {
                                 <div className="flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-widest">
                                   <Calendar className="w-4 h-4" /> Year 2+ (Steady State)
                                 </div>
-                                <div className="text-3xl font-black">
+                                <div className="text-2xl sm:text-3xl font-black">
                                   {formatINR(selectedOffer.offer.economicAnalysis.year2SteadyCTC)}
                                 </div>
-                                <div className="flex items-center gap-4 text-sm">
+                                <div className="flex flex-wrap items-center gap-4 text-sm">
                                   <div>
                                     <div className="text-slate-400 text-[10px] uppercase tracking-wider">Monthly</div>
                                     <div className="font-bold">{formatINR(selectedOffer.offer.economicAnalysis.year2MonthlyEffective)}</div>
                                   </div>
-                                  <div className="h-8 w-px bg-slate-700" />
+                                  <div className="hidden sm:block h-8 w-px bg-slate-700" />
                                   <div>
                                     <div className="text-slate-400 text-[10px] uppercase tracking-wider">Savings Rate</div>
                                     <div className="font-bold">{selectedOffer.offer.economicAnalysis.savingsRateYear2}%</div>
@@ -773,11 +783,11 @@ export default function OffersPage() {
 
                           {/* One-Time Benefits Breakdown */}
                           {selectedOffer.offer.oneTimeBenefits && (selectedOffer.offer.oneTimeBenefits.joiningBonus > 0 || selectedOffer.offer.oneTimeBenefits.relocationAllowance > 0) && (
-                            <div className="bg-amber-50 rounded-2xl p-6 border border-amber-100">
+                            <div className="bg-amber-50 rounded-2xl p-4 sm:p-6 border border-amber-100">
                               <h4 className="text-sm font-bold text-amber-900 uppercase tracking-widest mb-4 flex items-center gap-2">
                                 <Sparkles className="w-4 h-4 text-amber-500" /> One-Time Benefits (Year 1 Only)
                               </h4>
-                              <div className="grid sm:grid-cols-3 gap-4">
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 {selectedOffer.offer.oneTimeBenefits.joiningBonus > 0 && (
                                   <div className="bg-white rounded-xl p-4 border border-amber-100">
                                     <div className="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Joining Bonus</div>
@@ -805,7 +815,7 @@ export default function OffersPage() {
                           {/* City Economics & Livability */}
                           <div className="grid md:grid-cols-2 gap-4">
                             {/* City Cost Card */}
-                            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                            <div className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-100 shadow-sm">
                               <h4 className="text-sm font-bold text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
                                 <Home className="w-4 h-4 text-indigo-500" /> City Economics
                                 <InfoTooltip tooltipKey="cityEconomics" className="ml-1" />
@@ -825,39 +835,39 @@ export default function OffersPage() {
                                 <div className="grid grid-cols-2 gap-3">
                                   <div className="bg-slate-50 rounded-xl p-3">
                                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Base Cost</div>
-                                    <div className="text-sm font-bold text-slate-900">{formatINR(selectedOffer.offer.economicAnalysis.cityEconomics.baseMonthlyCost)}/mo</div>
+                                    <div className="text-xs sm:text-sm font-bold text-slate-900">{formatINR(selectedOffer.offer.economicAnalysis.cityEconomics.baseMonthlyCost)}/mo</div>
                                   </div>
                                   <div className="bg-slate-50 rounded-xl p-3">
                                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Adjusted Cost</div>
-                                    <div className="text-sm font-bold text-slate-900">{formatINR(selectedOffer.offer.economicAnalysis.cityEconomics.adjustedMonthlyCost)}/mo</div>
+                                    <div className="text-xs sm:text-sm font-bold text-slate-900">{formatINR(selectedOffer.offer.economicAnalysis.cityEconomics.adjustedMonthlyCost)}/mo</div>
                                   </div>
                                   <div className="bg-slate-50 rounded-xl p-3">
                                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Inflation</div>
-                                    <div className="text-sm font-bold text-slate-900">{selectedOffer.offer.economicAnalysis.cityEconomics.inflationRate}%</div>
+                                    <div className="text-xs sm:text-sm font-bold text-slate-900">{selectedOffer.offer.economicAnalysis.cityEconomics.inflationRate}%</div>
                                   </div>
                                   <div className="bg-slate-50 rounded-xl p-3">
                                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Work Mode</div>
-                                    <div className="text-sm font-bold text-slate-900">{selectedOffer.offer.workMode || 'Office'}</div>
+                                    <div className="text-xs sm:text-sm font-bold text-slate-900">{selectedOffer.offer.workMode || 'Office'}</div>
                                   </div>
                                 </div>
                               </div>
                             </div>
 
                             {/* Livability Meter */}
-                            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+                            <div className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-100 shadow-sm">
                               <h4 className="text-sm font-bold text-slate-900 uppercase tracking-widest mb-4 flex items-center gap-2">
                                 <Users className="w-4 h-4 text-emerald-500" /> Livability Index
                                 <InfoTooltip tooltipKey="livabilityIndex" className="ml-1" />
                               </h4>
                               <div className="space-y-4">
                                 <div className="flex items-center justify-between">
-                                  <div className="text-4xl font-black text-slate-900">
+                                  <div className="text-3xl sm:text-4xl font-black text-slate-900">
                                     {selectedOffer.offer.economicAnalysis.livabilityIndex.toFixed(2)}x
                                   </div>
-                                  <div className={`px-4 py-2 rounded-xl font-bold text-sm ${selectedOffer.offer.economicAnalysis.livabilityGrade === 'Comfortable' ? 'bg-emerald-50 text-emerald-700' :
-                                      selectedOffer.offer.economicAnalysis.livabilityGrade === 'Manageable' ? 'bg-amber-50 text-amber-700' :
-                                        selectedOffer.offer.economicAnalysis.livabilityGrade === 'Tight' ? 'bg-orange-50 text-orange-700' :
-                                          'bg-rose-50 text-rose-700'
+                                  <div className={`px-3 sm:px-4 py-1 sm:py-2 rounded-xl font-bold text-xs sm:text-sm ${selectedOffer.offer.economicAnalysis.livabilityGrade === 'Comfortable' ? 'bg-emerald-50 text-emerald-700' :
+                                    selectedOffer.offer.economicAnalysis.livabilityGrade === 'Manageable' ? 'bg-amber-50 text-amber-700' :
+                                      selectedOffer.offer.economicAnalysis.livabilityGrade === 'Tight' ? 'bg-orange-50 text-orange-700' :
+                                        'bg-rose-50 text-rose-700'
                                     }`}>
                                     {selectedOffer.offer.economicAnalysis.livabilityGrade}
                                   </div>
@@ -865,9 +875,9 @@ export default function OffersPage() {
                                 <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
                                   <div
                                     className={`h-full rounded-full transition-all duration-1000 ${selectedOffer.offer.economicAnalysis.livabilityGrade === 'Comfortable' ? 'bg-emerald-500' :
-                                        selectedOffer.offer.economicAnalysis.livabilityGrade === 'Manageable' ? 'bg-amber-500' :
-                                          selectedOffer.offer.economicAnalysis.livabilityGrade === 'Tight' ? 'bg-orange-500' :
-                                            'bg-rose-500'
+                                      selectedOffer.offer.economicAnalysis.livabilityGrade === 'Manageable' ? 'bg-amber-500' :
+                                        selectedOffer.offer.economicAnalysis.livabilityGrade === 'Tight' ? 'bg-orange-500' :
+                                          'bg-rose-500'
                                       }`}
                                     style={{ width: `${Math.min(100, (selectedOffer.offer.economicAnalysis.livabilityIndex / 3) * 100)}%` }}
                                   />
@@ -887,7 +897,7 @@ export default function OffersPage() {
                             </div>
 
                             {/* Tax Optimization Engine */}
-                            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-6">
+                            <div className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-100 shadow-sm space-y-6">
                               <div className="flex items-center justify-between">
                                 <h4 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-2">
                                   <Receipt className="w-4 h-4 text-emerald-500" /> Tax Optimization
@@ -918,12 +928,12 @@ export default function OffersPage() {
 
                                   return (
                                     <>
-                                      <div className="flex items-end justify-between">
+                                      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 sm:gap-0">
                                         <div>
                                           <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Est. Annual Tax</div>
-                                          <div className="text-2xl font-black text-slate-900">{formatINR(taxRegime === "new" ? taxNew : taxOld)}</div>
+                                          <div className="text-xl sm:text-2xl font-black text-slate-900">{formatINR(taxRegime === "new" ? taxNew : taxOld)}</div>
                                         </div>
-                                        <div className={`px-3 py-1 rounded-lg text-[10px] font-bold ${savings > 0 ? "bg-emerald-50 text-emerald-600" : "bg-indigo-50 text-indigo-600"}`}>
+                                        <div className={`px-3 py-1 rounded-lg text-[10px] font-bold w-full sm:w-auto text-center ${savings > 0 ? "bg-emerald-50 text-emerald-600" : "bg-indigo-50 text-indigo-600"}`}>
                                           {betterRegime} is better
                                         </div>
                                       </div>
@@ -939,7 +949,7 @@ export default function OffersPage() {
                             </div>
 
                             {/* Hidden Costs (Commute Time Tax) */}
-                            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-6">
+                            <div className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-100 shadow-sm space-y-6">
                               <h4 className="text-sm font-bold text-slate-900 uppercase tracking-widest flex items-center gap-2">
                                 <AlertCircle className="w-4 h-4 text-rose-500" /> The "Time Tax" (Commute)
                               </h4>
@@ -987,29 +997,29 @@ export default function OffersPage() {
 
                           {/* Clawback Risk Warning */}
                           {selectedOffer.offer.economicAnalysis.clawbackRisk && (
-                            <div className={`rounded-2xl p-6 border ${selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'high' ? 'bg-rose-50 border-rose-200' :
-                                selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'medium' ? 'bg-amber-50 border-amber-200' :
-                                  'bg-emerald-50 border-emerald-200'
+                            <div className={`rounded-2xl p-4 sm:p-6 border ${selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'high' ? 'bg-rose-50 border-rose-200' :
+                              selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'medium' ? 'bg-amber-50 border-amber-200' :
+                                'bg-emerald-50 border-emerald-200'
                               }`}>
-                              <div className="flex items-start gap-4">
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'high' ? 'bg-rose-100 text-rose-600' :
-                                    selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'medium' ? 'bg-amber-100 text-amber-600' :
-                                      'bg-emerald-100 text-emerald-600'
+                              <div className="flex flex-col sm:flex-row items-start gap-4">
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'high' ? 'bg-rose-100 text-rose-600' :
+                                  selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'medium' ? 'bg-amber-100 text-amber-600' :
+                                    'bg-emerald-100 text-emerald-600'
                                   }`}>
                                   <AlertTriangle className="w-5 h-5" />
                                 </div>
                                 <div className="flex-1 space-y-3">
                                   <div>
                                     <h4 className={`text-sm font-bold uppercase tracking-widest flex items-center gap-2 ${selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'high' ? 'text-rose-900' :
-                                        selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'medium' ? 'text-amber-900' :
-                                          'text-emerald-900'
+                                      selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'medium' ? 'text-amber-900' :
+                                        'text-emerald-900'
                                       }`}>
                                       Clawback Risk: {selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel.toUpperCase()}
                                       <InfoTooltip tooltipKey="clawbackRisk" />
                                     </h4>
                                     <p className={`text-sm mt-1 ${selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'high' ? 'text-rose-700' :
-                                        selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'medium' ? 'text-amber-700' :
-                                          'text-emerald-700'
+                                      selectedOffer.offer.economicAnalysis.clawbackRisk.riskLevel === 'medium' ? 'text-amber-700' :
+                                        'text-emerald-700'
                                       }`}>
                                       {selectedOffer.offer.economicAnalysis.clawbackRisk.warningMessage}
                                     </p>
@@ -1045,17 +1055,17 @@ export default function OffersPage() {
 
                   {expandedSection === "breakdown" && (
                     <div className="space-y-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
+                        <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl w-fit">
                           <button
                             onClick={() => setBreakdownPeriod("annual")}
-                            className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${breakdownPeriod === "annual" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                            className={`px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${breakdownPeriod === "annual" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                           >
                             Annual
                           </button>
                           <button
                             onClick={() => setBreakdownPeriod("monthly")}
-                            className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${breakdownPeriod === "monthly" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                            className={`px-3 sm:px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${breakdownPeriod === "monthly" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                           >
                             Monthly
                           </button>
@@ -1074,19 +1084,19 @@ export default function OffersPage() {
                             </h4>
                             <div className="space-y-2">
                               {selectedOffer.offer.salaryBreakdown.components.map((comp, idx) => (
-                                <div key={idx} className="flex items-center justify-between p-3 rounded-xl border border-slate-50 hover:bg-slate-50 transition-colors group">
-                                  <div className="flex items-center gap-3">
-                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${comp.type === "fixed" ? "bg-emerald-50 text-emerald-600" :
-                                        comp.type === "variable" ? "bg-indigo-50 text-indigo-600" :
-                                          comp.type === "deduction" ? "bg-rose-50 text-rose-600" : "bg-slate-50 text-slate-600"
+                                <div key={idx} className="flex items-start sm:items-center justify-between p-3 rounded-xl border border-slate-50 hover:bg-slate-50 transition-colors group gap-3">
+                                  <div className="flex items-center gap-3 min-w-0">
+                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${comp.type === "fixed" ? "bg-emerald-50 text-emerald-600" :
+                                      comp.type === "variable" ? "bg-indigo-50 text-indigo-600" :
+                                        comp.type === "deduction" ? "bg-rose-50 text-rose-600" : "bg-slate-50 text-slate-600"
                                       }`}>
                                       {comp.type === "fixed" ? <DollarSign className="w-4 h-4" /> :
                                         comp.type === "variable" ? <TrendingUp className="w-4 h-4" /> :
                                           comp.type === "deduction" ? <Minus className="w-4 h-4" /> : <PieChart className="w-4 h-4" />}
                                     </div>
-                                    <div>
-                                      <div className="text-sm font-bold text-slate-900">{comp.name}</div>
-                                      <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
+                                    <div className="min-w-0">
+                                      <div className="text-xs sm:text-sm font-bold text-slate-900 truncate">{comp.name}</div>
+                                      <div className="text-[10px] text-slate-400 flex items-center gap-1.5 flex-wrap">
                                         <span className="uppercase">{comp.type}</span>
                                         {comp.isNegotiable && (
                                           <>
@@ -1097,7 +1107,7 @@ export default function OffersPage() {
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="text-sm font-bold text-slate-900">
+                                  <div className="text-xs sm:text-sm font-bold text-slate-900 shrink-0">
                                     {formatCurrency(breakdownPeriod === "annual" ? comp.annual : comp.monthly, selectedOffer.offer.currency)}
                                   </div>
                                 </div>
@@ -1106,18 +1116,18 @@ export default function OffersPage() {
                           </div>
 
                           {/* Summary & Take-Home */}
-                          <div className="space-y-6">
-                            <div className="bg-slate-900 rounded-2xl p-6 text-white relative overflow-hidden group">
+                          <div className="space-y-4 sm:space-y-6">
+                            <div className="bg-slate-900 rounded-2xl p-4 sm:p-6 text-white relative overflow-hidden group">
                               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
                                 <Wallet className="w-20 h-20" />
                               </div>
                               <div className="relative z-10 space-y-4">
                                 <div>
-                                  <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-2">
+                                  <div className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-2">
                                     Estimated Take-Home
                                     <InfoTooltip tooltipKey="takeHome" variant="dark" />
                                   </div>
-                                  <div className="text-3xl font-black">
+                                  <div className="text-2xl sm:text-3xl font-black">
                                     {formatCurrency(
                                       breakdownPeriod === "annual" ? selectedOffer.offer.salaryBreakdown.annualTakeHome : selectedOffer.offer.salaryBreakdown.monthlyTakeHome,
                                       selectedOffer.offer.currency
@@ -1126,10 +1136,10 @@ export default function OffersPage() {
                                   <div className="text-[10px] text-slate-500 mt-1">* Post PF and estimated standard tax deductions</div>
                                 </div>
                                 <div className="h-px bg-slate-800" />
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                   <div>
                                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Gross CTC</div>
-                                    <div className="text-base font-bold">
+                                    <div className="text-sm sm:text-base font-bold">
                                       {formatCurrency(
                                         breakdownPeriod === "annual" ? selectedOffer.offer.salaryBreakdown.totalCTC : selectedOffer.offer.salaryBreakdown.totalCTC / 12,
                                         selectedOffer.offer.currency
@@ -1141,7 +1151,7 @@ export default function OffersPage() {
                                       Total Deductions
                                       <InfoTooltip tooltipKey="taxDeductions" variant="dark" />
                                     </div>
-                                    <div className="text-base font-bold text-rose-400">
+                                    <div className="text-sm sm:text-base font-bold text-rose-400">
                                       {formatCurrency(
                                         breakdownPeriod === "annual" ? selectedOffer.offer.salaryBreakdown.taxDeductions : selectedOffer.offer.salaryBreakdown.taxDeductions / 12,
                                         selectedOffer.offer.currency
@@ -1152,11 +1162,11 @@ export default function OffersPage() {
                               </div>
                             </div>
 
-                            <div className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4 shadow-sm">
+                            <div className="bg-white rounded-2xl border border-slate-100 p-4 sm:p-6 space-y-4 shadow-sm">
                               <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest flex items-center gap-2">
                                 <Gavel className="w-4 h-4 text-emerald-500" /> Compliance & Safety
                               </h4>
-                              <div className="grid grid-cols-2 gap-3">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {[
                                   { label: "Provident Fund (PF)", status: selectedOffer.offer.salaryBreakdown.complianceInfo.pfEnabled ? "Active" : "Not Found", icon: ShieldCheck },
                                   { label: "Gratuity", status: selectedOffer.offer.salaryBreakdown.complianceInfo.gratuityEnabled ? "Eligible" : "Standard Policy", icon: Award },
@@ -1434,8 +1444,8 @@ Looking forward to your thoughts.`,
                             key={risk.id || `risk-${index}`}
                             onClick={() => setSelectedRisk(risk)}
                             className={`group w-full flex items-center gap-3 sm:gap-4 px-3 sm:px-5 py-3 sm:py-4 rounded-2xl sm:rounded-3xl text-left transition-all duration-300 ${isSelected
-                                ? "bg-white text-slate-900 shadow-xl"
-                                : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-300"
+                              ? "bg-white text-slate-900 shadow-xl"
+                              : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-300"
                               }`}
                           >
                             <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0 ${config.dot} ${isSelected ? "animate-pulse" : "opacity-60"}`} />
@@ -1565,8 +1575,8 @@ Looking forward to your thoughts.`,
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-bold text-slate-700">What others are getting paid</span>
                           <span className={`text-[9px] font-bold px-2 py-1 rounded-full flex items-center gap-1 ${selectedOffer.marketComparison.benchmarks.confidence === 'High' ? 'bg-emerald-50 text-emerald-600' :
-                              selectedOffer.marketComparison.benchmarks.confidence === 'Medium' ? 'bg-amber-50 text-amber-600' :
-                                'bg-rose-50 text-rose-600'
+                            selectedOffer.marketComparison.benchmarks.confidence === 'Medium' ? 'bg-amber-50 text-amber-600' :
+                              'bg-rose-50 text-rose-600'
                             }`}>
                             <Info className="w-3 h-3" />
                             {selectedOffer.marketComparison.benchmarks.confidence === 'High' ? 'Reliable data' :
@@ -1656,8 +1666,8 @@ Looking forward to your thoughts.`,
                     onClick={() => changePerspective(p.id as any)}
                     disabled={isComparing}
                     className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${perspective === p.id
-                        ? "bg-white text-slate-900 shadow-xl scale-105"
-                        : "text-slate-500 hover:text-slate-800 hover:bg-white/50"
+                      ? "bg-white text-slate-900 shadow-xl scale-105"
+                      : "text-slate-500 hover:text-slate-800 hover:bg-white/50"
                       } ${isComparing ? "opacity-50" : ""}`}
                   >
                     <p.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -1984,6 +1994,15 @@ Looking forward to your thoughts.`,
           scrollbar-width: none;
         }
       `}</style>
+
+      {/* Rexi Chat Widget - Rendered when analysis ID is available */}
+      {currentAnalysisId && (
+        <RexiChatWidget
+          analysisId={currentAnalysisId}
+          context="offer"
+          initialMessage="I've analyzed your offer letter. I can explain your in-hand salary, identify hidden risks, or help you negotiate."
+        />
+      )}
     </div>
   );
 }

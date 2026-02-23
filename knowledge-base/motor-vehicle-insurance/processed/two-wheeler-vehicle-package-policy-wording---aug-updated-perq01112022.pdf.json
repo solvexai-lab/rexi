@@ -1,0 +1,38 @@
+{
+  "document_type": "Terms & Conditions (Policy Wording)",
+  "insurer_name": "ICICI Lombard",
+  "key_sections": [
+    "STANDARD FORM FOR TWO WHEELER PACKAGE POLICY",
+    "SECTION I : LOSS OF OR DAMAGE TO THE VEHICLE INSURED",
+    "SUM INSURED - INSURED'S DECLARED VALUE (IDV)",
+    "THE SCHEDULE OF DEPRECIATION FOR FIXING IDV OF THE VEHICLE",
+    "SECTION II - LIABILITY TO THIRD PARTIES"
+  ],
+  "available_fields": [
+    "Product Code",
+    "UN (Unique Identification Number)",
+    "Proposal and declaration date (as stated in the Schedule)",
+    "Premium (mentioned in the Schedule)",
+    "Period of Insurance",
+    "Vehicle type (motor cycle / scooter / auto cycle or any other motorised two wheeled vehicle mentioned in the Schedule)",
+    "Depreciation rates for parts replaced (rubber/nylon/plastic parts, tyres, tubes, batteries, fibre glass components, glass, wooden parts, other parts)",
+    "Age of vehicle (for depreciation calculation)",
+    "% of Depreciation (for parts replacement)",
+    "Rate of Depreciation for Painting (material cost component)",
+    "Insured's Declared Value (IDV)",
+    "Manufacturer's listed selling price of the brand and model",
+    "% of Depreciation for fixing IDV (based on vehicle age)",
+    "Market Value (for Total Loss / Constructive Total Loss claims)",
+    "Threshold for Constructive Total Loss (75% of IDV)",
+    "Limits of liability (as laid down in the Schedule)",
+    "Legal liability for death or bodily injury to any person (including occupants, except for hire or reward)",
+    "Legal liability for damage to third-party property",
+    "Exclusions (e.g., consequential loss, wear and tear, mechanical breakdown, damage to tyres/tubes unless vehicle is damaged simultaneously, loss of accessories unless vehicle is stolen, influence of intoxicating liquor/drugs)",
+    "Cost of protection and removal to nearest repairer (max ₹300 per accident)",
+    "Authorized repair conditions (max ₹150, detailed estimate required, company's consent for necessity and reasonableness)",
+    "Indemnity for drivers (with insured's permission)",
+    "Indemnity for personal representatives (in case of death of insured)",
+    "Company's option to arrange representation at Inquest or Fatal Inquiry"
+  ],
+  "summary": "This document is the policy wording for ICICI Lombard's Two Wheeler Vehicle Package Policy (Product Code - 3005). It outlines the terms, conditions, and coverage details for insurance against loss or damage to the insured two-wheeler vehicle and third-party liability. Key sections include coverage for loss/damage to the vehicle (with depreciation schedules for parts and painting), Insured's Declared Value (IDV) calculation, and third-party liability indemnification. The document specifies exclusions, claim processes, and conditions for repairs, along with tables for depreciation rates based on vehicle age."
+}

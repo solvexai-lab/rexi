@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Heart, Shield, Zap, Users, Target, Sparkles, Scale } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/logo";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,23 +13,18 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white">
       <nav className="fixed top-0 left-0 right-0 z-50 glass-nav">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <Link href="/">
-              <div className="flex items-center gap-2 group">
-                <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center premium-shadow group-hover:rotate-12 transition-transform">
-                  <Scale className="w-5 h-5 text-white" />
-                </div>
-                <span className="font-serif text-2xl font-bold text-neutral-900 tracking-tight">REXI</span>
-              </div>
-            </Link>
-            <Link href="/">
-              <Button variant="ghost" className="rounded-full">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
-              </Button>
-            </Link>
-          </div>
-        </nav>
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="group">
+            <Logo />
+          </Link>
+          <Link href="/">
+            <Button variant="ghost" className="rounded-full">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+          </Link>
+        </div>
+      </nav>
 
       <main className="pt-32 pb-20 px-6">
         <div className="max-w-4xl mx-auto">
@@ -54,7 +50,7 @@ export default function AboutPage() {
                   REXI was born from a simple frustration: why should understanding a rental agreement require a law degree?
                 </p>
                 <p>
-                    We watched friends sign leases with hidden fees, family members accept insurance policies with exclusions they didn't understand, and countless people locked into documents they regretted.
+                  We watched friends sign leases with hidden fees, family members accept insurance policies with exclusions they didn't understand, and countless people locked into documents they regretted.
                 </p>
                 <p>
                   The legal system wasn't built for everyday people. So we decided to build something that was.

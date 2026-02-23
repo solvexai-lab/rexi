@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const rateLimit = checkRateLimit(clientIP);
+  const rateLimit = await checkRateLimit(clientIP);
   if (!rateLimit.allowed) {
     logSecurityEvent("RATE_LIMIT_EXCEEDED", { ip: clientIP });
     return rateLimitedResponse(rateLimit.resetIn);
@@ -264,53 +264,53 @@ ${sanitizedText.slice(0, 12000)}
           },
         })),
         ...(parsedResponse.clauses || []).map((c: Record<string, unknown>, index: number) => ({
-        clause_id: String(c.clause_id || `clause-${index}`),
-        clause_text_excerpt: String(c.clause_text_excerpt || ""),
-        risk_signal: {
-          label: String((c.risk_signal as Record<string, unknown>)?.label || "Issue Detected"),
-          severity: String((c.risk_signal as Record<string, unknown>)?.severity || "medium") as "critical" | "high" | "medium" | "low",
-          confidence: Number((c.risk_signal as Record<string, unknown>)?.confidence || 0.8),
-          jurisdiction_assumptions: ["Indian Law"],
-          context_dependence: "Medium",
-        },
-        plain_english_interpretation: {
-          summary: String((c.plain_english_interpretation as Record<string, unknown>)?.summary || "No summary provided."),
-          why_it_matters: ((c.plain_english_interpretation as Record<string, unknown>)?.why_it_matters as string[]) || [],
-          interpretation_limits: "Analysis depends on full contract context.",
-        },
-        why_rexi_flagged_this: {
-          matched_patterns: [],
-          pattern_source: "Market Standard",
-          similarity_score: 0.9,
-        },
-        indian_law_compliance: {
-          applicable_laws: ((c.indian_law_compliance as Record<string, unknown>)?.applicable_laws as string[]) || [],
-          compliance_status: String((c.indian_law_compliance as Record<string, unknown>)?.compliance_status || "needs_review"),
-          specific_concerns: ((c.indian_law_compliance as Record<string, unknown>)?.specific_concerns as string[]) || [],
-          penalties_risk: "Review with legal counsel",
-          jurisdiction_notes: "",
-        },
-        market_practice_insight: {
-          common_in: ((c.market_practice_insight as Record<string, unknown>)?.common_in as string[]) || ["General Commercial"],
-          less_common_in: [],
-          typical_variations: ((c.market_practice_insight as Record<string, unknown>)?.typical_variations as string[]) || [],
-        },
-        discussion_talking_points: {
-          purpose: "Discussion points for clarification",
-          points: ((c.discussion_talking_points as Record<string, unknown>)?.points as string[]) || [],
-        },
-        example_alternative_language: {
-          label: "Suggested Alternative",
-          text: String((c.example_alternative_language as Record<string, unknown>)?.text || "No alternative provided."),
-          usage_note: String((c.example_alternative_language as Record<string, unknown>)?.usage_note || "Consult legal counsel before use."),
-        },
-        next_steps_guidance: {
-          self_review: ["Review surrounding clauses for context."],
-          professional_review_suggested: true,
-        },
+          clause_id: String(c.clause_id || `clause-${index}`),
+          clause_text_excerpt: String(c.clause_text_excerpt || ""),
+          risk_signal: {
+            label: String((c.risk_signal as Record<string, unknown>)?.label || "Issue Detected"),
+            severity: String((c.risk_signal as Record<string, unknown>)?.severity || "medium") as "critical" | "high" | "medium" | "low",
+            confidence: Number((c.risk_signal as Record<string, unknown>)?.confidence || 0.8),
+            jurisdiction_assumptions: ["Indian Law"],
+            context_dependence: "Medium",
+          },
+          plain_english_interpretation: {
+            summary: String((c.plain_english_interpretation as Record<string, unknown>)?.summary || "No summary provided."),
+            why_it_matters: ((c.plain_english_interpretation as Record<string, unknown>)?.why_it_matters as string[]) || [],
+            interpretation_limits: "Analysis depends on full contract context.",
+          },
+          why_rexi_flagged_this: {
+            matched_patterns: [],
+            pattern_source: "Market Standard",
+            similarity_score: 0.9,
+          },
+          indian_law_compliance: {
+            applicable_laws: ((c.indian_law_compliance as Record<string, unknown>)?.applicable_laws as string[]) || [],
+            compliance_status: String((c.indian_law_compliance as Record<string, unknown>)?.compliance_status || "needs_review"),
+            specific_concerns: ((c.indian_law_compliance as Record<string, unknown>)?.specific_concerns as string[]) || [],
+            penalties_risk: "Review with legal counsel",
+            jurisdiction_notes: "",
+          },
+          market_practice_insight: {
+            common_in: ((c.market_practice_insight as Record<string, unknown>)?.common_in as string[]) || ["General Commercial"],
+            less_common_in: [],
+            typical_variations: ((c.market_practice_insight as Record<string, unknown>)?.typical_variations as string[]) || [],
+          },
+          discussion_talking_points: {
+            purpose: "Discussion points for clarification",
+            points: ((c.discussion_talking_points as Record<string, unknown>)?.points as string[]) || [],
+          },
+          example_alternative_language: {
+            label: "Suggested Alternative",
+            text: String((c.example_alternative_language as Record<string, unknown>)?.text || "No alternative provided."),
+            usage_note: String((c.example_alternative_language as Record<string, unknown>)?.usage_note || "Consult legal counsel before use."),
+          },
+          next_steps_guidance: {
+            self_review: ["Review surrounding clauses for context."],
+            professional_review_suggested: true,
+          },
         })),
-        ],
-        legal_compliance_summary: {
+      ],
+      legal_compliance_summary: {
         overall_compliance: String(parsedResponse.legal_compliance_summary?.overall_compliance || "needs_review"),
         applicable_central_laws: [],
         applicable_state_laws: [],
@@ -324,10 +324,10 @@ ${sanitizedText.slice(0, 12000)}
           consumer_protection: "Review required",
         },
       },
-        summary: {
-          parties: [],
-          type: stageResult.router?.type || String(parsedResponse.summary?.type || "Unknown"),
-          industry: "General",
+      summary: {
+        parties: [],
+        type: stageResult.router?.type || String(parsedResponse.summary?.type || "Unknown"),
+        industry: "General",
         duration: "Not specified",
         value: "Not specified",
         jurisdiction: "India",
@@ -339,7 +339,7 @@ ${sanitizedText.slice(0, 12000)}
       analysis_metadata: {
         analysis_date: new Date().toISOString(),
         disclaimer: DISCLAIMER,
-          model_version: "rexi-v3-indian-law-optimized",
+        model_version: "rexi-v3-indian-law-optimized",
         laws_checked: indianLawMatches.length,
         patterns_checked: vectorMatches.length,
       },

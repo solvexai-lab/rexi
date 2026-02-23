@@ -1,0 +1,39 @@
+{
+  "document_type": "Terms & Conditions (Policy Document)",
+  "insurer_name": "The New India Assurance Co. Ltd.",
+  "key_sections": [
+    "SECTION I: LOSS OF OR DAMAGE TO THE VEHICLE INSURED",
+    "SUM INSURED – INSURED’S DECLARED VALUE (IDV)",
+    "SECTION II - LIABILITY TO THIRD PARTIES",
+    "Depreciation Schedule for Parts Replaced",
+    "Depreciation Schedule for Fixing IDV of the Vehicle",
+    "Exclusions under Section I",
+    "Conditions for Repair Authorization",
+    "Provisions under Third-Party Liability"
+  ],
+  "available_fields": [
+    "Insurer Name",
+    "Policy Basis (Proposal and Declaration Date)",
+    "Period of Insurance",
+    "Premium Amount (Mentioned in Schedule)",
+    "Vehicle Type (Motorcycle/Scooter/Auto Cycle/Other Two-Wheeler)",
+    "Covered Perils (Fire, Explosion, Self-Ignition, Lightning, Burglary, Housebreaking, Theft, Riot, Strike, Earthquake, Flood, Typhoon, Hurricane, Storm, Tempest, Inundation, Cyclone, Hailstorm, Frost, Accidental External Means, Malicious Act, Terrorist Activity, Transit by Road/Rail/Inland-Waterway/Lift/Elevator/Air, Landslide, Rockslide)",
+    "Depreciation Rates for Parts Replaced (Rubber/Nylon/Plastic Parts, Tyres, Tubes, Batteries, Air Bags, Fibre Glass Components, Glass, Wooden Parts, Painting)",
+    "Age of Vehicle (Depreciation Schedule for Parts)",
+    "Exclusions (Consequential Loss, Wear and Tear, Mechanical/Electrical Breakdown, Tyre/Tube Damage Unless Vehicle Damaged, Accessories Loss Unless Vehicle Stolen, Intoxicated Driver)",
+    "Cost of Protection and Removal (Max Rs. 300 per Accident)",
+    "Repair Authorization Conditions (Max Rs. 150, Detailed Estimate, Company Verification)",
+    "Insured’s Declared Value (IDV)",
+    "Manufacturer’s Listed Selling Price",
+    "Depreciation Schedule for IDV (Age of Vehicle)",
+    "Market Value (IDV for TL/CTL Claims)",
+    "Constructive Total Loss (CTL) Threshold (75% of IDV)",
+    "Third-Party Liability Coverage (Death/Bodily Injury, Property Damage)",
+    "Exclusions for Third-Party Liability (Occupants Carried for Hire/Reward, Employee Injury in Course of Employment, Property Belonging to Insured)",
+    "Geographical Limits for Liability (Carriageway/Thoroughfare)",
+    "Costs and Expenses (With Company’s Written Consent)",
+    "Driver Indemnity (With Insured’s Permission)",
+    "Personal Representative Indemnity (In Case of Death of Insured)"
+  ],
+  "summary": "This document is a comprehensive Two-Wheeler Package Policy issued by The New India Assurance Co. Ltd. It outlines the terms, conditions, and coverage details for motorcycles, scooters, or other two-wheeled vehicles. The policy is divided into two main sections: Section I covers loss or damage to the insured vehicle due to various perils, including fire, theft, natural disasters, and accidents, subject to depreciation rates for parts replaced. Section II covers third-party liability for bodily injury, death, or property damage. The document also defines the Insured’s Declared Value (IDV), depreciation schedules for IDV and parts, exclusions, conditions for repair authorization, and provisions for third-party claims. The policy is legally binding and incorporates the proposal and declaration as part of the contract."
+}

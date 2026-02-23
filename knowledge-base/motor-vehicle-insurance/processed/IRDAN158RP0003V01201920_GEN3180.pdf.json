@@ -1,0 +1,42 @@
+{
+  "document_type": "Policy Wording (Terms & Conditions)",
+  "insurer_name": "Go Digit General Insurance Ltd.",
+  "key_sections": [
+    "Loss or Damage to the Vehicle Insured",
+    "Sum Insured, Insured's Declared Value (IDV)",
+    "General Exceptions",
+    "Depreciation Rates for Parts Replaced",
+    "Depreciation Schedule for Fixing IDV",
+    "Conditions for Repair Authorization",
+    "Constructive Total Loss (CTL) Definition",
+    "Geographical Area Limitation",
+    "Driver's Clause and Limitations as to Use",
+    "Exclusions (Consequential Loss, Mechanical Breakdown, Tyres, Accessories, Intoxicants, etc.)",
+    "Nuclear and War Risks Exclusion"
+  ],
+  "available_fields": [
+    "Insurer Name (Go Digit General Insurance Ltd.)",
+    "Policy UIN (IRDAN158RP0003V01201920)",
+    "Policy Type (Two-Wheeler Stand Alone Own Damage Policy)",
+    "Basis of Contract (Proposal and Declaration)",
+    "Period of Insurance (Mentioned in Schedule)",
+    "Premium (Mentioned in Schedule)",
+    "Vehicle Type (Motorcycle/Scooter/Auto Cycle or other two-wheeled vehicle)",
+    "Covered Perils (Fire, Explosion, Theft, Riot, Earthquake, Flood, Accidental External Means, etc.)",
+    "Depreciation Rates for Parts (Rubber/Nylon/Plastic, Fibre Glass, Glass, Painting, Wooden Parts)",
+    "Depreciation Schedule for Vehicle Age (0-10+ years)",
+    "Insured's Declared Value (IDV) Definition",
+    "IDV Calculation Basis (Manufacturer's Listed Selling Price + Depreciation)",
+    "IDV Depreciation Schedule (0-5+ years)",
+    "Market Value Treatment for IDV",
+    "Constructive Total Loss (CTL) Threshold (75% of IDV)",
+    "Repair Authorization Conditions (Cost Limit: Rs. 150/-)",
+    "Geographical Area Limitation (Stated in Schedule)",
+    "Exclusions (Consequential Loss, Wear and Tear, Mechanical Breakdown, Tyres, Accessories, Intoxicants, etc.)",
+    "Contractual Liability Exclusion",
+    "Limitations as to Use (Driver's Clause)",
+    "Nuclear Risks Exclusion (Radiation, Contamination, Nuclear Fuel/Waste)",
+    "War Risks Exclusion (War, Invasion, Civil War, Rebellion, etc.)"
+  ],
+  "summary": "This document is a 'Policy Wording' for a 'Two-Wheeler Stand Alone Own Damage Policy' issued by Go Digit General Insurance Ltd. (UIN: IRDAN158RP0003V01201920). It outlines the terms, conditions, and coverage details for accidental loss or damage to the insured two-wheeler vehicle. Key sections include covered perils (e.g., fire, theft, natural disasters), depreciation rates for parts and IDV calculation, exclusions (e.g., consequential loss, mechanical breakdown, war risks), and conditions for repair authorization. The policy defines the Insured's Declared Value (IDV) and Constructive Total Loss (CTL) thresholds, along with limitations on geographical area and driver eligibility."
+}

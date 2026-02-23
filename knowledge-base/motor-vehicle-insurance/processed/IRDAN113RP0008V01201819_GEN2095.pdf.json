@@ -1,0 +1,42 @@
+{
+  "document_type": "Policy Wordings (Terms & Conditions)",
+  "insurer_name": "Bajaj Allianz General Insurance Co. Ltd",
+  "key_sections": [
+    "SECTION I : LOSS OR DAMAGE TO THE INSURED VEHICLE",
+    "SUM INSURED - INSURED'S DECLARED VALUE (IDV)",
+    "SECTION II - LIABILITY TO THIRD PARTIES",
+    "Policy Details and Definitions",
+    "Depreciation Schedules (for parts and IDV)",
+    "Exclusions under Section I",
+    "Conditions for Repair Authorization"
+  ],
+  "available_fields": [
+    "Insurer Name",
+    "Insurer Registered Office & Head Office Address",
+    "IRDAI Registration No.",
+    "Corporate Identity Number (CIN)",
+    "Unique Identification Number (UIN)",
+    "Policy Type (Two Wheeler Policy – Bundled)",
+    "Insured Name (as in Schedule)",
+    "Proposal and Declaration Date (as in Schedule)",
+    "Premium Amount (as in Schedule)",
+    "Period of Insurance",
+    "Insured Vehicle Type (Motorcycle/Scooter/Auto Cycle/etc.)",
+    "Coverage for Loss/Damage Causes (Fire, Explosion, Theft, Riot, Earthquake, Flood, etc.)",
+    "Depreciation Rates for Parts (Rubber, Nylon, Plastic, Tyre, Battery, Fibre Glass, Glass, Painting, Wooden Parts)",
+    "Age-wise Depreciation Schedule for Vehicle Parts",
+    "Exclusions under Section I (Consequential Loss, Wear and Tear, Mechanical Breakdown, Tyre/Tube Damage, etc.)",
+    "Protection and Removal Cost Limit (Rs. 300 per accident)",
+    "Repair Authorization Conditions (Cost Limit: Rs. 150, Estimate Requirement)",
+    "Insured's Declared Value (IDV) Definition",
+    "IDV Calculation Basis (Manufacturer's Listed Selling Price)",
+    "Age-wise Depreciation Schedule for IDV (Total Loss/CTL Claims)",
+    "IDV for Vehicles Beyond 5 Years or Obsolete Models",
+    "Constructive Total Loss (CTL) Definition (75% of IDV)",
+    "Third-Party Liability Coverage (Death/Bodily Injury, Property Damage)",
+    "Exclusions for Third-Party Liability (Occupants for Hire/Reward, Employee Injury, etc.)",
+    "Geographical Limits for Third-Party Liability",
+    "Costs and Expenses Coverage (with Company's Written Consent)"
+  ],
+  "summary": "This document is the 'Policy Wordings' for a 'Two Wheeler Policy – Bundled' issued by Bajaj Allianz General Insurance Co. Ltd. It outlines the terms, conditions, and coverage details for motorized two-wheelers, including sections on loss/damage to the insured vehicle, insured's declared value (IDV), and third-party liability. The document specifies coverage causes, depreciation rates for parts and IDV, exclusions, repair conditions, and liability limits. It also includes tables for age-wise depreciation schedules and defines key terms like CTL and IDV."
+}

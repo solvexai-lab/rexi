@@ -38,6 +38,7 @@ import { Button } from "@/components/ui/button";
 import { LegalDisclaimer } from "@/components/legal-disclaimer";
 import { DemoModal } from "@/components/demo-modal";
 import { StudioSelector } from "@/components/StudioSelector";
+import { Logo } from "@/components/logo";
 
 export default function HomePage() {
   const [isDragging, setIsDragging] = useState(false);
@@ -92,55 +93,52 @@ export default function HomePage() {
     }
   };
 
-return (
-      <div className="min-h-screen bg-white mesh-gradient selection:bg-neutral-200">
-        <StudioSelector isOpen={showSelector} onClose={() => setShowSelector(false)} />
-        <Script
+  return (
+    <div className="min-h-screen bg-white mesh-gradient selection:bg-neutral-200">
+      <StudioSelector isOpen={showSelector} onClose={() => setShowSelector(false)} />
+      <Script
         id="json-ld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      
+
       {/* Navigation */}
-      <motion.nav 
+      <motion.nav
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
         className="fixed top-0 left-0 right-0 z-50 glass-nav"
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center premium-shadow group-hover:rotate-12 transition-transform">
-              <Scale className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-serif text-2xl font-bold text-neutral-900 tracking-tight">REXI</span>
+          <Link href="/" className="group">
+            <Logo />
           </Link>
-            <div className="hidden md:flex items-center gap-8">
-              <a href="#how-it-works" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
-                How it Works
-              </a>
-              <a href="#what-we-cover" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
-                  What We Cover
-                </a>
-<Link href="/analyze" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
-                    Documents
-                  </Link>
-                <Link href="/offers" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
-                  Offer Letters
-                </Link>
-              <Link href="/blog" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
-                Blog
-              </Link>
-              <a href="#security" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
-                Security
-              </a>
+          <div className="hidden md:flex items-center gap-8">
+            <a href="#how-it-works" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
+              How it Works
+            </a>
+            <a href="#what-we-cover" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
+              What We Cover
+            </a>
+            <Link href="/analyze" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
+              Documents
+            </Link>
+            <Link href="/offers" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
+              Offer Letters
+            </Link>
+            <Link href="/blog" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
+              Blog
+            </Link>
+            <a href="#security" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
+              Security
+            </a>
+          </div>
+          <div className="flex items-center gap-3">
+            <div onClick={() => setShowSelector(true)} className="hidden sm:block cursor-pointer">
+              <Button className="bg-slate-900 hover:bg-black text-white rounded-full px-8 h-11 font-bold shadow-lg shadow-slate-200 hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                Analyze Now
+              </Button>
             </div>
-<div className="flex items-center gap-3">
-              <div onClick={() => setShowSelector(true)} className="hidden sm:block cursor-pointer">
-                <Button className="bg-slate-900 hover:bg-black text-white rounded-full px-8 h-11 font-bold shadow-lg shadow-slate-200 hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                  Analyze Now
-                </Button>
-              </div>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 transition-colors"
@@ -150,7 +148,7 @@ return (
             </button>
           </div>
         </div>
-        
+
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
@@ -218,17 +216,23 @@ return (
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-neutral-200/20 rounded-full blur-[80px] md:blur-[120px] animate-pulse"></div>
           <div className="absolute bottom-1/4 right-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-neutral-100/20 rounded-full blur-[80px] md:blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
-          
-            {/* Background Scales */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.03] rotate-12 flex flex-col items-center">
-              <Scale className="w-[600px] h-[600px] md:w-[900px] md:h-[900px] text-neutral-900" strokeWidth={0.5} />
-              <span className="font-serif text-6xl md:text-9xl font-bold uppercase tracking-[0.5em] text-neutral-900 mt-[-50px]">REXI</span>
+
+          {/* Background Logo Symbol */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.03] rotate-12 flex flex-col items-center">
+            <div className="w-[600px] h-[600px] md:w-[900px] md:h-[900px] flex items-center justify-center rounded-[6rem] md:rounded-[10rem] overflow-hidden">
+              <img
+                src="/logo.svg"
+                alt="REXI"
+                className="w-full h-full"
+              />
             </div>
+            <span className="font-serif text-6xl md:text-9xl font-bold uppercase tracking-[0.5em] text-neutral-900 mt-[-50px]">REXI</span>
+          </div>
         </div>
 
         <div className="max-w-7xl mx-auto relative">
           <div className="grid lg:grid-cols-2 gap-10 md:gap-20 items-center">
-            <motion.div 
+            <motion.div
               initial="initial"
               animate="animate"
               variants={stagger}
@@ -241,66 +245,66 @@ return (
                 </div>
                 <span className="text-[10px] md:text-xs font-bold text-slate-700 uppercase tracking-[0.2em]">Smarter Legal Review</span>
               </motion.div>
-              
+
               <motion.h1 variants={fadeInUp} className="font-serif text-4xl md:text-6xl lg:text-8xl font-bold text-slate-900 leading-[1.1] md:leading-[0.95] mb-6 md:mb-10 tracking-tight">
                 Know <span className="shimmer-text">exactly</span> what you're signing.
               </motion.h1>
-              
+
               <motion.p variants={fadeInUp} className="text-lg md:text-2xl text-slate-600 mb-8 md:mb-12 leading-relaxed max-w-xl font-medium">
                 Don't let the fine print hide the risks. REXI scans your documents to spot red flags in plain English, instantly.
               </motion.p>
-              
-<motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 md:gap-5">
-                    <div onClick={() => setShowSelector(true)} className="cursor-pointer">
-                      <Button size="lg" className="bg-slate-900 hover:bg-black text-white px-10 md:px-12 h-14 md:h-16 rounded-full text-lg md:text-xl font-bold shadow-2xl shadow-slate-200 hover:shadow-slate-300 hover:-translate-y-1 transition-all group w-full sm:w-auto">
-                        <Shield className="w-5 h-5 md:w-6 md:h-6 mr-2" />
-                        Scan Any Document
-                      </Button>
+
+              <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 md:gap-5">
+                <div onClick={() => setShowSelector(true)} className="cursor-pointer">
+                  <Button size="lg" className="bg-slate-900 hover:bg-black text-white px-10 md:px-12 h-14 md:h-16 rounded-full text-lg md:text-xl font-bold shadow-2xl shadow-slate-200 hover:shadow-slate-300 hover:-translate-y-1 transition-all group w-full sm:w-auto">
+                    <Shield className="w-5 h-5 md:w-6 md:h-6 mr-2" />
+                    Scan Any Document
+                  </Button>
+                </div>
+                <DemoModal>
+                  <Button size="lg" variant="outline" className="border-2 border-slate-200 bg-white/50 text-slate-700 hover:bg-white px-8 md:px-10 h-14 md:h-16 rounded-full text-base md:text-lg font-bold hover:shadow-lg hover:-translate-y-1 transition-all w-full sm:w-auto">
+                    <Eye className="w-5 h-5 mr-2" />
+                    Try Demo
+                  </Button>
+                </DemoModal>
+              </motion.div>
+
+              <motion.div variants={fadeInUp} className="mt-12 md:mt-16 flex flex-col sm:flex-row items-center gap-6 md:gap-8">
+                <div className="flex -space-x-3 md:-space-x-4">
+                  {[
+                    { initials: "SP", gradient: "from-violet-500 to-purple-600" },
+                    { initials: "MK", gradient: "from-emerald-500 to-teal-600" },
+                    { initials: "JR", gradient: "from-rose-500 to-pink-600" },
+                    { initials: "DT", gradient: "from-blue-500 to-indigo-600" },
+                    { initials: "AL", gradient: "from-amber-500 to-orange-600" },
+                  ].map((user, i) => (
+                    <div key={i} className={`w-10 h-10 md:w-12 md:h-12 rounded-full border-2 md:border-4 border-white bg-gradient-to-br ${user.gradient} flex items-center justify-center shadow-lg hover:scale-110 transition-transform cursor-pointer`}>
+                      <span className="text-white font-bold text-xs md:text-sm">{user.initials}</span>
                     </div>
-                  <DemoModal>
-                    <Button size="lg" variant="outline" className="border-2 border-slate-200 bg-white/50 text-slate-700 hover:bg-white px-8 md:px-10 h-14 md:h-16 rounded-full text-base md:text-lg font-bold hover:shadow-lg hover:-translate-y-1 transition-all w-full sm:w-auto">
-                      <Eye className="w-5 h-5 mr-2" />
-                      Try Demo
-                    </Button>
-                  </DemoModal>
-                </motion.div>
-                
-<motion.div variants={fadeInUp} className="mt-12 md:mt-16 flex flex-col sm:flex-row items-center gap-6 md:gap-8">
-                  <div className="flex -space-x-3 md:-space-x-4">
-                    {[
-                      { initials: "SP", gradient: "from-violet-500 to-purple-600" },
-                      { initials: "MK", gradient: "from-emerald-500 to-teal-600" },
-                      { initials: "JR", gradient: "from-rose-500 to-pink-600" },
-                      { initials: "DT", gradient: "from-blue-500 to-indigo-600" },
-                      { initials: "AL", gradient: "from-amber-500 to-orange-600" },
-                    ].map((user, i) => (
-                      <div key={i} className={`w-10 h-10 md:w-12 md:h-12 rounded-full border-2 md:border-4 border-white bg-gradient-to-br ${user.gradient} flex items-center justify-center shadow-lg hover:scale-110 transition-transform cursor-pointer`}>
-                        <span className="text-white font-bold text-xs md:text-sm">{user.initials}</span>
-                      </div>
+                  ))}
+                </div>
+                <div className="text-center sm:text-left">
+                  <div className="flex items-center justify-center sm:justify-start gap-1 mb-1">
+                    {[1, 2, 3, 4, 5].map(i => (
+                      <Star key={i} className="w-3.5 h-3.5 md:w-4 md:h-4 text-amber-500 fill-amber-500" />
                     ))}
                   </div>
-                  <div className="text-center sm:text-left">
-                    <div className="flex items-center justify-center sm:justify-start gap-1 mb-1">
-                      {[1,2,3,4,5].map(i => (
-                        <Star key={i} className="w-3.5 h-3.5 md:w-4 md:h-4 text-amber-500 fill-amber-500" />
-                      ))}
-                    </div>
-                    <p className="text-slate-600 font-bold text-xs md:text-sm">Trusted by 1,000+ users</p>
-                  </div>
-                </motion.div>
+                  <p className="text-slate-600 font-bold text-xs md:text-sm">Trusted by 1,000+ users</p>
+                </div>
+              </motion.div>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.3 }}
               className="relative mt-10 lg:mt-0"
             >
               <div className="absolute -inset-6 md:-inset-10 bg-slate-900/5 rounded-[2rem] md:rounded-[3rem] blur-2xl md:blur-3xl opacity-50"></div>
-              
+
               <article className="glass-card rounded-[2rem] md:rounded-[3rem] p-1 shadow-2xl relative z-10 overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-slate-200 via-slate-400 to-slate-200 shimmer"></div>
-                
+
                 <div className="p-6 md:p-10">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-12">
                     <div className="flex items-center gap-3 md:gap-4">
@@ -332,7 +336,7 @@ return (
                           <span className="text-xs md:text-sm font-bold text-slate-900">{scanSteps[activeScanIndex].progress}%</span>
                         </div>
                         <div className="h-2 md:h-3 bg-slate-100 rounded-full overflow-hidden p-0.5">
-                          <motion.div 
+                          <motion.div
                             className="h-full bg-slate-900 rounded-full"
                             initial={{ width: 0 }}
                             animate={{ width: `${scanSteps[activeScanIndex].progress}%` }}
@@ -342,20 +346,20 @@ return (
                       </motion.div>
                     </AnimatePresence>
 
-<div className="grid grid-cols-2 gap-3 md:gap-4">
-                        <div className="h-20 md:h-24 rounded-xl md:rounded-2xl bg-slate-50 border border-slate-100 p-3 md:p-4 flex flex-col justify-between">
-                          <div className="w-7 h-7 md:w-8 md:h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                            <Clock className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-900" />
-                          </div>
-                          <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase">Latency</span>
+                    <div className="grid grid-cols-2 gap-3 md:gap-4">
+                      <div className="h-20 md:h-24 rounded-xl md:rounded-2xl bg-slate-50 border border-slate-100 p-3 md:p-4 flex flex-col justify-between">
+                        <div className="w-7 h-7 md:w-8 md:h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                          <Clock className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-900" />
                         </div>
-                        <div className="h-20 md:h-24 rounded-xl md:rounded-2xl bg-slate-50 border border-slate-100 p-3 md:p-4 flex flex-col justify-between">
-                          <div className="w-7 h-7 md:w-8 md:h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                            <Database className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-900" />
-                          </div>
-                          <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase">Knowledge</span>
-                        </div>
+                        <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase">Latency</span>
                       </div>
+                      <div className="h-20 md:h-24 rounded-xl md:rounded-2xl bg-slate-50 border border-slate-100 p-3 md:p-4 flex flex-col justify-between">
+                        <div className="w-7 h-7 md:w-8 md:h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                          <Database className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-900" />
+                        </div>
+                        <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase">Knowledge</span>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="p-4 md:p-6 bg-slate-900 rounded-[1.5rem] md:rounded-[2rem] text-white">
@@ -400,7 +404,7 @@ return (
                 step: "01",
                 icon: Upload,
                 title: "Upload Your Document",
-                  description: "Drag and drop any PDF, image, or document. We support insurance policies, rent agreements, employment documents, and more.",
+                description: "Drag and drop any PDF, image, or document. We support insurance policies, rent agreements, employment documents, and more.",
               },
               {
                 step: "02",
@@ -448,26 +452,26 @@ return (
             ))}
           </div>
 
-<motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mt-12 md:mt-16"
-            >
-              <div onClick={() => setShowSelector(true)} className="inline-block cursor-pointer">
-                <Button size="lg" className="bg-slate-900 hover:bg-black text-white px-10 md:px-12 h-14 md:h-16 rounded-full text-lg font-bold shadow-2xl shadow-slate-200 hover:shadow-slate-300 hover:-translate-y-1 transition-all group">
-                  Try It Now — Free
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </div>
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mt-12 md:mt-16"
+          >
+            <div onClick={() => setShowSelector(true)} className="inline-block cursor-pointer">
+              <Button size="lg" className="bg-slate-900 hover:bg-black text-white px-10 md:px-12 h-14 md:h-16 rounded-full text-lg font-bold shadow-2xl shadow-slate-200 hover:shadow-slate-300 hover:-translate-y-1 transition-all group">
+                Try It Now — Free
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Bento Grid Features */}
       <section id="what-we-cover" className="py-20 md:py-32 px-6 relative">
         <div className="max-w-7xl mx-auto">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -481,107 +485,118 @@ return (
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 auto-rows-[auto] md:auto-rows-[280px]">
-            {/* Main Feature - Bento 1 */}
-            <motion.div 
-              whileHover={{ y: -8 }}
-              className="md:col-span-8 md:row-span-2 glass-card rounded-[2rem] md:rounded-[3rem] p-8 md:p-12 flex flex-col justify-between overflow-hidden relative group"
-            >
-              <div className="absolute top-0 right-0 -mr-20 -mt-20 opacity-[0.03] group-hover:opacity-[0.07] transition-all duration-700 rotate-12 group-hover:rotate-0 hidden md:block">
-                <HeartPulse className="w-[500px] h-[500px] text-slate-900" />
-              </div>
-              
-              <div>
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-900 rounded-2xl md:rounded-3xl flex items-center justify-center mb-6 md:mb-10 premium-shadow group-hover:scale-110 transition-transform">
-                  <HeartPulse className="w-8 h-8 md:w-10 md:h-10 text-white" />
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 auto-rows-[auto] md:auto-rows-[320px]">
+            {/* Main Feature - Bento 1: Insurance */}
+            <Link href="/insurance" className="md:col-span-8 md:row-span-2 group">
+              <motion.div
+                whileHover={{ y: -10 }}
+                className="glass-panel-heavy squircle-soft p-10 md:p-14 flex flex-col justify-between h-full relative overflow-hidden border-white/60 shadow-dreamy"
+              >
+                {/* Decorative Mesh Background */}
+                <div className="absolute inset-0 mesh-gradient opacity-20 pointer-events-none group-hover:opacity-40 transition-opacity duration-700" />
+
+                <div className="absolute top-0 right-0 -mr-24 -mt-24 opacity-[0.03] group-hover:opacity-[0.08] transition-all duration-1000 rotate-12 group-hover:rotate-0 hidden md:block">
+                  <HeartPulse className="w-[600px] h-[600px] text-slate-950" />
                 </div>
-                <h3 className="font-serif text-3xl md:text-5xl font-bold text-slate-900 mb-4 md:mb-6 leading-tight">
-                  Insurance & <br className="hidden md:block" /> Health Safety
-                </h3>
-                <p className="text-base md:text-xl text-slate-600 max-w-lg leading-relaxed font-medium mb-6 md:mb-0">
-                  We decode complex policies to find hidden exclusions, waiting periods, and predatory premium hikes before you commit.
-                </p>
+
+                <div className="relative z-10">
+                  <div className="w-20 h-20 bg-slate-950 rounded-[2rem] flex items-center justify-center mb-12 shadow-2xl group-hover:rotate-6 transition-transform">
+                    <HeartPulse className="w-10 h-10 text-white" />
+                  </div>
+                  <h3 className="font-serif text-4xl md:text-6xl font-bold text-slate-950 mb-6 tracking-tight leading-none">
+                    Insurance <br /> Hub
+                  </h3>
+                  <p className="text-lg md:text-2xl text-slate-600 max-w-lg leading-relaxed font-medium mb-10">
+                    Decode complex policies, find hidden exclusions, and run claim simulations before you sign.
+                  </p>
+
+                  <div className="inline-flex items-center gap-4 text-slate-950 font-bold group/btn">
+                    <span className="text-xl uppercase tracking-widest border-b-2 border-slate-950 pb-1">Enter Studio</span>
+                    <ArrowRight className="w-6 h-6 group-hover/btn:translate-x-2 transition-transform" />
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-3 mt-12 md:mt-auto relative z-10">
+                  <div className="px-6 py-3 bg-white/40 backdrop-blur-md rounded-2xl border border-white/60 shadow-sm text-xs md:text-sm font-bold text-slate-950 uppercase tracking-widest">Health</div>
+                  <div className="px-6 py-3 bg-white/40 backdrop-blur-md rounded-2xl border border-white/60 shadow-sm text-xs md:text-sm font-bold text-slate-950 uppercase tracking-widest">Motor</div>
+                  <div className="px-6 py-3 bg-white/40 backdrop-blur-md rounded-2xl border border-white/60 shadow-sm text-xs md:text-sm font-bold text-slate-950 uppercase tracking-widest">Travel</div>
+                </div>
+              </motion.div>
+            </Link>
+
+            {/* Feature 2 - Housing */}
+            <motion.div
+              whileHover={{ y: -8 }}
+              className="md:col-span-4 md:row-span-1 bg-slate-950 squircle-soft p-10 flex flex-col justify-between group text-white min-h-[300px] md:min-h-0 shadow-dreamy"
+            >
+              <div className="flex items-center justify-between">
+                <div className="w-16 h-16 bg-white/10 rounded-[1.5rem] flex items-center justify-center backdrop-blur-md group-hover:bg-white group-hover:text-slate-950 transition-all shadow-xl">
+                  <Home className="w-8 h-8" />
+                </div>
+                <div className="px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest text-slate-400">Analysis Studio</div>
               </div>
-              
-              <div className="flex flex-wrap gap-2 md:gap-4 mt-auto">
-                <div className="px-4 md:px-6 py-2 md:py-3 bg-white rounded-xl md:rounded-2xl border border-slate-100 shadow-sm text-xs md:text-sm font-bold text-slate-700">Health Policies</div>
-                <div className="px-4 md:px-6 py-2 md:py-3 bg-white rounded-xl md:rounded-2xl border border-slate-100 shadow-sm text-xs md:text-sm font-bold text-slate-700">Life Insurance</div>
+              <div>
+                <h3 className="font-serif text-3xl font-bold mb-3 tracking-tight">Rent & Housing</h3>
+                <p className="text-slate-400 font-medium text-base text-balance leading-relaxed">Spot unfair deposit rules and hidden landlord fees instantly.</p>
               </div>
             </motion.div>
 
-{/* Feature 2 - Housing */}
-              <motion.div 
+            {/* Feature 3 - Documents */}
+            <Link href="/analyze" className="md:col-span-4 md:row-span-1 group">
+              <motion.div
                 whileHover={{ y: -8 }}
-                className="md:col-span-4 md:row-span-1 glass-card-dark rounded-[2rem] md:rounded-[3rem] p-8 md:p-10 flex flex-col justify-between group text-white min-h-[240px] md:min-h-0"
+                className="glass-panel-heavy squircle-soft p-10 flex flex-col justify-between min-h-[300px] md:min-h-0 h-full cursor-pointer shadow-dreamy border-white/60"
               >
-                <div className="flex items-center justify-between mb-4 md:mb-0">
-                  <div className="w-12 h-12 md:w-14 md:h-14 bg-white/10 rounded-xl md:rounded-2xl flex items-center justify-center backdrop-blur-md group-hover:bg-white group-hover:text-slate-950 transition-all">
-                    <Home className="w-6 h-6 md:w-7 md:h-7" />
+                <div className="flex items-center justify-between">
+                  <div className="w-16 h-16 bg-slate-950 rounded-[1.5rem] flex items-center justify-center shadow-xl group-hover:bg-emerald-500 transition-all">
+                    <FileSearch className="w-8 h-8 text-white" />
                   </div>
-                  <Clock className="w-5 h-5 md:w-6 md:h-6 text-slate-400" />
+                  <ArrowRight className="w-6 h-6 text-slate-300 group-hover:text-slate-950 group-hover:translate-x-1 transition-all" />
                 </div>
                 <div>
-                  <h3 className="font-serif text-2xl md:text-3xl font-bold mb-2 md:mb-3">Rent & Housing</h3>
-                  <p className="text-slate-300 font-medium text-sm md:text-base text-balance">Spot unfair deposit rules and hidden landlord fees instantly.</p>
+                  <h3 className="font-serif text-3xl font-bold text-slate-950 mb-3 tracking-tight">General Legal</h3>
+                  <p className="text-slate-500 font-medium text-base text-balance leading-relaxed">Risk detection for NDAs, leases, and service agreements.</p>
                 </div>
               </motion.div>
+            </Link>
 
-{/* Feature 3 - Documents */}
-                <Link href="/analyze" className="md:col-span-4 md:row-span-1">
-                  <motion.div 
-                    whileHover={{ y: -8 }}
-                    className="glass-card rounded-[2rem] md:rounded-[3rem] p-8 md:p-10 flex flex-col justify-between group bg-slate-50 border-slate-200 min-h-[240px] md:min-h-0 h-full cursor-pointer"
-                  >
-                    <div className="flex items-center justify-between mb-4 md:mb-0">
-                      <div className="w-12 h-12 md:w-14 md:h-14 bg-slate-900 rounded-xl md:rounded-2xl flex items-center justify-center premium-shadow group-hover:rotate-12 transition-transform">
-                        <FileSearch className="w-6 h-6 md:w-7 md:h-7 text-white" />
-                      </div>
-                      <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
-                    </div>
-                    <div>
-                      <h3 className="font-serif text-2xl md:text-3xl font-bold text-slate-900 mb-2 md:mb-3">Documents</h3>
-                      <p className="text-slate-600 font-medium text-sm md:text-base text-balance">Split-pane analysis with legal citations and negotiation scripts.</p>
-                    </div>
-                  </motion.div>
-                </Link>
-
-              {/* Feature 4 - Work */}
-              <Link href="/offers" className="md:col-span-4 md:row-span-1">
-                <motion.div 
-                  whileHover={{ y: -8 }}
-                  className="glass-card rounded-[2rem] md:rounded-[3rem] p-8 md:p-10 flex flex-col justify-between group bg-slate-100 border-slate-200 min-h-[240px] md:min-h-0 h-full cursor-pointer"
-                >
-                  <div className="flex items-center justify-between mb-4 md:mb-0">
-                    <div className="w-12 h-12 md:w-14 md:h-14 bg-slate-900 rounded-xl md:rounded-2xl flex items-center justify-center premium-shadow group-hover:rotate-12 transition-transform">
-                      <Briefcase className="w-6 h-6 md:w-7 md:h-7 text-white" />
-                    </div>
-                    <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
+            {/* Feature 4 - Work */}
+            <Link href="/offers" className="md:col-span-4 md:row-span-1 group">
+              <motion.div
+                whileHover={{ y: -8 }}
+                className="glass-panel-heavy squircle-soft p-10 flex flex-col justify-between min-h-[300px] md:min-h-0 h-full cursor-pointer shadow-dreamy border-white/60"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="w-16 h-16 bg-slate-950 rounded-[1.5rem] flex items-center justify-center shadow-xl group-hover:bg-indigo-500 transition-all">
+                    <Briefcase className="w-8 h-8 text-white" />
                   </div>
-                  <div>
-                    <h3 className="font-serif text-2xl md:text-3xl font-bold text-slate-900 mb-2 md:mb-3">Work & Offers</h3>
-                    <p className="text-slate-600 font-medium text-sm md:text-base text-balance">Decode offer letters and compare multiple job offers instantly.</p>
-                  </div>
-                </motion.div>
-              </Link>
-
-            {/* Feature 4 - Patterns */}
-            <motion.div 
-              whileHover={{ y: -8 }}
-              className="md:col-span-12 md:row-span-1 glass-card rounded-[2rem] md:rounded-[3rem] p-8 md:p-12 flex flex-col md:flex-row items-start md:items-center justify-between group overflow-hidden gap-8"
-            >
-              <div className="absolute inset-0 bg-slate-900/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="flex items-center gap-6 md:gap-10 relative z-10">
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-white rounded-2xl md:rounded-[2rem] flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform shrink-0">
-                  <Database className="w-8 h-8 md:w-10 md:h-10 text-slate-900" />
+                  <ArrowRight className="w-6 h-6 text-slate-300 group-hover:text-slate-950 group-hover:translate-x-1 transition-all" />
                 </div>
                 <div>
-                  <h3 className="font-serif text-2xl md:text-4xl font-bold text-slate-900 mb-2">5,000+ Risk Patterns</h3>
-                  <p className="text-base md:text-lg text-slate-600 font-medium max-w-xl">Our legal database is updated daily with the latest predatory clauses used by big corporations.</p>
+                  <h3 className="font-serif text-3xl font-bold text-slate-950 mb-3 tracking-tight">Work & Offers</h3>
+                  <p className="text-slate-500 font-medium text-base text-balance leading-relaxed">Salary breakdown, benefits analysis, and market comparison.</p>
+                </div>
+              </motion.div>
+            </Link>
+
+            {/* Feature 5 - Patterns */}
+            <motion.div
+              whileHover={{ y: -8 }}
+              className="md:col-span-12 md:row-span-1 glass-panel-heavy squircle-soft p-12 flex flex-col md:flex-row items-start md:items-center justify-between group overflow-hidden gap-8 shadow-dreamy border-white/60"
+            >
+              <div className="absolute inset-0 mesh-gradient opacity-0 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none"></div>
+              <div className="flex items-center gap-10 relative z-10">
+                <div className="w-24 h-24 bg-white rounded-[2rem] flex items-center justify-center shadow-2xl group-hover:rotate-6 transition-transform shrink-0 border border-slate-100">
+                  <Database className="w-10 h-10 text-slate-950" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-3xl md:text-5xl font-bold text-slate-950 mb-3 tracking-tight">5,000+ Risk Patterns</h3>
+                  <p className="text-lg md:text-xl text-slate-500 font-medium max-w-2xl leading-relaxed">Our legal database is updated daily with the latest predatory clauses used by global corporations.</p>
                 </div>
               </div>
-              <Link href="/about">
-                <Button variant="ghost" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base md:text-lg font-bold border-2 border-slate-200 hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all w-full md:w-auto">
-                  Learn more <ArrowRight className="ml-3 w-4 h-4 md:w-5 md:h-5" />
+              <Link href="/about" className="relative z-10 w-full md:w-auto">
+                <Button className="rounded-full px-12 h-16 text-lg font-bold bg-slate-950 hover:bg-black text-white shadow-xl hover:-translate-y-1 transition-all w-full md:w-auto uppercase tracking-widest">
+                  View Insights <ArrowRight className="ml-3 w-6 h-6" />
                 </Button>
               </Link>
             </motion.div>
@@ -605,9 +620,9 @@ return (
             <h2 className="font-serif text-4xl md:text-6xl font-bold text-slate-900 mb-6 tracking-tight">
               How We <span className="shimmer-text italic">Protect</span> You
             </h2>
-<p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto font-medium">
-                We believe you deserve to know exactly how your documents are analyzed and what powers our system.
-              </p>
+            <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto font-medium">
+              We believe you deserve to know exactly how your documents are analyzed and what powers our system.
+            </p>
           </motion.div>
 
           <motion.div
@@ -618,7 +633,7 @@ return (
           >
             <div className="glass-card rounded-3xl p-8 md:p-12 relative overflow-hidden">
               <h3 className="font-serif text-2xl md:text-3xl font-bold text-slate-900 mb-8 text-center">Your Document's Journey</h3>
-              
+
               <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4">
                 <div className="flex flex-col items-center text-center flex-1">
                   <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
@@ -627,14 +642,14 @@ return (
                   <h4 className="font-bold text-slate-900 mb-1">Upload</h4>
                   <p className="text-sm text-slate-500">256-bit encrypted transfer</p>
                 </div>
-                
+
                 <div className="hidden md:flex items-center">
                   <div className="w-16 h-0.5 bg-slate-200"></div>
                   <ArrowRight className="w-5 h-5 text-slate-300 mx-2" />
                   <div className="w-16 h-0.5 bg-slate-200"></div>
                 </div>
                 <div className="md:hidden h-8 w-0.5 bg-slate-200"></div>
-                
+
                 <div className="flex flex-col items-center text-center flex-1">
                   <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
                     <ScanLine className="w-8 h-8 text-white" />
@@ -642,14 +657,14 @@ return (
                   <h4 className="font-bold text-slate-900 mb-1">Analyze</h4>
                   <p className="text-sm text-slate-500">Volatile memory only</p>
                 </div>
-                
+
                 <div className="hidden md:flex items-center">
                   <div className="w-16 h-0.5 bg-slate-200"></div>
                   <ArrowRight className="w-5 h-5 text-slate-300 mx-2" />
                   <div className="w-16 h-0.5 bg-slate-200"></div>
                 </div>
                 <div className="md:hidden h-8 w-0.5 bg-slate-200"></div>
-                
+
                 <div className="flex flex-col items-center text-center flex-1">
                   <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
                     <FileCheck className="w-8 h-8 text-white" />
@@ -657,14 +672,14 @@ return (
                   <h4 className="font-bold text-slate-900 mb-1">Report</h4>
                   <p className="text-sm text-slate-500">Delivered to you</p>
                 </div>
-                
+
                 <div className="hidden md:flex items-center">
                   <div className="w-16 h-0.5 bg-slate-200"></div>
                   <ArrowRight className="w-5 h-5 text-slate-300 mx-2" />
                   <div className="w-16 h-0.5 bg-slate-200"></div>
                 </div>
                 <div className="md:hidden h-8 w-0.5 bg-slate-200"></div>
-                
+
                 <div className="flex flex-col items-center text-center flex-1">
                   <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
                     <ZapOff className="w-8 h-8 text-white" />
@@ -673,7 +688,7 @@ return (
                   <p className="text-sm text-slate-500">Instant file deletion</p>
                 </div>
               </div>
-              
+
               <div className="mt-8 pt-8 border-t border-slate-100 flex flex-wrap justify-center gap-4 md:gap-6">
                 <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl border border-slate-100">
                   <Lock className="w-4 h-4 text-slate-700" />
@@ -705,10 +720,10 @@ return (
                 <div className="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                   <Landmark className="w-7 h-7 text-white" />
                 </div>
-<h3 className="font-serif text-2xl font-bold text-slate-900 mb-4">Enterprise-Grade Engine</h3>
+                <h3 className="font-serif text-2xl font-bold text-slate-900 mb-4">Enterprise-Grade Engine</h3>
                 <p className="text-slate-600 font-medium leading-relaxed mb-6">
-                    We use Google's enterprise-grade Gemini engine via secure API. Your data is processed in real-time and <span className="font-bold text-slate-900">never stored or used for training</span>.
-                  </p>
+                  We use Google's enterprise-grade Gemini engine via secure API. Your data is processed in real-time and <span className="font-bold text-slate-900">never stored or used for training</span>.
+                </p>
                 <div className="flex items-center gap-2 text-sm">
                   <img src="https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg" alt="Gemini" className="w-5 h-5" />
                   <span className="font-bold text-slate-500">Google Gemini 1.5</span>
@@ -731,9 +746,9 @@ return (
                   <Database className="w-7 h-7 text-white" />
                 </div>
                 <h3 className="font-serif text-2xl font-bold text-slate-900 mb-4">5,000+ Legal Patterns</h3>
-<p className="text-slate-600 font-medium leading-relaxed mb-6">
-                    Our system matches clauses against a curated database of <span className="font-bold text-slate-900">verified predatory patterns</span> from real court cases and consumer protection agencies.
-                  </p>
+                <p className="text-slate-600 font-medium leading-relaxed mb-6">
+                  Our system matches clauses against a curated database of <span className="font-bold text-slate-900">verified predatory patterns</span> from real court cases and consumer protection agencies.
+                </p>
                 <div className="flex items-center gap-3">
                   <div className="px-3 py-1.5 bg-emerald-50 rounded-lg border border-emerald-100">
                     <span className="text-xs font-bold text-emerald-700">Updated Daily</span>
@@ -818,11 +833,11 @@ return (
             viewport={{ once: true }}
             className="mt-12 md:mt-16 p-6 md:p-8 bg-slate-900 rounded-3xl text-white text-center"
           >
-<p className="text-lg md:text-xl font-medium text-slate-300 max-w-3xl mx-auto">
-                <span className="text-white font-bold">"Backed by 5,000+ Verified Legal Patterns & Enterprise-Grade Security"</span>
-                <br className="hidden md:block" />
-                <span className="text-slate-400 text-base">— Rule-based analysis meets specialized legal knowledge</span>
-              </p>
+            <p className="text-lg md:text-xl font-medium text-slate-300 max-w-3xl mx-auto">
+              <span className="text-white font-bold">"Backed by 5,000+ Verified Legal Patterns & Enterprise-Grade Security"</span>
+              <br className="hidden md:block" />
+              <span className="text-slate-400 text-base">— Rule-based analysis meets specialized legal knowledge</span>
+            </p>
           </motion.div>
         </div>
       </section>
@@ -856,13 +871,13 @@ return (
               className="glass-card rounded-3xl p-8 relative"
             >
               <div className="flex items-center gap-1 mb-6">
-                {[1,2,3,4,5].map(i => (
+                {[1, 2, 3, 4, 5].map(i => (
                   <Star key={i} className="w-4 h-4 text-amber-500 fill-amber-500" />
                 ))}
               </div>
-                <p className="text-slate-700 font-medium leading-relaxed mb-8 text-lg">
-                  My landlord tried to sneak in a <span className="font-bold text-slate-900">$2,400 early termination fee</span> buried in page 12. REXI caught it in 30 seconds. I negotiated it down to $500.
-                </p>
+              <p className="text-slate-700 font-medium leading-relaxed mb-8 text-lg">
+                My landlord tried to sneak in a <span className="font-bold text-slate-900">$2,400 early termination fee</span> buried in page 12. REXI caught it in 30 seconds. I negotiated it down to $500.
+              </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
                   SP
@@ -885,13 +900,13 @@ return (
               className="rounded-3xl p-8 relative bg-slate-900 text-white shadow-xl"
             >
               <div className="flex items-center gap-1 mb-6">
-                {[1,2,3,4,5].map(i => (
+                {[1, 2, 3, 4, 5].map(i => (
                   <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
                 ))}
               </div>
-                <p className="text-slate-300 font-medium leading-relaxed mb-8 text-lg">
-                  I was about to accept a job offer until REXI flagged a <span className="font-bold text-white">non-compete clause</span> that would've blocked me from the entire industry for 2 years. Dodged a career bullet.
-                </p>
+              <p className="text-slate-300 font-medium leading-relaxed mb-8 text-lg">
+                I was about to accept a job offer until REXI flagged a <span className="font-bold text-white">non-compete clause</span> that would've blocked me from the entire industry for 2 years. Dodged a career bullet.
+              </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white font-bold text-lg">
                   MK
@@ -914,13 +929,13 @@ return (
               className="glass-card rounded-3xl p-8 relative"
             >
               <div className="flex items-center gap-1 mb-6">
-                {[1,2,3,4,5].map(i => (
+                {[1, 2, 3, 4, 5].map(i => (
                   <Star key={i} className="w-4 h-4 text-amber-500 fill-amber-500" />
                 ))}
               </div>
-                <p className="text-slate-700 font-medium leading-relaxed mb-8 text-lg">
-                  My health insurance had a <span className="font-bold text-slate-900">6-month waiting period for pre-existing conditions</span> hidden in the fine print. REXI found it before I cancelled my old plan. Life saver.
-                </p>
+              <p className="text-slate-700 font-medium leading-relaxed mb-8 text-lg">
+                My health insurance had a <span className="font-bold text-slate-900">6-month waiting period for pre-existing conditions</span> hidden in the fine print. REXI found it before I cancelled my old plan. Life saver.
+              </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-400 to-pink-600 flex items-center justify-center text-white font-bold text-lg">
                   JR
@@ -948,13 +963,13 @@ return (
               </div>
               <div>
                 <div className="flex items-center gap-1 mb-3">
-                  {[1,2,3,4,5].map(i => (
+                  {[1, 2, 3, 4, 5].map(i => (
                     <Star key={i} className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                   ))}
                 </div>
-                  <p className="text-slate-700 font-medium leading-relaxed mb-4">
-                    Uploaded my gym membership document just to test it. Found out they could <span className="font-bold text-slate-900">auto-renew for 3 years</span> without explicit consent. Got out before the trap sprung.
-                  </p>
+                <p className="text-slate-700 font-medium leading-relaxed mb-4">
+                  Uploaded my gym membership document just to test it. Found out they could <span className="font-bold text-slate-900">auto-renew for 3 years</span> without explicit consent. Got out before the trap sprung.
+                </p>
                 <p className="text-sm text-slate-500"><span className="font-bold text-slate-700">David T.</span> — Personal Trainer, Miami</p>
               </div>
             </motion.div>
@@ -971,13 +986,13 @@ return (
               </div>
               <div>
                 <div className="flex items-center gap-1 mb-3">
-                  {[1,2,3,4,5].map(i => (
+                  {[1, 2, 3, 4, 5].map(i => (
                     <Star key={i} className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                   ))}
                 </div>
-                  <p className="text-slate-700 font-medium leading-relaxed mb-4">
-                    My car loan had an <span className="font-bold text-slate-900">arbitration clause</span> that waived my right to sue. REXI explained what it meant in plain English. I went with a different lender.
-                  </p>
+                <p className="text-slate-700 font-medium leading-relaxed mb-4">
+                  My car loan had an <span className="font-bold text-slate-900">arbitration clause</span> that waived my right to sue. REXI explained what it meant in plain English. I went with a different lender.
+                </p>
                 <p className="text-sm text-slate-500"><span className="font-bold text-slate-700">Amanda L.</span> — Teacher, Chicago</p>
               </div>
             </motion.div>
@@ -1029,7 +1044,7 @@ return (
               <p className="text-lg md:text-xl text-slate-600 leading-relaxed font-medium mb-10 md:mb-12">
                 We believe legal safety shouldn't come at the cost of your privacy. REXI is built on a "zero-retention" architecture. Your documents are analyzed in a volatile memory and wiped the second your report is generated.
               </p>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
                 {[
                   { icon: Lock, label: "256-bit Encryption", desc: "Bank-grade security" },
@@ -1077,10 +1092,10 @@ return (
       {/* CTA Section */}
       <section className="py-20 md:py-32 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="glass-card rounded-[2.5rem] md:rounded-[4rem] p-10 md:p-20 bg-slate-950 text-white relative overflow-hidden text-center shadow-[0_50px_100px_-20px_rgba(15,23,42,0.3)]">
+          <div className="glass-card-dark rounded-[2.5rem] md:rounded-[4rem] p-10 md:p-20 bg-slate-950 text-white relative overflow-hidden text-center shadow-[0_50px_100px_-20px_rgba(15,23,42,0.3)]">
             <div className="absolute top-0 right-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-slate-800/20 rounded-full blur-[80px] md:blur-[120px]"></div>
             <div className="absolute bottom-0 left-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-slate-900/10 rounded-full blur-[80px] md:blur-[120px]"></div>
-            
+
             <div className="relative z-10">
               <h2 className="font-serif text-4xl md:text-8xl font-bold mb-6 md:mb-10 tracking-tight leading-[1.1] md:leading-[0.9]">
                 Sign with <span className="italic text-slate-400">Confidence.</span>
@@ -1088,13 +1103,13 @@ return (
               <p className="text-lg md:text-2xl text-slate-400 max-w-2xl mx-auto mb-10 md:mb-16 font-medium leading-relaxed">
                 Join thousands of people who use REXI to protect their interests, their finances, and their peace of mind.
               </p>
-              
-<div onClick={() => setShowSelector(true)} className="inline-block w-full sm:w-auto cursor-pointer">
-                  <Button size="lg" className="bg-white hover:bg-slate-100 text-slate-900 px-10 md:px-16 h-16 md:h-20 rounded-full text-xl md:text-2xl font-bold shadow-2xl transition-all hover:scale-105 active:scale-95 w-full sm:w-auto">
-                    Analyze Now — It's Free
-                  </Button>
-                </div>
-              
+
+              <div onClick={() => setShowSelector(true)} className="inline-block w-full sm:w-auto cursor-pointer">
+                <Button size="lg" className="bg-white hover:bg-slate-100 text-slate-900 px-10 md:px-16 h-16 md:h-20 rounded-full text-xl md:text-2xl font-bold shadow-2xl transition-all hover:scale-105 active:scale-95 w-full sm:w-auto">
+                  Analyze Now — It's Free
+                </Button>
+              </div>
+
               <p className="mt-8 md:mt-10 text-slate-500 font-bold text-[10px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-2 md:gap-3">
                 <ShieldCheck className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 No Credit Card Required
@@ -1108,13 +1123,8 @@ return (
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-12 gap-12 md:gap-8 mb-12 md:mb-16">
             <div className="md:col-span-5">
-              <Link href="/" className="inline-block mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 bg-white rounded-xl flex items-center justify-center">
-                    <Scale className="w-5 h-5 text-slate-900" />
-                  </div>
-                  <span className="font-serif text-3xl font-bold tracking-tighter text-white">REXI</span>
-                </div>
+              <Link href="/" className="inline-block mb-6 group">
+                <Logo variant="light" />
               </Link>
               <p className="text-slate-400 font-medium max-w-xs leading-relaxed text-sm md:text-base">
                 Smart legal document review for everyone. Know what you're signing before you sign.
@@ -1143,7 +1153,7 @@ return (
               </ul>
             </div>
           </div>
-          
+
           <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-slate-500 text-sm font-medium">
               © 2026 REXI Legal Safety. All rights reserved.

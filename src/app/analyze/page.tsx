@@ -32,8 +32,11 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/logo";
 import { ShareReportButton } from "@/components/share-report-button";
+import { toast } from "sonner";
 import type { ContractAnalysisResult, ContractClause, LegalCitation } from "@/lib/types/contract-analysis";
+import { RexiChatWidget } from "@/components/insurance/RexiChatWidget";
 
 type ViewMode = "upload" | "workspace";
 type MobileTab = "document" | "analysis";
@@ -47,17 +50,53 @@ export default function AnalyzePage() {
   const [showHighlights, setShowHighlights] = useState(true);
   const [filterSeverity, setFilterSeverity] = useState<string | null>(null);
   const [copiedText, setCopiedText] = useState<string | null>(null);
-  const [leftPanelWidth, setLeftPanelWidth] = useState(55);
+  const [leftPanelWidth, setLeftPanelWidth] = useState(50);
   const [isResizing, setIsResizing] = useState(false);
   const [mobileTab, setMobileTab] = useState<MobileTab>("document");
+  const [currentAnalysisId, setCurrentAnalysisId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const documentRef = useRef<HTMLDivElement>(null);
 
   const filteredClauses = useMemo(() => {
     if (!analysis) return [];
-    if (!filterSeverity) return analysis.clauses;
-    return analysis.clauses.filter(c => c.severity === filterSeverity);
+
+    const severityWeight: Record<string, number> = {
+      critical: 0,
+      high: 1,
+      medium: 2,
+      low: 3,
+      safe: 4
+    };
+
+    let clauses = [...analysis.clauses];
+
+    // Filter if needed (though UI filter was removed, logic stays for safety)
+    if (filterSeverity) {
+      clauses = clauses.filter(c => c.severity === filterSeverity);
+    }
+
+    // Sort by Severity Risk (Critical first) -> then by Position in text
+    return clauses.sort((a, b) => {
+      const scoreA = severityWeight[a.severity] ?? 5;
+      const scoreB = severityWeight[b.severity] ?? 5;
+      if (scoreA !== scoreB) return scoreA - scoreB;
+      return a.startIndex - b.startIndex;
+    });
   }, [analysis, filterSeverity]);
+
+  const handleNextClause = () => {
+    if (!filteredClauses.length) return;
+    const currentIndex = selectedClause ? filteredClauses.findIndex(c => c.id === selectedClause.id) : -1;
+    const nextIndex = currentIndex < filteredClauses.length - 1 ? currentIndex + 1 : 0;
+    scrollToClause(filteredClauses[nextIndex]);
+  };
+
+  const handlePrevClause = () => {
+    if (!filteredClauses.length) return;
+    const currentIndex = selectedClause ? filteredClauses.findIndex(c => c.id === selectedClause.id) : 0;
+    const prevIndex = currentIndex > 0 ? currentIndex - 1 : filteredClauses.length - 1;
+    scrollToClause(filteredClauses[prevIndex]);
+  };
 
   const handleFileUpload = useCallback(async (file: File) => {
     setIsAnalyzing(true);
@@ -106,24 +145,48 @@ export default function AnalyzePage() {
       }
 
       const result: ContractAnalysisResult = await analyzeResponse.json();
+
+      // Sort clauses by severity (Critical -> High -> Medium -> Low)
+      const severityOrder = { critical: 0, high: 1, medium: 2, low: 3, safe: 4 };
+      result.clauses.sort((a, b) => {
+        const scoreA = severityOrder[a.severity as keyof typeof severityOrder] ?? 5;
+        const scoreB = severityOrder[b.severity as keyof typeof severityOrder] ?? 5;
+        if (scoreA !== scoreB) return scoreA - scoreB;
+        return a.startIndex - b.startIndex;
+      });
+
       setAnalysis(result);
       if (result.clauses.length > 0) {
         setSelectedClause(result.clauses[0]);
       }
       setViewMode("workspace");
 
-      fetch("/api/store-analysis", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          source: "analyze",
-          rawText: extractedText,
-          analysisResult: result,
-          fileName: file.name,
-          documentType: result.summary?.type || "unknown",
-          metadata: { fileSize: file.size, fileType: file.type },
-        }),
-      }).catch(console.error);
+      try {
+        const storeResponse = await fetch("/api/store-analysis", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            source: "analyze",
+            rawText: extractedText,
+            analysisResult: result,
+            fileName: file.name,
+            documentType: result.summary?.type || "unknown",
+            metadata: { fileSize: file.size, fileType: file.type },
+          }),
+        });
+
+        const storeData = await storeResponse.json();
+        if (storeData.id) {
+          setCurrentAnalysisId(storeData.id);
+          toast.success("Rexi is ready to chat!");
+        } else {
+          console.error("Store analysis returned no ID:", storeData);
+          toast.error("Could not initialize Rexi (Database Error)");
+        }
+      } catch (storeError) {
+        console.error("Failed to store analysis:", storeError);
+        toast.error("Failed to save analysis for Rexi chat");
+      }
     } catch (error: any) {
       console.error("Error:", error);
       alert(error.message || "Failed to process document");
@@ -212,7 +275,11 @@ export default function AnalyzePage() {
 
     const text = analysis.rawText;
     if (!showHighlights) {
-      return <div className="whitespace-pre-wrap font-mono text-xs sm:text-sm leading-relaxed text-slate-700">{text}</div>;
+      return (
+        <div className="max-w-3xl mx-auto bg-white min-h-[800px] p-8 sm:p-12 shadow-sm border border-slate-200/60 transition-all">
+          <div className="whitespace-pre-wrap font-mono text-xs sm:text-sm leading-relaxed text-slate-700">{text}</div>
+        </div>
+      );
     }
 
     const sortedClauses = [...analysis.clauses].sort((a, b) => a.startIndex - b.startIndex);
@@ -237,8 +304,8 @@ export default function AnalyzePage() {
           data-clause-id={clause.id}
           onClick={() => scrollToClause(clause)}
           className={`inline cursor-pointer rounded px-0.5 transition-all duration-200 border-b-2 ${isSelected
-              ? `${config.highlight} ring-2 ring-offset-1 ring-indigo-400 border-indigo-500`
-              : `hover:${config.bg} border-transparent hover:border-current ${config.color}`
+            ? `${config.highlight} ring-2 ring-offset-1 ring-indigo-400 border-indigo-500`
+            : `hover:${config.bg} border-transparent hover:border-current ${config.color}`
             }`}
           title={clause.title}
         >
@@ -257,7 +324,11 @@ export default function AnalyzePage() {
       );
     }
 
-    return <div className="whitespace-pre-wrap font-mono text-xs sm:text-sm leading-relaxed">{elements}</div>;
+    return (
+      <div className="max-w-3xl mx-auto bg-white min-h-[800px] p-8 sm:p-12 shadow-sm border border-slate-200/60 transition-all">
+        <div className="whitespace-pre-wrap font-mono text-xs sm:text-sm leading-relaxed">{elements}</div>
+      </div>
+    );
   };
 
   // Mobile Analysis Panel Content
@@ -409,8 +480,8 @@ export default function AnalyzePage() {
                   key={clause.id}
                   onClick={() => scrollToClause(clause)}
                   className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-[9px] sm:text-[10px] font-bold transition-all ${isSelected
-                      ? `${config.bg} ${config.color} ring-2 ring-offset-1 ring-current`
-                      : "bg-white border border-slate-200 text-slate-400 hover:border-slate-300"
+                    ? `${config.bg} ${config.color} ring-2 ring-offset-1 ring-current`
+                    : "bg-white border border-slate-200 text-slate-400 hover:border-slate-300"
                     }`}
                   title={clause.title}
                 >
@@ -471,9 +542,7 @@ export default function AnalyzePage() {
         <div className="max-w-[1800px] mx-auto flex items-center justify-between pointer-events-auto">
           <div className="flex items-center gap-2 sm:gap-3 bg-white/90 backdrop-blur-xl border border-slate-200/60 shadow-sm rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-slate-900 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                <Scale className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-              </div>
+              <Logo className="w-7 h-7 sm:w-8 sm:h-8" iconOnly />
               <span className="font-semibold text-slate-900 tracking-tight text-sm sm:text-base">REXI <span className="text-indigo-500">STUDIO</span></span>
             </Link>
             <div className="h-4 w-px bg-slate-200 mx-1 hidden sm:block" />
@@ -495,7 +564,7 @@ export default function AnalyzePage() {
 
       <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} accept=".pdf,.docx,.txt" />
 
-      <main className="pt-16 sm:pt-20 pb-8">
+      <main className="pt-16 sm:pt-20 pb-32">
         {viewMode === "upload" && !isAnalyzing ? (
           <div className="max-w-4xl mx-auto px-4 pt-8 sm:pt-16">
             <div className="text-center mb-10 sm:mb-16 space-y-4">
@@ -615,7 +684,7 @@ export default function AnalyzePage() {
                   <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-slate-50 rounded-lg sm:rounded-xl">
                     <span className="text-[10px] sm:text-xs font-bold text-slate-500 hidden sm:inline">Score:</span>
                     <span className={`text-xs sm:text-sm font-black ${analysis.overallScore >= 70 ? "text-emerald-600" :
-                        analysis.overallScore >= 50 ? "text-amber-600" : "text-rose-600"
+                      analysis.overallScore >= 50 ? "text-amber-600" : "text-rose-600"
                       }`}>{analysis.overallScore}/100</span>
                   </div>
 
@@ -647,8 +716,8 @@ export default function AnalyzePage() {
                 <button
                   onClick={() => setMobileTab("document")}
                   className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-lg transition-all ${mobileTab === "document"
-                      ? "bg-white text-slate-900 shadow-sm"
-                      : "text-slate-500"
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-500"
                     }`}
                 >
                   <FileText className="w-4 h-4" />
@@ -657,8 +726,8 @@ export default function AnalyzePage() {
                 <button
                   onClick={() => setMobileTab("analysis")}
                   className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-lg transition-all ${mobileTab === "analysis"
-                      ? "bg-white text-slate-900 shadow-sm"
-                      : "text-slate-500"
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-500"
                     }`}
                 >
                   <Gavel className="w-4 h-4" />
@@ -683,30 +752,12 @@ export default function AnalyzePage() {
                     <h2 className="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2">
                       <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" /> Document
                     </h2>
-                    <div className="flex items-center gap-1">
-                      {["critical", "high", "medium", "low", "safe"].map((sev) => {
-                        const config = getSeverityConfig(sev);
-                        const count = analysis.clauses.filter(c => c.severity === sev).length;
-                        if (count === 0) return null;
-                        return (
-                          <button
-                            key={sev}
-                            onClick={() => setFilterSeverity(filterSeverity === sev ? null : sev)}
-                            className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[9px] sm:text-[10px] font-bold uppercase transition-all ${filterSeverity === sev
-                                ? `${config.bg} ${config.color} ring-1 ring-current`
-                                : "bg-white text-slate-400 hover:bg-slate-100"
-                              }`}
-                          >
-                            {count}
-                          </button>
-                        );
-                      })}
-                    </div>
+
                   </div>
                   <p className="text-[9px] sm:text-[10px] text-slate-400">Click highlighted text to see analysis</p>
                 </div>
 
-                <div ref={documentRef} className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar">
+                <div ref={documentRef} className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar bg-slate-50/50">
                   {renderHighlightedDocument()}
                 </div>
               </div>
@@ -726,13 +777,39 @@ export default function AnalyzePage() {
                   } lg:!w-auto`}
               >
                 <div className="p-3 sm:p-4 border-b border-slate-100 bg-white">
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-indigo-50 rounded-lg flex items-center justify-center">
-                      <Gavel className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-600" />
+                  <div className="flex items-center justify-between gap-2 sm:gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 bg-indigo-50 rounded-lg flex items-center justify-center">
+                        <Gavel className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-600" />
+                      </div>
+                      <div>
+                        <h2 className="text-xs sm:text-sm font-bold text-slate-900">Legal Review</h2>
+                        <p className="text-[9px] sm:text-[10px] text-slate-400">
+                          {selectedClause
+                            ? `${filteredClauses.findIndex(c => c.id === selectedClause.id) + 1} of ${filteredClauses.length} • Prioritized by Risk`
+                            : "Select a clause to review"}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="text-xs sm:text-sm font-bold text-slate-900">Legal Review</h2>
-                      <p className="text-[9px] sm:text-[10px] text-slate-400">{selectedClause ? "Clause breakdown" : "Select a clause to review"}</p>
+
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={handlePrevClause}
+                        disabled={!filteredClauses.length}
+                        className="p-1.5 hover:bg-slate-100 text-slate-400 hover:text-slate-600 rounded-lg transition-colors disabled:opacity-30"
+                        title="Previous Clause (Shift + Left)"
+                      >
+                        <ChevronUp className="w-4 h-4 rotate-[-90deg]" />
+                      </button>
+                      <button
+                        onClick={handleNextClause}
+                        disabled={!filteredClauses.length}
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg transition-all shadow-sm shadow-slate-200 disabled:opacity-50 disabled:shadow-none"
+                        title="Next Clause (Shift + Right)"
+                      >
+                        <span className="text-[10px] font-bold">Next</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -761,6 +838,15 @@ export default function AnalyzePage() {
           background: #CBD5E1;
         }
       `}</style>
+
+      {/* Rexi Chat Widget - Rendered when analysis ID is available */}
+      {currentAnalysisId && (
+        <RexiChatWidget
+          analysisId={currentAnalysisId}
+          context="contract"
+          initialMessage="I've reviewed the legal terms. I can explain complex clauses, highlight risks, or suggest negotiation points."
+        />
+      )}
     </div>
   );
 }

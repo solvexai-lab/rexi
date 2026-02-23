@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const rateLimit = checkRateLimit(clientIP);
+  const rateLimit = await checkRateLimit(clientIP);
   if (!rateLimit.allowed) {
     logSecurityEvent("RATE_LIMIT_EXCEEDED", { ip: clientIP });
     return rateLimitedResponse(rateLimit.resetIn);
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-      const prompt = `You are REXI - an expert HR analyst and compensation specialist with 20+ years of experience analyzing Indian job offers. Your task is to extract data from an offer letter with 100% mathematical accuracy AND intelligently detect nuances, conditions, and fine print.
+    const prompt = `You are REXI - an expert HR analyst and compensation specialist with 20+ years of experience analyzing Indian job offers. Your task is to extract data from an offer letter with 100% mathematical accuracy AND intelligently detect nuances, conditions, and fine print.
 
 OFFER LETTER TEXT:
 ${sanitizedText}
@@ -335,40 +335,40 @@ Ensure P25 < P50 < P75 and they are realistic for the Indian market.
       responseText = responseText.replace(/^```json\n?/, "").replace(/\n?```$/, "");
     }
 
-      let parsedResponse;
+    let parsedResponse;
+    try {
+      parsedResponse = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error("Initial JSON parse failed, attempting repair. First 500 chars:", responseText.substring(0, 500));
+
+      let repairedText = responseText;
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        repairedText = jsonMatch[0];
+      }
+
       try {
-        parsedResponse = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error("Initial JSON parse failed, attempting repair. First 500 chars:", responseText.substring(0, 500));
-        
-        let repairedText = responseText;
-        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          repairedText = jsonMatch[0];
-        }
+        parsedResponse = JSON.parse(repairedText);
+      } catch {
+        const openBraces = (repairedText.match(/\{/g) || []).length;
+        const closeBraces = (repairedText.match(/\}/g) || []).length;
+        const openBrackets = (repairedText.match(/\[/g) || []).length;
+        const closeBrackets = (repairedText.match(/\]/g) || []).length;
+
+        for (let i = 0; i < openBrackets - closeBrackets; i++) repairedText += "]";
+        for (let i = 0; i < openBraces - closeBraces; i++) repairedText += "}";
 
         try {
           parsedResponse = JSON.parse(repairedText);
-        } catch {
-          const openBraces = (repairedText.match(/\{/g) || []).length;
-          const closeBraces = (repairedText.match(/\}/g) || []).length;
-          const openBrackets = (repairedText.match(/\[/g) || []).length;
-          const closeBrackets = (repairedText.match(/\]/g) || []).length;
-
-          for (let i = 0; i < openBrackets - closeBrackets; i++) repairedText += "]";
-          for (let i = 0; i < openBraces - closeBraces; i++) repairedText += "}";
-
-          try {
-            parsedResponse = JSON.parse(repairedText);
-          } catch (finalError) {
-            console.error("All JSON parse attempts failed. Raw text length:", responseText.length);
-            console.error("Raw text (first 2000 chars):", responseText.substring(0, 2000));
-            return addSecurityHeaders(
-              NextResponse.json({ error: "AI returned invalid response format. Please try uploading again." }, { status: 500 })
-            );
-          }
+        } catch (finalError) {
+          console.error("All JSON parse attempts failed. Raw text length:", responseText.length);
+          console.error("Raw text (first 2000 chars):", responseText.substring(0, 2000));
+          return addSecurityHeaders(
+            NextResponse.json({ error: "AI returned invalid response format. Please try uploading again." }, { status: 500 })
+          );
         }
       }
+    }
 
     const risksWithIds = (parsedResponse.risks || []).map((risk: any, index: number) => ({
       ...risk,
@@ -388,23 +388,23 @@ Ensure P25 < P50 < P75 and they are realistic for the Indian market.
     };
 
     const annualCTC = parsedResponse.offer?.salaryBreakdown?.totalCTC || parsedResponse.offer?.baseSalary || 0;
-      const currency = parsedResponse.offer?.currency || "INR";
-      const city = parsedResponse.offer?.location || "Bengaluru";
-      
-      const aiComponents: SalaryComponent[] = (parsedResponse.offer?.salaryBreakdown?.components || []).map((c: any) => ({
-        name: c.name || "Unknown",
-        annual: c.annual || 0,
-        monthly: c.monthly || 0,
-        type: c.type || "fixed",
-        isNegotiable: c.isNegotiable || false,
-        description: c.description,
-      }));
-      
-      const deterministicBreakdown = calculateDeterministicSalaryBreakdown(aiComponents, annualCTC, currency);
-      
-      const monthlyInHand = deterministicBreakdown.monthlyTakeHome;
-      
-      let workMode: WorkMode = "Office 5-day";
+    const currency = parsedResponse.offer?.currency || "INR";
+    const city = parsedResponse.offer?.location || "Bengaluru";
+
+    const aiComponents: SalaryComponent[] = (parsedResponse.offer?.salaryBreakdown?.components || []).map((c: any) => ({
+      name: c.name || "Unknown",
+      annual: c.annual || 0,
+      monthly: c.monthly || 0,
+      type: c.type || "fixed",
+      isNegotiable: c.isNegotiable || false,
+      description: c.description,
+    }));
+
+    const deterministicBreakdown = calculateDeterministicSalaryBreakdown(aiComponents, annualCTC, currency);
+
+    const monthlyInHand = deterministicBreakdown.monthlyTakeHome;
+
+    let workMode: WorkMode = "Office 5-day";
     const rawWorkMode = parsedResponse.offer?.workMode?.toLowerCase() || "";
     if (rawWorkMode.includes("remote") || rawWorkMode === "full remote") {
       workMode = "Full Remote";
@@ -433,7 +433,7 @@ Ensure P25 < P50 < P75 and they are realistic for the Indian market.
           esopGrant: oneTimeBenefits.esopGrant,
         }
       );
-      
+
       economicAnalysis = {
         cityEconomics: economicResult.cityEconomics,
         livabilityIndex: economicResult.livabilityIndex,
@@ -456,65 +456,65 @@ Ensure P25 < P50 < P75 and they are realistic for the Indian market.
     let calculatedScore = parsedResponse.overallScore || 0;
     if (calculatedScore === 0 || calculatedScore === 75) {
       let score = 50;
-      
+
       if (annualCTC >= 3000000) score += 15;
       else if (annualCTC >= 1500000) score += 10;
       else if (annualCTC >= 800000) score += 5;
-      
+
       if (oneTimeBenefits.joiningBonus > 0) score += 5;
       if (oneTimeBenefits.relocationAllowance > 0) score += 3;
       if (parsedResponse.offer?.equity?.amount > 0) score += 5;
-      
+
       const benefits = parsedResponse.offer?.benefits || [];
       if (benefits.length >= 5) score += 8;
       else if (benefits.length >= 3) score += 5;
-      
+
       const risks = parsedResponse.risks || [];
       const criticalRisks = risks.filter((r: any) => r.severity === 'critical').length;
       const highRisks = risks.filter((r: any) => r.severity === 'high').length;
       score -= (criticalRisks * 10) + (highRisks * 5);
-      
+
       if (economicAnalysis) {
         if (economicAnalysis.livabilityIndex >= 2.5) score += 8;
         else if (economicAnalysis.livabilityIndex >= 2.0) score += 5;
         else if (economicAnalysis.livabilityIndex < 1.5) score -= 5;
       }
-      
+
       if (rawWorkMode.includes("remote")) score += 3;
       else if (rawWorkMode.includes("hybrid")) score += 2;
-      
+
       calculatedScore = Math.max(20, Math.min(95, score));
     }
 
     const finalResponse: OfferAnalysisResponse = {
-        offer: {
-          ...parsedResponse.offer,
-          id: parsedResponse.offer?.id || `offer-${Date.now()}`,
-          rawText: sanitizedText,
-          fileName: fileName || "Uploaded Document",
-          oneTimeBenefits,
-          economicAnalysis,
-          salaryBreakdown: {
-            components: deterministicBreakdown.components,
-            totalCTC: deterministicBreakdown.totalCTC,
-            monthlyTakeHome: deterministicBreakdown.monthlyTakeHome,
-            annualTakeHome: deterministicBreakdown.annualTakeHome,
-            taxDeductions: deterministicBreakdown.taxDeductions,
-            complianceInfo: deterministicBreakdown.complianceInfo,
-          },
+      offer: {
+        ...parsedResponse.offer,
+        id: parsedResponse.offer?.id || `offer-${Date.now()}`,
+        rawText: sanitizedText,
+        fileName: fileName || "Uploaded Document",
+        oneTimeBenefits,
+        economicAnalysis,
+        salaryBreakdown: {
+          components: deterministicBreakdown.components,
+          totalCTC: deterministicBreakdown.totalCTC,
+          monthlyTakeHome: deterministicBreakdown.monthlyTakeHome,
+          annualTakeHome: deterministicBreakdown.annualTakeHome,
+          taxDeductions: deterministicBreakdown.taxDeductions,
+          complianceInfo: deterministicBreakdown.complianceInfo,
         },
-        risks: risksWithIds,
-        overallScore: calculatedScore,
-        summary: parsedResponse.summary || "Analysis complete.",
-        strengths: parsedResponse.strengths || [],
-        concerns: parsedResponse.concerns || [],
-        negotiationPoints: parsedResponse.negotiationPoints || [],
-        marketComparison: parsedResponse.marketComparison,
-        metadata: {
-          analysisDate: new Date().toISOString(),
-          disclaimer: DISCLAIMER,
-        },
-      };
+      },
+      risks: risksWithIds,
+      overallScore: calculatedScore,
+      summary: parsedResponse.summary || "Analysis complete.",
+      strengths: parsedResponse.strengths || [],
+      concerns: parsedResponse.concerns || [],
+      negotiationPoints: parsedResponse.negotiationPoints || [],
+      marketComparison: parsedResponse.marketComparison,
+      metadata: {
+        analysisDate: new Date().toISOString(),
+        disclaimer: DISCLAIMER,
+      },
+    };
 
     return addSecurityHeaders(NextResponse.json(finalResponse));
   } catch (error) {

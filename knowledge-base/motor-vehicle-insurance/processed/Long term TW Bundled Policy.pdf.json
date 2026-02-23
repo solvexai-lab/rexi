@@ -1,0 +1,41 @@
+{
+  "document_type": "Terms & Conditions (Policy Document)",
+  "insurer_name": "National Insurance Company Limited",
+  "key_sections": [
+    "Policy Issuing Office",
+    "SECTION I : LOSS OF OR DAMAGE TO THE VEHICLE INSURED",
+    "SUM INSURED – INSURED’S DECLARED VALUE (IDV)",
+    "Depreciation Rates for Parts Replaced",
+    "Depreciation Schedule for Fixing IDV",
+    "Illustration of IDV Calculation",
+    "Obsolete Models IDV Determination",
+    "Exclusions under Section I",
+    "Policy Coverage Details (Section I, II, III)",
+    "Definition of Two Wheeler"
+  ],
+  "available_fields": [
+    "Insurer Name (National Insurance Company Limited)",
+    "CIN (U10200WB1906GOI001713)",
+    "IRDAI Regn. No. (58)",
+    "Policy Type (Long Term Two Wheelers Bundled Policy)",
+    "Proposal and Declaration Date (referenced in Schedule)",
+    "Premium Amount (referenced in Schedule)",
+    "Period of Insurance (Section I, II, III durations)",
+    "Definition of Two Wheeler (usage restrictions)",
+    "Section I Coverage (Own Damage perils: fire, theft, riot, earthquake, flood, etc.)",
+    "Exclusions under Section I (consequential loss, wear and tear, mechanical breakdown, etc.)",
+    "Depreciation Rates for Parts Replaced (rubber/nylon/plastic: 50%, fibre glass: 30%, glass: Nil, others: age-based)",
+    "Age-wise Depreciation Schedule for Parts (0-10+ years)",
+    "Depreciation for Painting (50% on material cost, 25% of total bill assumed as material)",
+    "Liability Limits (e.g., Rs. 300 for protection/removal costs, Rs. 150 for repair authorization)",
+    "Conditions for Repair Authorization (cost limit, estimate submission, company verification)",
+    "Insured’s Declared Value (IDV) Definition",
+    "IDV Calculation Basis (manufacturer’s listed selling price adjusted for depreciation)",
+    "Age-wise Depreciation Schedule for IDV (0-6+ years)",
+    "IDV for Obsolete Models (65% depreciation up to 1 year, no coverage beyond 1 year under this policy)",
+    "Policy Period Illustration (OD: 1 year extendable, TP: 5 years)",
+    "IDV Calculation Examples (yearly adjustments based on market price)",
+    "Obsolete Vehicle IDV Illustration (fixed IDV for all 5 years)"
+  ],
+  "summary": "This document is a 'Long Term Two Wheelers Bundled Policy' issued by National Insurance Company Limited. It combines Own Damage (Section I, 1 year extendable), Third Party Liability (Section II, 5 years), and Compulsory Personal Accident Cover for Owner-Driver (Section III, 5 years). The policy details coverage perils, exclusions, depreciation rates for parts and IDV, conditions for claims, and specific rules for obsolete vehicles. Key fields include insurer details, policy structure, coverage scope, depreciation schedules, IDV calculation methodology, and liability limits."
+}

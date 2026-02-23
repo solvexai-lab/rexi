@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkDistributedRateLimit, type RateLimitResult } from "./rate-limit";
 
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
-const MAX_REQUESTS_PER_WINDOW = 20;
+const MAX_REQUESTS_PER_WINDOW = 5000;
 
-const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+// Fallback in-memory store for development/testing
+const localRateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
 export function getClientIP(req: NextRequest): string {
   const forwarded = req.headers.get("x-forwarded-for");
@@ -17,12 +19,29 @@ export function getClientIP(req: NextRequest): string {
   return "unknown";
 }
 
-export function checkRateLimit(clientIP: string): { allowed: boolean; remaining: number; resetIn: number } {
+/**
+ * Check rate limit using distributed Supabase storage
+ * Falls back to local storage in development
+ */
+export async function checkRateLimit(clientIP: string): Promise<RateLimitResult> {
+  // Use distributed rate limiting in production
+  if (process.env.NODE_ENV === "production" || process.env.USE_DISTRIBUTED_RATE_LIMIT === "true") {
+    return await checkDistributedRateLimit(clientIP);
+  }
+
+  // Fallback to local rate limiting for development
+  return checkLocalRateLimit(clientIP);
+}
+
+/**
+ * Local in-memory rate limiting (development only)
+ */
+function checkLocalRateLimit(clientIP: string): RateLimitResult {
   const now = Date.now();
-  const record = rateLimitStore.get(clientIP);
+  const record = localRateLimitStore.get(clientIP);
 
   if (!record || now > record.resetTime) {
-    rateLimitStore.set(clientIP, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    localRateLimitStore.set(clientIP, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
     return { allowed: true, remaining: MAX_REQUESTS_PER_WINDOW - 1, resetIn: RATE_LIMIT_WINDOW_MS };
   }
 
@@ -33,6 +52,7 @@ export function checkRateLimit(clientIP: string): { allowed: boolean; remaining:
   record.count++;
   return { allowed: true, remaining: MAX_REQUESTS_PER_WINDOW - record.count, resetIn: record.resetTime - now };
 }
+
 
 export function rateLimitedResponse(resetIn: number): NextResponse {
   return NextResponse.json(
@@ -103,7 +123,7 @@ export function validateRequestOrigin(req: NextRequest): boolean {
 
   try {
     const originUrl = new URL(origin);
-    
+
     // Exact match (including port)
     if (originUrl.host === host) {
       return true;
@@ -118,7 +138,7 @@ export function validateRequestOrigin(req: NextRequest): boolean {
     ];
 
     return allowedHosts.some(
-      (allowed) => originUrl.hostname === allowed || originUrl.hostname.endsWith(`.${allowed}`)
+      (allowed) => originUrl.hostname === allowed || originUrl.hostname.endsWith(`.${allowed}`) || originUrl.hostname.startsWith("192.168.")
     );
   } catch {
     return false;

@@ -28,45 +28,45 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const rateLimit = checkRateLimit(clientIP);
+  const rateLimit = await checkRateLimit(clientIP);
   if (!rateLimit.allowed) {
     logSecurityEvent("RATE_LIMIT_EXCEEDED", { ip: clientIP });
     return rateLimitedResponse(rateLimit.resetIn);
   }
 
+  try {
+    let body;
     try {
-      let body;
-      try {
-        body = await req.json();
-      } catch {
-        return addSecurityHeaders(
-          NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
-        );
-      }
+      body = await req.json();
+    } catch {
+      return addSecurityHeaders(
+        NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+      );
+    }
 
-      const { offers, perspective = "balanced" } = body as { 
-        offers: OfferAnalysisResponse[]; 
-        perspective?: "balanced" | "money" | "stability" | "growth" 
-      };
+    const { offers, perspective = "balanced" } = body as {
+      offers: OfferAnalysisResponse[];
+      perspective?: "balanced" | "money" | "stability" | "growth"
+    };
 
-      if (!offers || !Array.isArray(offers) || offers.length < 2) {
-        return addSecurityHeaders(
-          NextResponse.json({ error: "At least 2 offers required for comparison" }, { status: 400 })
-        );
-      }
+    if (!offers || !Array.isArray(offers) || offers.length < 2) {
+      return addSecurityHeaders(
+        NextResponse.json({ error: "At least 2 offers required for comparison" }, { status: 400 })
+      );
+    }
 
-      if (offers.length > 5) {
-        return addSecurityHeaders(
-          NextResponse.json({ error: "Maximum 5 offers allowed for comparison" }, { status: 400 })
-        );
-      }
+    if (offers.length > 5) {
+      return addSecurityHeaders(
+        NextResponse.json({ error: "Maximum 5 offers allowed for comparison" }, { status: 400 })
+      );
+    }
 
-      const apiKey = process.env.GEMINI_API_KEY;
-      if (!apiKey) {
-        return addSecurityHeaders(
-          NextResponse.json({ error: "Service temporarily unavailable" }, { status: 503 })
-        );
-      }
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return addSecurityHeaders(
+        NextResponse.json({ error: "Service temporarily unavailable" }, { status: 503 })
+      );
+    }
 
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
@@ -77,58 +77,58 @@ export async function POST(req: NextRequest) {
       },
     });
 
-      const offersData = offers.map((o, i) => {
-          const year1Ctc = o.offer?.economicAnalysis?.year1EffectiveCTC || o.offer?.salaryBreakdown?.totalCTC || o.offer?.baseSalary || 0;
-          const year2Ctc = o.offer?.economicAnalysis?.year2SteadyCTC || o.offer?.salaryBreakdown?.totalCTC || o.offer?.baseSalary || 0;
-          const city = o.offer?.location || "Bengaluru";
-          const normalizedSalary = normalizeSalaryToCity(year2Ctc, city, "Pune");
-          
-          return {
-            id: o.offer?.id || `offer-${i + 1}`,
-            company: o.offer?.company || "Unknown Company",
-            role: o.offer?.role || "Unknown Role",
-            baseSalary: o.offer?.baseSalary || 0,
-            currency: o.offer?.currency || "INR",
-            bonus: o.offer?.bonus || 0,
-            bonusPercentage: o.offer?.bonusPercentage || 0,
-            bonusIsVariable: o.offer?.bonusIsVariable || false,
-            bonusCondition: o.offer?.bonusCondition || null,
-            equity: o.offer?.equity,
-            benefits: o.offer?.benefits || [],
-            pto: o.offer?.pto || "Not specified",
-            ptoCarryForward: o.offer?.ptoCarryForward || null,
-            location: o.offer?.location || "Not specified",
-            workMode: o.offer?.workMode || "Not specified",
-            noticePeriod: o.offer?.noticePeriod || "Not specified",
-            noticeBuyoutAllowed: o.offer?.noticeBuyoutAllowed ?? null,
-            nonCompete: o.offer?.nonCompete,
-            signingBonus: o.offer?.signingBonus || 0,
-            probationPeriod: o.offer?.probationPeriod || "Not specified",
-            probationNoticePeriod: o.offer?.probationNoticePeriod || null,
-            bondPeriod: o.offer?.bondPeriod || null,
-            bondAmount: o.offer?.bondAmount || 0,
-            overallScore: o.overallScore || 0,
-            risks: o.risks || [],
-            riskCount: o.risks?.length || 0,
-            criticalRisks: o.risks?.filter((r: any) => r.severity === 'critical').length || 0,
-            highRisks: o.risks?.filter((r: any) => r.severity === 'high').length || 0,
-            year1EffectiveCTC: year1Ctc,
-            year2SteadyCTC: year2Ctc,
-            joiningBonus: o.offer?.oneTimeBenefits?.joiningBonus || 0,
-            relocationAllowance: o.offer?.oneTimeBenefits?.relocationAllowance || 0,
-            clawbackMonths: o.offer?.oneTimeBenefits?.joiningBonusClawbackMonths || 0,
-            livabilityIndex: o.offer?.economicAnalysis?.livabilityIndex || 0,
-            livabilityGrade: o.offer?.economicAnalysis?.livabilityGrade || "Unknown",
-            savingsRateYear1: o.offer?.economicAnalysis?.savingsRateYear1 || 0,
-            savingsRateYear2: o.offer?.economicAnalysis?.savingsRateYear2 || 0,
-            cityCluster: o.offer?.economicAnalysis?.cityEconomics?.cluster || "C",
-            monthlyCost: o.offer?.economicAnalysis?.cityEconomics?.adjustedMonthlyCost || 0,
-            clawbackRiskLevel: o.offer?.economicAnalysis?.clawbackRisk?.riskLevel || 'low',
-            normalizedSalaryPuneEquivalent: normalizedSalary,
-          };
-        });
+    const offersData = offers.map((o, i) => {
+      const year1Ctc = o.offer?.economicAnalysis?.year1EffectiveCTC || o.offer?.salaryBreakdown?.totalCTC || o.offer?.baseSalary || 0;
+      const year2Ctc = o.offer?.economicAnalysis?.year2SteadyCTC || o.offer?.salaryBreakdown?.totalCTC || o.offer?.baseSalary || 0;
+      const city = o.offer?.location || "Bengaluru";
+      const normalizedSalary = normalizeSalaryToCity(year2Ctc, city, "Pune");
 
-const prompt = `You are REXI - an expert career advisor specializing in Indian job market. Compare these job offers and respond with ONLY valid JSON (no markdown, no explanation).
+      return {
+        id: o.offer?.id || `offer-${i + 1}`,
+        company: o.offer?.company || "Unknown Company",
+        role: o.offer?.role || "Unknown Role",
+        baseSalary: o.offer?.baseSalary || 0,
+        currency: o.offer?.currency || "INR",
+        bonus: o.offer?.bonus || 0,
+        bonusPercentage: o.offer?.bonusPercentage || 0,
+        bonusIsVariable: o.offer?.bonusIsVariable || false,
+        bonusCondition: o.offer?.bonusCondition || null,
+        equity: o.offer?.equity,
+        benefits: o.offer?.benefits || [],
+        pto: o.offer?.pto || "Not specified",
+        ptoCarryForward: o.offer?.ptoCarryForward || null,
+        location: o.offer?.location || "Not specified",
+        workMode: o.offer?.workMode || "Not specified",
+        noticePeriod: o.offer?.noticePeriod || "Not specified",
+        noticeBuyoutAllowed: o.offer?.noticeBuyoutAllowed ?? null,
+        nonCompete: o.offer?.nonCompete,
+        signingBonus: o.offer?.signingBonus || 0,
+        probationPeriod: o.offer?.probationPeriod || "Not specified",
+        probationNoticePeriod: o.offer?.probationNoticePeriod || null,
+        bondPeriod: o.offer?.bondPeriod || null,
+        bondAmount: o.offer?.bondAmount || 0,
+        overallScore: o.overallScore || 0,
+        risks: o.risks || [],
+        riskCount: o.risks?.length || 0,
+        criticalRisks: o.risks?.filter((r: any) => r.severity === 'critical').length || 0,
+        highRisks: o.risks?.filter((r: any) => r.severity === 'high').length || 0,
+        year1EffectiveCTC: year1Ctc,
+        year2SteadyCTC: year2Ctc,
+        joiningBonus: o.offer?.oneTimeBenefits?.joiningBonus || 0,
+        relocationAllowance: o.offer?.oneTimeBenefits?.relocationAllowance || 0,
+        clawbackMonths: o.offer?.oneTimeBenefits?.joiningBonusClawbackMonths || 0,
+        livabilityIndex: o.offer?.economicAnalysis?.livabilityIndex || 0,
+        livabilityGrade: o.offer?.economicAnalysis?.livabilityGrade || "Unknown",
+        savingsRateYear1: o.offer?.economicAnalysis?.savingsRateYear1 || 0,
+        savingsRateYear2: o.offer?.economicAnalysis?.savingsRateYear2 || 0,
+        cityCluster: o.offer?.economicAnalysis?.cityEconomics?.cluster || "C",
+        monthlyCost: o.offer?.economicAnalysis?.cityEconomics?.adjustedMonthlyCost || 0,
+        clawbackRiskLevel: o.offer?.economicAnalysis?.clawbackRisk?.riskLevel || 'low',
+        normalizedSalaryPuneEquivalent: normalizedSalary,
+      };
+    });
+
+    const prompt = `You are REXI - an expert career advisor specializing in Indian job market. Compare these job offers and respond with ONLY valid JSON (no markdown, no explanation).
 
 PERSPECTIVE: ${perspective}
 - balanced: Equal weight to all factors
@@ -222,7 +222,7 @@ IMPORTANT: Return ONLY the JSON object, no other text.`;
       parsedResponse = JSON.parse(responseText);
     } catch {
       console.error("Initial comparison JSON parse failed. First 500 chars:", responseText.substring(0, 500));
-      
+
       let repairedText = responseText;
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {

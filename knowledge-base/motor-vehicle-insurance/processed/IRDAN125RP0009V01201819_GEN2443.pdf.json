@@ -1,0 +1,41 @@
+{
+  "document_type": "Policy Wording (Terms & Conditions)",
+  "insurer_name": "HDFC ERGO General Insurance Company Limited",
+  "key_sections": [
+    "SECTION I : LOSS OF OR DAMAGE TO THE VEHICLE INSURED",
+    "SUM INSURED – INSURED’S DECLARED VALUE (IDV)",
+    "THE SCHEDULE OF DEPRECIATION FOR FIXING IDV OF THE VEHICLE",
+    "SECTION II - LIABILITY TO THIRD PARTIES"
+  ],
+  "available_fields": [
+    "Insurer Name",
+    "Policy Type (Motor Insurance – Two Wheeler Policy – Bundled)",
+    "Proposal and Declaration Date (referenced in Schedule)",
+    "Premium (mentioned in Schedule)",
+    "Period of Insurance",
+    "Indemnification for Loss or Damage to Vehicle (Section I)",
+    "Causes of Loss/Damage Covered (e.g., fire, theft, riot, earthquake, flood, etc.)",
+    "Depreciation Rates for Parts Replaced (Rubber/Nylon/Plastic, Fiber Glass, Glass, Other Parts, Wooden Parts)",
+    "Depreciation Schedule for Parts (Age of Vehicle vs. % Depreciation)",
+    "Depreciation Rate for Painting (Material Cost Only)",
+    "Exclusions (e.g., consequential loss, wear and tear, mechanical breakdown, damage to tyres/tubes unless vehicle damaged, intoxication)",
+    "Cost of Protection and Removal (Max Rs. 300 per accident)",
+    "Repair Authorization Conditions (Max Rs. 150, detailed estimate, company consent)",
+    "Insured’s Declared Value (IDV) Definition",
+    "IDV Calculation Basis (Manufacturer’s Listed Selling Price + Depreciation)",
+    "Depreciation Schedule for IDV (Age of Vehicle vs. % Depreciation for TL/CTL)",
+    "IDV for Vehicles Beyond 5 Years or Obsolete Models (Mutual Agreement)",
+    "Market Value Definition for TL/CTL Claims",
+    "Constructive Total Loss (CTL) Definition (Cost of Retrieval/Repair > 75% of IDV)",
+    "Third-Party Liability Coverage (Section II)",
+    "Legal Liability for Death/Bodily Injury (Excluding Hire/Reward Occupants, Employee Exceptions)",
+    "Legal Liability for Property Damage (Excluding Insured’s Property)",
+    "Costs and Expenses Coverage (With Company’s Written Consent)",
+    "Company Registration Details (CIN, Registered & Corporate Office, Customer Service Address)",
+    "Customer Service Contact (Phone, Email, Website)",
+    "Trade Logo Ownership",
+    "IRDAI Registration Number",
+    "Policy UIN (IRDAN12SRP0009V01201819)"
+  ],
+  "summary": "This document is the policy wording (terms and conditions) for a bundled two-wheeler motor insurance policy issued by HDFC ERGO General Insurance Company Limited. It outlines the coverage for loss or damage to the insured vehicle (Section I), including specific perils, depreciation rates for parts, exclusions, and conditions for repairs. It defines the Insured’s Declared Value (IDV) and its calculation, including depreciation schedules for total loss claims. Section II covers third-party liability for bodily injury and property damage, subject to policy limits. The document also includes insurer details, customer service information, and regulatory compliance details."
+}

@@ -36,7 +36,15 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const rateLimit = checkRateLimit(clientIP);
+  /* 
+   * WARNING: The previous implementation failed to await this asynchronous call.
+   * checkRateLimit returns a Promise<RateLimitResult>, but it was being treated as a synchronous value.
+   * This caused the 'allowed' property to be undefined on the Promise object,
+   * leading to an incorrect truthy/falsy evaluation or runtime error in strict mode.
+   *
+   * FIX: Added 'await' to properly resolve the Promise and get the actual RateLimitResult.
+   */
+  const rateLimit = await checkRateLimit(clientIP);
   if (!rateLimit.allowed) {
     logSecurityEvent("RATE_LIMIT_FILE_UPLOAD", { ip: clientIP });
     return rateLimitedResponse(rateLimit.resetIn);

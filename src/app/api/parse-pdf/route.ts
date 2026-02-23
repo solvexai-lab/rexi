@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const rateLimit = checkRateLimit(clientIP);
+  const rateLimit = await checkRateLimit(clientIP);
   if (!rateLimit.allowed) {
     logSecurityEvent("RATE_LIMIT_PDF", { ip: clientIP });
     return rateLimitedResponse(rateLimit.resetIn);

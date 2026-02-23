@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const rateLimit = checkRateLimit(clientIP);
+  const rateLimit = await checkRateLimit(clientIP);
   if (!rateLimit.allowed) {
     logSecurityEvent("RATE_LIMIT_EXCEEDED", { ip: clientIP });
     return rateLimitedResponse(rateLimit.resetIn);
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
     }
 
     const relevantLaws = await fetchRelevantLaws([]);
-    const lawsContext = relevantLaws.map(law => 
+    const lawsContext = relevantLaws.map(law =>
       `- ${law.law_name}: ${law.contract_relevance}\n  Violations: ${law.common_violations}\n  Penalties: ${law.penalties}`
     ).join("\n\n");
 
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-      const prompt = `You are REXI - an expert contract attorney. Analyze this contract and explain findings in VERY SIMPLE language that a 10th grader can understand.
+    const prompt = `You are REXI - an expert contract attorney. Analyze this contract and explain findings in VERY SIMPLE language that a 10th grader can understand.
 
 CONTRACT TEXT:
 ${sanitizedText}
@@ -210,56 +210,56 @@ CRITICAL REQUIREMENTS:
       responseText = responseText.replace(/^```\n?/, "").replace(/\n?```$/, "");
     }
 
-      let parsedResponse;
-      try {
-        parsedResponse = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error("JSON parse failed, attempting repair. Raw response:", responseText.substring(0, 500));
-        
-        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          let repairedJson = jsonMatch[0];
-          try {
-            const openBraces = (repairedJson.match(/\{/g) || []).length;
-            const closeBraces = (repairedJson.match(/\}/g) || []).length;
-            const openBrackets = (repairedJson.match(/\[/g) || []).length;
-            const closeBrackets = (repairedJson.match(/\]/g) || []).length;
+    let parsedResponse;
+    try {
+      parsedResponse = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error("JSON parse failed, attempting repair. Raw response:", responseText.substring(0, 500));
 
-            if ((repairedJson.match(/"/g) || []).length % 2 !== 0) {
-              repairedJson = repairedJson.replace(/,\s*([}\]])/, '$1');
-              repairedJson += '"';
-            }
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        let repairedJson = jsonMatch[0];
+        try {
+          const openBraces = (repairedJson.match(/\{/g) || []).length;
+          const closeBraces = (repairedJson.match(/\}/g) || []).length;
+          const openBrackets = (repairedJson.match(/\[/g) || []).length;
+          const closeBrackets = (repairedJson.match(/\]/g) || []).length;
 
-            repairedJson = repairedJson.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
-
-            for (let i = 0; i < openBrackets - closeBrackets; i++) repairedJson += "]";
-            for (let i = 0; i < openBraces - closeBraces; i++) repairedJson += "}";
-
-            parsedResponse = JSON.parse(repairedJson);
-          } catch (repairError) {
-            console.error("JSON repair also failed:", repairError);
-            parsedResponse = {
-              summary: { parties: [], type: "Unknown", keyObligations: [], overallAssessment: "Analysis could not be completed due to response format error." },
-              clauses: [],
-              overallScore: 0,
-              riskSummary: { critical: 0, high: 0, medium: 0, low: 0, safe: 0 },
-              strengths: [],
-              concerns: ["Analysis incomplete - please try again"],
-              negotiationStrategy: [],
-            };
+          if ((repairedJson.match(/"/g) || []).length % 2 !== 0) {
+            repairedJson = repairedJson.replace(/,\s*([}\]])/, '$1');
+            repairedJson += '"';
           }
-        } else {
+
+          repairedJson = repairedJson.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
+
+          for (let i = 0; i < openBrackets - closeBrackets; i++) repairedJson += "]";
+          for (let i = 0; i < openBraces - closeBraces; i++) repairedJson += "}";
+
+          parsedResponse = JSON.parse(repairedJson);
+        } catch (repairError) {
+          console.error("JSON repair also failed:", repairError);
           parsedResponse = {
-            summary: { parties: [], type: "Unknown", keyObligations: [], overallAssessment: "Analysis could not parse contract." },
+            summary: { parties: [], type: "Unknown", keyObligations: [], overallAssessment: "Analysis could not be completed due to response format error." },
             clauses: [],
             overallScore: 0,
             riskSummary: { critical: 0, high: 0, medium: 0, low: 0, safe: 0 },
             strengths: [],
-            concerns: ["Analysis failed - please try again"],
+            concerns: ["Analysis incomplete - please try again"],
             negotiationStrategy: [],
           };
         }
+      } else {
+        parsedResponse = {
+          summary: { parties: [], type: "Unknown", keyObligations: [], overallAssessment: "Analysis could not parse contract." },
+          clauses: [],
+          overallScore: 0,
+          riskSummary: { critical: 0, high: 0, medium: 0, low: 0, safe: 0 },
+          strengths: [],
+          concerns: ["Analysis failed - please try again"],
+          negotiationStrategy: [],
+        };
       }
+    }
 
     const clauses: ContractClause[] = (parsedResponse.clauses || []).map((clause: any, index: number) => ({
       id: clause.id || `clause-${index}`,
