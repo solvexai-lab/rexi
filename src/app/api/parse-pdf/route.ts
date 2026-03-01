@@ -1,5 +1,12 @@
+/**
+ * Bug #9 fix: /api/parse-pdf now uses Mistral OCR as primary extractor
+ * (same as /api/parse-file). pdf-parse is kept as a fast fallback for
+ * digital PDFs — no more silent failures on scanned insurance documents.
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import pdf from "pdf-parse/lib/pdf-parse.js";
+import { extractTextWithMistral } from "@/lib/mistral-ocr";
 import {
   getClientIP,
   checkRateLimit,
@@ -11,6 +18,10 @@ import {
 } from "@/lib/security";
 
 const MAX_FILE_SIZE_MB = 10;
+
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   const clientIP = getClientIP(request);
@@ -65,36 +76,57 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let data;
+    // ── Strategy 1: pdf-parse (fast, digital PDFs only) ──────────────────────
+    let text = "";
+    let pages = 0;
+    const usedFallback = false; // track whether Mistral was needed
+
     try {
-      data = await pdf(buffer);
-    } catch (pdfError) {
-      console.error("PDF parsing error:", pdfError);
-      return addSecurityHeaders(
-        NextResponse.json(
-          { error: "Failed to parse PDF. The file may be corrupted or password-protected." },
-          { status: 422 }
-        )
-      );
+      const data = await pdf(buffer);
+      text = data.text || "";
+      pages = data.numpages || 0;
+
+      // Clean raw extracted text
+      text = text
+        .replace(/\s+/g, " ")
+        .replace(/\u00AD/g, "")
+        .replace(/\uFB01/g, "fi")
+        .replace(/\uFB02/g, "fl")
+        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "")
+        .trim();
+    } catch {
+      // pdf-parse failed entirely — proceed to Mistral
+      text = "";
     }
 
-    let text = data.text || "";
-
-    text = text.replace(/\s+/g, " ");
-    text = text.replace(/\u00AD/g, "");
-    text = text.replace(/\uFB01/g, "fi");
-    text = text.replace(/\uFB02/g, "fl");
-    text = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
-    text = text.trim();
-
-    if (text.length < 50) {
-      console.warn("Extracted text is very short. PDF might be scanned or image-based.");
+    // ── Strategy 2: Mistral OCR for scanned / image-based PDFs ───────────────
+    // Trigger Mistral if pdf-parse returned less than 200 chars (scanned PDF)
+    if (text.length < 200) {
+      console.log(`[parse-pdf] pdf-parse yielded ${text.length} chars — escalating to Mistral OCR`);
+      try {
+        text = await extractTextWithMistral(buffer);
+        // pages unknown from Mistral, use 0 as signal to caller
+        pages = 0;
+      } catch (mistralError) {
+        console.error("[parse-pdf] Mistral OCR failed:", mistralError);
+        // If both strategies fail, return an informative error
+        return addSecurityHeaders(
+          NextResponse.json(
+            {
+              error:
+                "Could not extract text from this PDF. It may be encrypted, heavily compressed, or corrupt. Please try a different format.",
+            },
+            { status: 422 }
+          )
+        );
+      }
     }
 
     return addSecurityHeaders(
       NextResponse.json({
         text,
-        pages: data.numpages,
+        pages,
+        method: text.length < 200 ? "mistral" : "pdf-parse",
       })
     );
   } catch (error) {

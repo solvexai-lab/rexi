@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, FileText, AlertTriangle, Scale, CheckCircle, XCircle, Mail } from "lucide-react";
+import { ArrowLeft, FileText, AlertTriangle, Scale, CheckCircle, XCircle, Mail, Shield, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
 
@@ -12,23 +12,23 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen bg-white">
       <nav className="fixed top-0 left-0 right-0 z-50 glass-nav">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <Link href="/">
-              <div className="flex items-center gap-2 group">
-                <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center premium-shadow group-hover:rotate-12 transition-transform">
-                  <Scale className="w-5 h-5 text-white" />
-                </div>
-                <span className="font-serif text-2xl font-bold text-neutral-900 tracking-tight">REXI</span>
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/">
+            <div className="flex items-center gap-2 group">
+              <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center premium-shadow group-hover:rotate-12 transition-transform">
+                <Scale className="w-5 h-5 text-white" />
               </div>
-            </Link>
-            <Link href="/">
-              <Button variant="ghost" className="rounded-full">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
-              </Button>
-            </Link>
-          </div>
-        </nav>
+              <span className="font-serif text-2xl font-bold text-neutral-900 tracking-tight">REXI</span>
+            </div>
+          </Link>
+          <Link href="/">
+            <Button variant="ghost" className="rounded-full">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+          </Link>
+        </div>
+      </nav>
 
       <main className="pt-32 pb-20 px-6">
         <div className="max-w-3xl mx-auto">
@@ -40,7 +40,7 @@ export default function TermsPage() {
               Terms of Service
             </h1>
             <p className="text-slate-500 font-medium">
-              Last updated: January 17, 2026
+              Last updated: March 1, 2026
             </p>
           </div>
 
@@ -76,9 +76,9 @@ export default function TermsPage() {
               <h2 className="font-serif text-2xl font-bold text-slate-900 mb-4">
                 Description of Service
               </h2>
-<p className="text-slate-600 leading-relaxed mb-4">
-                  REXI is a document analysis tool backed by legal databases that helps users understand legal documents by:
-                </p>
+              <p className="text-slate-600 leading-relaxed mb-4">
+                REXI is a document analysis tool backed by legal databases that helps users understand legal documents by:
+              </p>
               <ul className="space-y-3 text-slate-600">
                 <li className="flex items-start gap-3">
                   <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 shrink-0"></div>
@@ -110,7 +110,7 @@ export default function TermsPage() {
               <div className="grid gap-3">
                 {[
                   "Analyze personal legal documents for educational purposes",
-                    "Better understand document terms before signing",
+                  "Better understand document terms before signing",
                   "Compare job offers and employment terms",
                   "Get plain-language explanations of legal jargon",
                   "Identify potential red flags in agreements",
@@ -193,11 +193,29 @@ export default function TermsPage() {
             </section>
 
             <section className="mb-10">
-              <h2 className="font-serif text-2xl font-bold text-slate-900 mb-4">
-                Governing Law
+              <h2 className="font-serif text-2xl font-bold text-slate-900 mb-4 flex items-center gap-3">
+                <Shield className="w-6 h-6" />
+                AI Usage & Zero-Retention
               </h2>
-              <p className="text-slate-600 leading-relaxed">
-                These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which REXI operates, without regard to its conflict of law provisions.
+              <p className="text-slate-600 leading-relaxed mb-4">
+                REXI uses highly advanced AI models to assist with your document review. Our platform is built on a "Privacy-First" architecture:
+              </p>
+              <ul className="space-y-3 text-slate-600 text-sm">
+                <li><strong>Ephemeral Processing:</strong> Your documents are processed in volatile memory. We do not store your uploaded files on persistent storage.</li>
+                <li><strong>No Model Training:</strong> We do not use your personal documents or sensitive legal data to train or fine-tune our AI models or third-party models.</li>
+                <li><strong>Session Expiry:</strong> Analysis results are associated with temporary sessions or secure, encrypted shared IDs only at your explicit request.</li>
+              </ul>
+            </section>
+
+            <section className="mb-10">
+              <h2 className="font-serif text-2xl font-bold text-slate-900 mb-4">
+                Governing Law & Dispute Resolution
+              </h2>
+              <p className="text-slate-600 leading-relaxed mb-4">
+                These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which REXI operates.
+              </p>
+              <p className="text-slate-600 leading-relaxed text-sm">
+                For international users, you agree that any disputes will first be attempted to be resolved through informal mediation. If mediation fails, disputes may be settled through binding arbitration in accordance with international commercial arbitration rules.
               </p>
             </section>
 
@@ -210,7 +228,7 @@ export default function TermsPage() {
                 For questions about these Terms of Service, contact us at:
               </p>
               <p className="text-slate-900 font-bold mt-2">
-                legal@rexilegal.com
+                legal@rexi.pro
               </p>
             </section>
 

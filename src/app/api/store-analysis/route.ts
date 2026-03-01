@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
+import {
+  getClientIP,
+  checkRateLimit,
+  rateLimitedResponse,
+  addSecurityHeaders,
+  validateRequestOrigin,
+  logSecurityEvent,
+} from "@/lib/security";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,6 +21,22 @@ function generateDocumentHash(text: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  // Bug #1 fix: add origin validation + rate limiting
+  const clientIP = getClientIP(req);
+
+  if (!validateRequestOrigin(req)) {
+    logSecurityEvent("INVALID_ORIGIN_STORE_ANALYSIS", { ip: clientIP });
+    return addSecurityHeaders(
+      NextResponse.json({ error: "Invalid request origin" }, { status: 403 })
+    );
+  }
+
+  const rateLimit = await checkRateLimit(clientIP);
+  if (!rateLimit.allowed) {
+    logSecurityEvent("RATE_LIMIT_STORE_ANALYSIS", { ip: clientIP });
+    return rateLimitedResponse(rateLimit.resetIn);
+  }
+
   try {
     const body = await req.json();
     const { source, rawText, analysisResult, fileName, documentType, metadata } = body;
@@ -55,7 +79,8 @@ export async function POST(req: NextRequest) {
         source,
         document_type: documentType || analysisResult?.summary?.type || "unknown",
         file_name: fileName || "unnamed",
-        raw_text: rawText,
+        // Bug #11 fix: raw_text is NOT stored — zero-retention policy.
+        // The document text only exists in memory during analysis and is never persisted.
         analysis_result: analysisResult,
         metadata: metadata || {},
       })
@@ -70,17 +95,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      duplicate: false,
-      message: "Analysis stored successfully",
-      id: data.id,
-    });
+    return addSecurityHeaders(
+      NextResponse.json({
+        success: true,
+        duplicate: false,
+        message: "Analysis stored successfully",
+        id: data.id,
+      })
+    );
   } catch (error: any) {
     console.error("Store analysis error:", error);
-    return NextResponse.json(
-      { error: error.message || "Internal server error" },
-      { status: 500 }
+    return addSecurityHeaders(
+      NextResponse.json(
+        { error: error.message || "Internal server error" },
+        { status: 500 }
+      )
     );
   }
 }

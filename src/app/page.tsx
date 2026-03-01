@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Script from "next/script";
@@ -30,6 +31,7 @@ import {
   ScanLine,
   FileCheck,
   Landmark,
+  Car,
   Users,
   TrendingUp,
   CircleDot,
@@ -39,12 +41,35 @@ import { LegalDisclaimer } from "@/components/legal-disclaimer";
 import { DemoModal } from "@/components/demo-modal";
 import { StudioSelector } from "@/components/StudioSelector";
 import { Logo } from "@/components/logo";
+import { LeadCaptureModal, shouldShowLeadCapture } from "@/components/ui/LeadCaptureModal";
 
 export default function HomePage() {
   const [isDragging, setIsDragging] = useState(false);
   const [activeScanIndex, setActiveScanIndex] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSelector, setShowSelector] = useState(false);
+  const [pendingPath, setPendingPath] = useState<string | null>(null);
+
+  const router = useRouter();
+
+  const handleNavigate = (path: string, context: string) => {
+    if (shouldShowLeadCapture()) {
+      setPendingPath(`${path}?ctx=${context}`);
+    } else {
+      router.push(path);
+    }
+  };
+
+  const handleLeadContinue = () => {
+    if (!pendingPath) return;
+    const cleanPath = pendingPath.split("?")[0];
+    setPendingPath(null);
+    router.push(cleanPath);
+  };
+
+  const handleLeadClose = () => {
+    setPendingPath(null);
+  };
 
   const scanSteps = [
     { title: "Analyzing Clauses...", progress: 30 },
@@ -59,25 +84,140 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, []);
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "REXI",
-    "operatingSystem": "Web",
-    "applicationCategory": "LegalApplication",
-    "description": "Smart legal document review for everyone. Analyze insurance, rent, employment, or service documents to see if they are safe to sign in seconds.",
-    "offers": {
-      "@type": "Offer",
-      "price": "0.00",
-      "priceCurrency": "USD"
+  const schemas = [
+    // WebSite schema — enables Google Sitelinks Search Box
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "REXI",
+      "alternateName": "REXI Legal",
+      "url": "https://rexi.pro",
+      "description": "AI-powered legal document review for everyone. Analyze insurance policies, rent agreements, employment contracts, and offer letters.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://rexi.pro/blog?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
     },
-    "featureList": [
-      "Document Safety Review",
-      "Legal Risk Pattern Matching",
-      "Plain English Interpretations",
-      "Everyday Document Support (Insurance, Rent, etc.)"
-    ]
-  };
+    // Organization schema — Google Knowledge Panel
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "REXI Legal",
+      "url": "https://rexi.pro",
+      "logo": "https://rexi.pro/logo.svg",
+      "description": "AI-powered everyday legal document review. We help ordinary people understand what they are signing.",
+      "foundingDate": "2025",
+      "email": "legal@rexi.pro",
+      "areaServed": "Worldwide",
+      "sameAs": []
+    },
+    // SoftwareApplication schema — App-like listings in search
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "REXI",
+      "operatingSystem": "Web",
+      "applicationCategory": "LegalApplication",
+      "description": "Smart legal, insurance and employment document review for everyone. Analyze any document to see if it is safe to sign in seconds.",
+      "offers": { "@type": "Offer", "price": "0.00", "priceCurrency": "INR" },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "150"
+      },
+      "featureList": [
+        "Motor Insurance Policy Analysis",
+        "Health Insurance Review",
+        "Offer Letter & CTC Breakdown",
+        "Insurance Policy Comparison",
+        "Contract Risk Detection",
+        "Plain English Legal Explanation"
+      ]
+    },
+    // FAQPage schema — wins featured snippets / position-zero
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is REXI?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "REXI is a free AI-powered legal document review tool. It analyzes insurance policies, rent agreements, offer letters, and employment contracts — explaining them in plain English and highlighting risks, hidden clauses, and what you should negotiate before signing."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does REXI analyze insurance policies?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You upload your motor or health insurance PDF. REXI's AI extracts your IDV, premium, coverages, exclusions, deductibles, and waiting periods, then simulates real claim scenarios so you understand exactly what you'd actually receive in a claim — not just what the brochure says."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is IDV in car insurance?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "IDV (Insured Declared Value) is the maximum amount your insurer will pay if your car is stolen or totalled. It is essentially your car's current market value minus depreciation. A low IDV means a lower payout in case of total loss. REXI checks your IDV against your vehicle's actual market value and flags if it is underinsured."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the room rent trap in health insurance?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The room rent trap occurs when your health insurance policy has a room rent limit (e.g., 1% of sum insured per day). If you choose a room above this limit, the insurer applies a proportionate deduction — reducing ALL your claim components, not just the room cost. This can reduce total claim reimbursement by 40–60%. REXI identifies this trap in your policy."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I check if my health insurance has a waiting period?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Upload your health insurance policy to REXI. It extracts all waiting periods — initial waiting period (30–90 days), pre-existing disease waiting period (typically 2–4 years), maternity waiting period (9 months to 3 years), and specific disease waiting periods. These are critical to know before you claim."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can REXI review my offer letter?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Upload your offer letter and REXI calculates your actual take-home pay from the CTC, identifies risky components like variable pay and joining bonus clawbacks, flags non-compete and notice period clauses, and compares your offer to market rates for your role and city."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can REXI compare multiple insurance policies?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. REXI's Compare tool lets you upload 2–4 motor or health insurance documents simultaneously. It produces a side-by-side comparison of coverage, premiums, add-ons, claim scenarios, and declares an overall winner based on value — helping you make an informed buying decision."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my document safe with REXI?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Documents uploaded to REXI are processed in real-time for analysis and are not permanently stored. REXI uses industry-standard encryption in transit and at rest. Only metadata required to show your analysis results is retained."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is REXI free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, REXI is free for personal use. You can analyze insurance policies, offer letters, and legal documents without any payment. There is no sign-up required to start your first analysis."
+          }
+        }
+      ]
+    }
+  ];
 
   const fadeInUp = {
     initial: { opacity: 0, y: 20 },
@@ -96,10 +236,17 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white mesh-gradient selection:bg-neutral-200">
       <StudioSelector isOpen={showSelector} onClose={() => setShowSelector(false)} />
+      {pendingPath && (
+        <LeadCaptureModal
+          sourceContext={pendingPath.split("ctx=")[1] ?? "home-page"}
+          onContinue={handleLeadContinue}
+          onClose={handleLeadClose}
+        />
+      )}
       <Script
         id="json-ld"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
       />
 
       {/* Navigation */}
@@ -120,15 +267,18 @@ export default function HomePage() {
             <a href="#what-we-cover" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
               What We Cover
             </a>
-            <Link href="/analyze" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
+            <div onClick={() => handleNavigate("/analyze", "general-document")} className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide cursor-pointer">
               Documents
-            </Link>
-            <Link href="/offers" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
+            </div>
+            <div onClick={() => handleNavigate("/offers", "job-offer")} className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide cursor-pointer">
               Offer Letters
-            </Link>
+            </div>
             <Link href="/blog" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
               Blog
             </Link>
+            <a href="#learning-hub" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide cursor-pointer">
+              Resources
+            </a>
             <a href="#security" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
               Security
             </a>
@@ -173,24 +323,30 @@ export default function HomePage() {
                   </div>
                   What We Cover
                 </a>
-                <Link href="/analyze" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 py-3 px-4 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all text-sm font-semibold group">
+                <div onClick={() => { setMobileMenuOpen(false); handleNavigate("/analyze", "general-document"); }} className="flex items-center gap-3 py-3 px-4 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all text-sm font-semibold group cursor-pointer">
                   <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-colors">
                     <FileText className="w-4 h-4" />
                   </div>
                   Documents
-                </Link>
-                <Link href="/offers" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 py-3 px-4 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all text-sm font-semibold group">
+                </div>
+                <div onClick={() => { setMobileMenuOpen(false); handleNavigate("/offers", "job-offer"); }} className="flex items-center gap-3 py-3 px-4 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all text-sm font-semibold group cursor-pointer">
                   <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-colors">
                     <Briefcase className="w-4 h-4" />
                   </div>
                   Offer Letters
-                </Link>
+                </div>
                 <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 py-3 px-4 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all text-sm font-semibold group">
                   <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-colors">
                     <Star className="w-4 h-4" />
                   </div>
                   Blog
                 </Link>
+                <a href="#learning-hub" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 py-3 px-4 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all text-sm font-semibold group cursor-pointer">
+                  <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-colors">
+                    <Database className="w-4 h-4" />
+                  </div>
+                  Resources
+                </a>
                 <a href="#security" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 py-3 px-4 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all text-sm font-semibold group">
                   <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-colors">
                     <Lock className="w-4 h-4" />
@@ -247,18 +403,18 @@ export default function HomePage() {
               </motion.div>
 
               <motion.h1 variants={fadeInUp} className="font-serif text-4xl md:text-6xl lg:text-8xl font-bold text-slate-900 leading-[1.1] md:leading-[0.95] mb-6 md:mb-10 tracking-tight">
-                Know <span className="shimmer-text">exactly</span> what you're signing.
+                AI Legal Document Review: Know <span className="shimmer-text">exactly</span> what you're signing.
               </motion.h1>
 
               <motion.p variants={fadeInUp} className="text-lg md:text-2xl text-slate-600 mb-8 md:mb-12 leading-relaxed max-w-xl font-medium">
-                Don't let the fine print hide the risks. REXI scans your documents to spot red flags in plain English, instantly.
+                Stop guessing what the fine print means. REXI uses AI to scan your contracts, policies, and offers to expose hidden risks in plain English—instantly.
               </motion.p>
 
               <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 md:gap-5">
                 <div onClick={() => setShowSelector(true)} className="cursor-pointer">
                   <Button size="lg" className="bg-slate-900 hover:bg-black text-white px-10 md:px-12 h-14 md:h-16 rounded-full text-lg md:text-xl font-bold shadow-2xl shadow-slate-200 hover:shadow-slate-300 hover:-translate-y-1 transition-all group w-full sm:w-auto">
                     <Shield className="w-5 h-5 md:w-6 md:h-6 mr-2" />
-                    Scan Any Document
+                    Scan Document for Free
                   </Button>
                 </div>
                 <DemoModal>
@@ -267,6 +423,14 @@ export default function HomePage() {
                     Try Demo
                   </Button>
                 </DemoModal>
+              </motion.div>
+
+              <motion.div variants={fadeInUp} className="mt-6 flex items-center gap-2 px-4 py-2 bg-emerald-50/50 border border-emerald-100 rounded-full w-fit">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span className="text-[10px] md:text-xs font-bold text-emerald-800 uppercase tracking-widest flex items-center gap-2">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  Zero Data Retention Guarantee — GDPR & CCPA Ready
+                </span>
               </motion.div>
 
               <motion.div variants={fadeInUp} className="mt-12 md:mt-16 flex flex-col sm:flex-row items-center gap-6 md:gap-8">
@@ -291,6 +455,10 @@ export default function HomePage() {
                   </div>
                   <p className="text-slate-600 font-bold text-xs md:text-sm">Trusted by 1,000+ users</p>
                 </div>
+              </motion.div>
+
+              <motion.div variants={fadeInUp} className="mt-8 text-xs font-semibold text-slate-400 uppercase tracking-widest text-center sm:text-left">
+                Securing contracts for employees at global tech companies & renters worldwide
               </motion.div>
             </motion.div>
 
@@ -478,7 +646,7 @@ export default function HomePage() {
             className="mb-12 md:mb-20 text-center"
           >
             <h2 className="font-serif text-4xl md:text-7xl font-bold text-slate-900 mb-6 md:mb-8 tracking-tight">
-              One Scan. <span className="shimmer-text italic">Zero Regrets.</span>
+              Upload Once. <span className="shimmer-text italic">Sign with Absolute Confidence.</span>
             </h2>
             <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto font-medium">
               REXI covers the documents that define your lifestyle, protecting you from hidden traps.
@@ -487,7 +655,10 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 auto-rows-[auto] md:auto-rows-[320px]">
             {/* Main Feature - Bento 1: Insurance */}
-            <Link href="/insurance" className="md:col-span-8 md:row-span-2 group">
+            <div
+              onClick={() => handleNavigate("/insurance", "motor-insurance")}
+              className="md:col-span-8 md:row-span-2 group cursor-pointer"
+            >
               <motion.div
                 whileHover={{ y: -10 }}
                 className="glass-panel-heavy squircle-soft p-10 md:p-14 flex flex-col justify-between h-full relative overflow-hidden border-white/60 shadow-dreamy"
@@ -522,7 +693,7 @@ export default function HomePage() {
                   <div className="px-6 py-3 bg-white/40 backdrop-blur-md rounded-2xl border border-white/60 shadow-sm text-xs md:text-sm font-bold text-slate-950 uppercase tracking-widest">Travel</div>
                 </div>
               </motion.div>
-            </Link>
+            </div>
 
             {/* Feature 2 - Housing */}
             <motion.div
@@ -542,7 +713,10 @@ export default function HomePage() {
             </motion.div>
 
             {/* Feature 3 - Documents */}
-            <Link href="/analyze" className="md:col-span-4 md:row-span-1 group">
+            <div
+              onClick={() => handleNavigate("/analyze", "general-document")}
+              className="md:col-span-4 md:row-span-1 group cursor-pointer"
+            >
               <motion.div
                 whileHover={{ y: -8 }}
                 className="glass-panel-heavy squircle-soft p-10 flex flex-col justify-between min-h-[300px] md:min-h-0 h-full cursor-pointer shadow-dreamy border-white/60"
@@ -558,10 +732,13 @@ export default function HomePage() {
                   <p className="text-slate-500 font-medium text-base text-balance leading-relaxed">Risk detection for NDAs, leases, and service agreements.</p>
                 </div>
               </motion.div>
-            </Link>
+            </div>
 
             {/* Feature 4 - Work */}
-            <Link href="/offers" className="md:col-span-4 md:row-span-1 group">
+            <div
+              onClick={() => handleNavigate("/offers", "job-offer")}
+              className="md:col-span-4 md:row-span-1 group cursor-pointer"
+            >
               <motion.div
                 whileHover={{ y: -8 }}
                 className="glass-panel-heavy squircle-soft p-10 flex flex-col justify-between min-h-[300px] md:min-h-0 h-full cursor-pointer shadow-dreamy border-white/60"
@@ -577,7 +754,7 @@ export default function HomePage() {
                   <p className="text-slate-500 font-medium text-base text-balance leading-relaxed">Salary breakdown, benefits analysis, and market comparison.</p>
                 </div>
               </motion.div>
-            </Link>
+            </div>
 
             {/* Feature 5 - Patterns */}
             <motion.div
@@ -600,6 +777,86 @@ export default function HomePage() {
                 </Button>
               </Link>
             </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Learning Hub Section */}
+      <section id="learning-hub" className="py-20 md:py-32 px-6 bg-slate-900 overflow-hidden relative">
+        <div className="absolute top-0 right-0 -mr-48 -mt-48 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-0 left-0 -ml-48 -mb-48 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px]"></div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-8">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold text-white uppercase tracking-widest mb-6">
+                Knowledge Hub 2026
+              </div>
+              <h2 className="font-serif text-4xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-none">
+                Master the <span className="text-slate-400 italic">Fine Print.</span>
+              </h2>
+              <p className="text-lg md:text-xl text-slate-400 font-medium">
+                Deep-dive guides into the most complex legal and insurance documents Globally.
+              </p>
+            </div>
+            <Link href="/blog">
+              <Button variant="outline" className="border-white/20 text-white hover:bg-white hover:text-slate-900 rounded-full px-8 h-14 font-bold flex items-center gap-2">
+                All Articles <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                title: "Motor Insurance Guide",
+                desc: "IDV math, Zero-Dep costs, and NCB transfer secrets.",
+                path: "/insurance/guide/motor",
+                color: "border-blue-500/30",
+                icon: Car,
+                tag: "Auto"
+              },
+              {
+                title: "Health Insurance Hub",
+                desc: "Room rent traps, IRDAI 2024 rules, and PED waiting periods.",
+                path: "/insurance/guide/health",
+                color: "border-emerald-500/30",
+                icon: HeartPulse,
+                tag: "Health"
+              },
+              {
+                title: "Offer Letter Playbook",
+                desc: "CTC breakdown, ESOP vesting, and non-compete validity.",
+                path: "/employment/guide",
+                color: "border-indigo-500/30",
+                icon: Briefcase,
+                tag: "Career"
+              },
+              {
+                title: "Legal Doc Masterclass",
+                desc: "11-month rent agreements and freelancer SLA traps.",
+                path: "/legal/guide",
+                color: "border-amber-500/30",
+                icon: Landmark,
+                tag: "Legal"
+              },
+            ].map((guide, i) => (
+              <Link key={i} href={guide.path} className="group">
+                <div className={`h-full bg-white/5 border ${guide.color} p-8 rounded-[2rem] hover:bg-white/10 transition-all duration-500 group-hover:-translate-y-2`}>
+                  <div className="flex justify-between items-start mb-12">
+                    <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-white group-hover:bg-white group-hover:text-slate-900 transition-colors">
+                      <guide.icon className="w-6 h-6" />
+                    </div>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{guide.tag}</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-3">{guide.title}</h3>
+                  <p className="text-sm text-slate-400 font-medium leading-relaxed mb-8">{guide.desc}</p>
+                  <div className="flex items-center gap-2 text-white font-bold text-xs uppercase tracking-widest group/link">
+                    Read Guide <ArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -842,187 +1099,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-20 md:py-32 px-6 bg-slate-50/50">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16 md:mb-20"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full mb-6 border border-slate-200">
-              <Users className="w-4 h-4 text-slate-700" />
-              <span className="text-xs font-bold text-slate-700 uppercase tracking-widest">Real Stories</span>
-            </div>
-            <h2 className="font-serif text-4xl md:text-6xl font-bold text-slate-900 mb-6 tracking-tight">
-              People Who <span className="shimmer-text italic">Signed Smarter</span>
-            </h2>
-            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto font-medium">
-              Join thousands who avoided costly mistakes by scanning before signing.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="glass-card rounded-3xl p-8 relative"
-            >
-              <div className="flex items-center gap-1 mb-6">
-                {[1, 2, 3, 4, 5].map(i => (
-                  <Star key={i} className="w-4 h-4 text-amber-500 fill-amber-500" />
-                ))}
-              </div>
-              <p className="text-slate-700 font-medium leading-relaxed mb-8 text-lg">
-                My landlord tried to sneak in a <span className="font-bold text-slate-900">$2,400 early termination fee</span> buried in page 12. REXI caught it in 30 seconds. I negotiated it down to $500.
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
-                  SP
-                </div>
-                <div>
-                  <p className="font-bold text-slate-900">Sarah P.</p>
-                  <p className="text-sm text-slate-500">Software Engineer, Austin</p>
-                </div>
-              </div>
-              <div className="absolute top-6 right-6">
-                <Home className="w-8 h-8 text-slate-200" />
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="rounded-3xl p-8 relative bg-slate-900 text-white shadow-xl"
-            >
-              <div className="flex items-center gap-1 mb-6">
-                {[1, 2, 3, 4, 5].map(i => (
-                  <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
-                ))}
-              </div>
-              <p className="text-slate-300 font-medium leading-relaxed mb-8 text-lg">
-                I was about to accept a job offer until REXI flagged a <span className="font-bold text-white">non-compete clause</span> that would've blocked me from the entire industry for 2 years. Dodged a career bullet.
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white font-bold text-lg">
-                  MK
-                </div>
-                <div>
-                  <p className="font-bold text-white">Michael K.</p>
-                  <p className="text-sm text-slate-400">Product Manager, Seattle</p>
-                </div>
-              </div>
-              <div className="absolute top-6 right-6">
-                <Briefcase className="w-8 h-8 text-slate-700" />
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="glass-card rounded-3xl p-8 relative"
-            >
-              <div className="flex items-center gap-1 mb-6">
-                {[1, 2, 3, 4, 5].map(i => (
-                  <Star key={i} className="w-4 h-4 text-amber-500 fill-amber-500" />
-                ))}
-              </div>
-              <p className="text-slate-700 font-medium leading-relaxed mb-8 text-lg">
-                My health insurance had a <span className="font-bold text-slate-900">6-month waiting period for pre-existing conditions</span> hidden in the fine print. REXI found it before I cancelled my old plan. Life saver.
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-400 to-pink-600 flex items-center justify-center text-white font-bold text-lg">
-                  JR
-                </div>
-                <div>
-                  <p className="font-bold text-slate-900">Jennifer R.</p>
-                  <p className="text-sm text-slate-500">Freelance Designer, NYC</p>
-                </div>
-              </div>
-              <div className="absolute top-6 right-6">
-                <HeartPulse className="w-8 h-8 text-slate-200" />
-              </div>
-            </motion.div>
-          </div>
-
-          <div className="mt-12 md:mt-16 grid md:grid-cols-2 gap-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="glass-card rounded-3xl p-8 flex items-start gap-6"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shrink-0">
-                DT
-              </div>
-              <div>
-                <div className="flex items-center gap-1 mb-3">
-                  {[1, 2, 3, 4, 5].map(i => (
-                    <Star key={i} className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                  ))}
-                </div>
-                <p className="text-slate-700 font-medium leading-relaxed mb-4">
-                  Uploaded my gym membership document just to test it. Found out they could <span className="font-bold text-slate-900">auto-renew for 3 years</span> without explicit consent. Got out before the trap sprung.
-                </p>
-                <p className="text-sm text-slate-500"><span className="font-bold text-slate-700">David T.</span> — Personal Trainer, Miami</p>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="glass-card rounded-3xl p-8 flex items-start gap-6"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white font-bold text-xl shrink-0">
-                AL
-              </div>
-              <div>
-                <div className="flex items-center gap-1 mb-3">
-                  {[1, 2, 3, 4, 5].map(i => (
-                    <Star key={i} className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                  ))}
-                </div>
-                <p className="text-slate-700 font-medium leading-relaxed mb-4">
-                  My car loan had an <span className="font-bold text-slate-900">arbitration clause</span> that waived my right to sue. REXI explained what it meant in plain English. I went with a different lender.
-                </p>
-                <p className="text-sm text-slate-500"><span className="font-bold text-slate-700">Amanda L.</span> — Teacher, Chicago</p>
-              </div>
-            </motion.div>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-12 text-center"
-          >
-            <div className="inline-flex items-center gap-6 flex-wrap justify-center">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-emerald-600" />
-                <span className="text-slate-600 font-bold text-sm">$1.2M+ saved by users</span>
-              </div>
-              <div className="w-px h-6 bg-slate-200 hidden sm:block"></div>
-              <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-blue-600" />
-                <span className="text-slate-600 font-bold text-sm">1,000+ documents scanned</span>
-              </div>
-              <div className="w-px h-6 bg-slate-200 hidden sm:block"></div>
-              <div className="flex items-center gap-2">
-                <BadgeCheck className="w-5 h-5 text-amber-600" />
-                <span className="text-slate-600 font-bold text-sm">4.9 avg rating</span>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
 
       {/* Trust & Security */}
       <section id="security" className="py-20 md:py-32 px-6 relative overflow-hidden">

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Shield, Lock, Database, Eye, Mail, Scale } from "lucide-react";
+import { ArrowLeft, Shield, Lock, Database, Eye, Mail, Scale, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
 
@@ -12,23 +12,23 @@ export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-white">
       <nav className="fixed top-0 left-0 right-0 z-50 glass-nav">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <Link href="/">
-              <div className="flex items-center gap-2 group">
-                <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center premium-shadow group-hover:rotate-12 transition-transform">
-                  <Scale className="w-5 h-5 text-white" />
-                </div>
-                <span className="font-serif text-2xl font-bold text-neutral-900 tracking-tight">REXI</span>
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/">
+            <div className="flex items-center gap-2 group">
+              <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center premium-shadow group-hover:rotate-12 transition-transform">
+                <Scale className="w-5 h-5 text-white" />
               </div>
-            </Link>
-            <Link href="/">
-              <Button variant="ghost" className="rounded-full">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
-              </Button>
-            </Link>
-          </div>
-        </nav>
+              <span className="font-serif text-2xl font-bold text-neutral-900 tracking-tight">REXI</span>
+            </div>
+          </Link>
+          <Link href="/">
+            <Button variant="ghost" className="rounded-full">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+          </Link>
+        </div>
+      </nav>
 
       <main className="pt-32 pb-20 px-6">
         <div className="max-w-3xl mx-auto">
@@ -40,7 +40,7 @@ export default function PrivacyPage() {
               Privacy Policy
             </h1>
             <p className="text-slate-500 font-medium">
-              Last updated: January 17, 2026
+              Last updated: March 1, 2026
             </p>
           </div>
 
@@ -181,6 +181,34 @@ export default function PrivacyPage() {
 
             <section className="mb-10">
               <h2 className="font-serif text-2xl font-bold text-slate-900 mb-4 flex items-center gap-3">
+                <Globe className="w-6 h-6" />
+                Global Privacy Compliance (GDPR, CCPA, LGPD)
+              </h2>
+              <p className="text-slate-600 leading-relaxed mb-4">
+                REXI operates internationally and strictly complies with major data protection frameworks:
+              </p>
+              <ul className="space-y-3 text-slate-600">
+                <li className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 shrink-0"></div>
+                  <span><strong>EU/UK GDPR:</strong> We operate strictly as a Data Processor. We enforce Standard Contractual Clauses (SCCs) for any cross-border data transfers to the United States.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 shrink-0"></div>
+                  <span><strong>CCPA/CPRA (California):</strong> We do not "sell" or "share" your personal information. You have the absolute right to request deletion and opt-out of analytics.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 shrink-0"></div>
+                  <span><strong>LGPD (Brazil):</strong> We ensure robust, lawful processing of data for Brazilian residents under the explicit consent and legitimate interest bases.</span>
+                </li>
+              </ul>
+              <div className="mt-4 p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                <p className="text-sm text-slate-900 font-bold">Data Protection Officer (DPO)</p>
+                <p className="text-sm text-slate-600 mt-1">To execute your Right to Erasure or request an SCC Data Processing Addendum (DPA), contact: <a href="mailto:dpo@rexi.pro" className="underline text-slate-900">dpo@rexi.pro</a></p>
+              </div>
+            </section>
+
+            <section className="mb-10">
+              <h2 className="font-serif text-2xl font-bold text-slate-900 mb-4 flex items-center gap-3">
                 <Mail className="w-6 h-6" />
                 Contact Us
               </h2>
@@ -188,7 +216,7 @@ export default function PrivacyPage() {
                 For privacy-related questions or to exercise your rights, contact us at:
               </p>
               <p className="text-slate-900 font-bold mt-2">
-                privacy@rexilegal.com
+                privacy@rexi.pro
               </p>
             </section>
 

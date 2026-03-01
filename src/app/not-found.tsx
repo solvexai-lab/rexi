@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileQuestion, Home, Search, Scale } from "lucide-react";
+import { FileQuestion, Home, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 
@@ -21,7 +21,7 @@ export default function NotFound() {
       </nav>
 
       <main className="flex-1 flex items-center justify-center px-6 pt-20">
-        <div className="text-center max-w-lg">
+        <div className="text-center max-w-lg animate-in fade-in slide-in-from-bottom-6 duration-700">
           <div className="w-24 h-24 md:w-32 md:h-32 bg-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-8 md:mb-10">
             <FileQuestion className="w-12 h-12 md:w-16 md:h-16 text-slate-400" />
           </div>

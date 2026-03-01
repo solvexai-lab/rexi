@@ -1,3 +1,5 @@
+import { formatCurrencyCompact } from "@/lib/utils/currency";
+
 export type CityCluster = "A" | "B" | "C" | "D" | "E";
 export type WorkMode = "Office 5-day" | "Hybrid 3-day" | "Hybrid 2-day" | "Full Remote";
 export type LivabilityGrade = "Comfortable" | "Manageable" | "Tight" | "Challenging";
@@ -150,7 +152,7 @@ const FAMILY_COST_MULTIPLIER = 1.3;
 
 export function detectCityCluster(city: string): { cluster: CityCluster; clusterData: CityClusterData } | null {
   const normalizedCity = city.toLowerCase().trim();
-  
+
   for (const [cluster, data] of Object.entries(CITY_CLUSTERS)) {
     for (const cityName of data.cities) {
       if (normalizedCity.includes(cityName.toLowerCase()) || cityName.toLowerCase().includes(normalizedCity)) {
@@ -158,7 +160,7 @@ export function detectCityCluster(city: string): { cluster: CityCluster; cluster
       }
     }
   }
-  
+
   return null;
 }
 
@@ -169,18 +171,18 @@ export function calculateAdjustedMonthlyCost(
 ): number {
   const modifier = WORK_MODE_MODIFIERS[workMode];
   const baseCost = clusterData.baseMonthlyCost;
-  
+
   const rentCost = baseCost * clusterData.rentShare * modifier.rent;
   const transportCost = baseCost * clusterData.transportShare * modifier.transport;
   const foodCost = baseCost * clusterData.foodShare * modifier.food;
   const otherCost = baseCost * (1 - clusterData.rentShare - clusterData.transportShare - clusterData.foodShare);
-  
+
   let totalCost = rentCost + transportCost + foodCost + otherCost;
-  
+
   if (hasFamily) {
     totalCost *= FAMILY_COST_MULTIPLIER;
   }
-  
+
   return Math.round(totalCost);
 }
 
@@ -211,20 +213,20 @@ export function calculateClawbackRisk(
   if (!joiningBonus || joiningBonus <= 0 || !clawbackMonths || clawbackMonths <= 0) {
     return undefined;
   }
-  
+
   const monthlyLiability = joiningBonus / clawbackMonths;
   const monthsOfSalary = joiningBonus / monthlyInHand;
-  
+
   let riskLevel: ClawbackRiskLevel = "low";
   if (monthsOfSalary > 3) {
     riskLevel = "high";
   } else if (monthsOfSalary > 1) {
     riskLevel = "medium";
   }
-  
+
   const exitScenarios: { month: number; owed: number }[] = [];
   const checkpoints = [3, 6, 9, 12, 18, 24].filter(m => m <= clawbackMonths);
-  
+
   for (const month of checkpoints) {
     const remainingMonths = clawbackMonths - month;
     const owed = Math.round((remainingMonths / clawbackMonths) * joiningBonus);
@@ -232,16 +234,16 @@ export function calculateClawbackRisk(
       exitScenarios.push({ month, owed });
     }
   }
-  
+
   let warningMessage = "";
   if (riskLevel === "high") {
-    warningMessage = `High clawback risk: You'd owe more than 3 months salary (₹${Math.round(joiningBonus).toLocaleString()}) if you leave early.`;
+    warningMessage = `High clawback risk: You'd owe more than 3 months salary (${formatCurrencyCompact(joiningBonus)}) if you leave early.`;
   } else if (riskLevel === "medium") {
-    warningMessage = `Moderate clawback: Leaving within ${clawbackMonths} months means returning part of ₹${Math.round(joiningBonus).toLocaleString()} bonus.`;
+    warningMessage = `Moderate clawback: Leaving within ${clawbackMonths} months means returning part of ${formatCurrencyCompact(joiningBonus)} bonus.`;
   } else {
     warningMessage = `Low clawback risk: Bonus is less than 1 month's salary.`;
   }
-  
+
   return {
     totalLiability: joiningBonus,
     monthlyLiability: Math.round(monthlyLiability),
@@ -259,9 +261,9 @@ export function estimateRelocationCost(
 ): number {
   const toCluster = detectCityCluster(toCity);
   const fromCluster = fromCity ? detectCityCluster(fromCity) : null;
-  
+
   let baseRange: RelocationCostRange;
-  
+
   if (!fromCity || !fromCluster) {
     baseRange = RELOCATION_COSTS["tier2_to_metro"];
   } else if (fromCluster.cluster === toCluster?.cluster) {
@@ -271,14 +273,14 @@ export function estimateRelocationCost(
   } else {
     baseRange = RELOCATION_COSTS["metro_to_metro"];
   }
-  
+
   let cost = (baseRange.min + baseRange.max) / 2;
-  
+
   if (withFamily) {
     const familyAddon = RELOCATION_COSTS["family_addon"];
     cost += (familyAddon.min + familyAddon.max) / 2;
   }
-  
+
   return Math.round(cost);
 }
 
@@ -292,7 +294,7 @@ export function calculateEconomicAnalysis(
   fromCity?: string
 ): EconomicAnalysisResult {
   const cityClusterResult = detectCityCluster(city);
-  
+
   const defaultClusterData: CityClusterData = {
     name: "Unknown",
     cities: [city],
@@ -302,12 +304,12 @@ export function calculateEconomicAnalysis(
     transportShare: 0.12,
     foodShare: 0.25,
   };
-  
+
   const cluster = cityClusterResult?.cluster || "C";
   const clusterData = cityClusterResult?.clusterData || defaultClusterData;
-  
+
   const adjustedMonthlyCost = calculateAdjustedMonthlyCost(clusterData, workMode, hasFamily);
-  
+
   const cityEconomics: CityEconomicsResult = {
     city,
     cluster,
@@ -317,41 +319,41 @@ export function calculateEconomicAnalysis(
     inflationRate: clusterData.inflationRate,
     familyMultiplier: hasFamily ? FAMILY_COST_MULTIPLIER : 1.0,
   };
-  
+
   const joiningBonus = oneTimeBenefits?.joiningBonus || 0;
   const relocationAllowance = oneTimeBenefits?.relocationAllowance || 0;
   const noticeBuyout = oneTimeBenefits?.noticeBuyout || 0;
   const clawbackMonths = oneTimeBenefits?.joiningBonusClawbackMonths || 12;
-  
+
   const esopYear1Value = 0;
-  
+
   const year1EffectiveCTC = annualCTC + joiningBonus + relocationAllowance + noticeBuyout;
   const year1MonthlyEffective = year1EffectiveCTC / 12;
-  
+
   const year2SteadyCTC = annualCTC;
   const year2MonthlyEffective = monthlyInHand;
-  
+
   const year1Livability = calculateLivabilityIndex(year1MonthlyEffective, adjustedMonthlyCost);
   const year2Livability = calculateLivabilityIndex(year2MonthlyEffective, adjustedMonthlyCost);
-  
+
   const livabilityIndex = year2Livability;
   const livabilityGrade = getLivabilityGrade(livabilityIndex);
   const analysisMode = getAnalysisMode(livabilityIndex);
-  
+
   const monthlySavingsYear1 = Math.max(0, year1MonthlyEffective - adjustedMonthlyCost);
   const monthlySavingsYear2 = Math.max(0, year2MonthlyEffective - adjustedMonthlyCost);
-  
+
   const savingsRateYear1 = year1MonthlyEffective > 0 ? Math.round((monthlySavingsYear1 / year1MonthlyEffective) * 100) : 0;
   const savingsRateYear2 = year2MonthlyEffective > 0 ? Math.round((monthlySavingsYear2 / year2MonthlyEffective) * 100) : 0;
-  
+
   const clawbackRisk = calculateClawbackRisk(joiningBonus, clawbackMonths, monthlyInHand);
-  
+
   let netRelocationValue: number | undefined;
   if (relocationAllowance > 0) {
     const estimatedCost = estimateRelocationCost(fromCity, city, hasFamily);
     netRelocationValue = relocationAllowance - estimatedCost;
   }
-  
+
   return {
     cityEconomics,
     livabilityIndex,
@@ -378,25 +380,18 @@ export function normalizeSalaryToCity(
 ): number {
   const fromCluster = detectCityCluster(fromCity);
   const toCluster = detectCityCluster(toCity);
-  
+
   if (!fromCluster || !toCluster) return annualCTC;
-  
+
   const fromCost = fromCluster.clusterData.baseMonthlyCost;
   const toCost = toCluster.clusterData.baseMonthlyCost;
-  
+
   const ratio = toCost / fromCost;
   return Math.round(annualCTC * ratio);
 }
 
 export function formatINR(amount: number): string {
-  if (amount >= 10000000) {
-    return `₹${(amount / 10000000).toFixed(2)} Cr`;
-  } else if (amount >= 100000) {
-    return `₹${(amount / 100000).toFixed(2)} L`;
-  } else if (amount >= 1000) {
-    return `₹${(amount / 1000).toFixed(1)}K`;
-  }
-  return `₹${amount.toLocaleString("en-IN")}`;
+  return formatCurrencyCompact(amount);
 }
 
 export function getLivabilityColor(grade: LivabilityGrade): string {
@@ -444,7 +439,7 @@ export function calculateTaxForRegime(income: number, regime: "old" | "new" = "n
   if (regime === "new") {
     // Standard Deduction of 75,000 for FY 2024-25 (July 2024 Update)
     const taxableIncome = Math.max(0, income - 75000);
-    
+
     if (taxableIncome <= 700000) return 0; // Rebate 87A
 
     let tax = 0;
@@ -466,9 +461,9 @@ export function calculateTaxForRegime(income: number, regime: "old" | "new" = "n
     else if (taxable <= 500000) tax = (taxable - 250000) * 0.05;
     else if (taxable <= 1000000) tax = 12500 + (taxable - 500000) * 0.2;
     else tax = 112500 + (taxable - 1000000) * 0.3;
-    
+
     if (taxable <= 500000) tax = 0; // Rebate 87A (Old regime threshold is 5L)
-    
+
     return Math.round(tax * 1.04);
   }
 }
@@ -482,7 +477,7 @@ export function calculateDeterministicSalaryBreakdown(
     const monthlyGross = totalCTC / 12;
     const estimatedTax = totalCTC * 0.25;
     const monthlyTakeHome = Math.round((totalCTC - estimatedTax) / 12);
-    
+
     return {
       components: aiComponents.length > 0 ? aiComponents : [
         { name: "Base Salary", annual: totalCTC, monthly: Math.round(totalCTC / 12), type: "fixed", isNegotiable: false }
@@ -542,31 +537,31 @@ export function calculateDeterministicSalaryBreakdown(
   const pfBase = Math.min(basicSalary, 15000 * 12);
   const calculatedPfEmployee = Math.round(pfBase * 0.12);
   const calculatedPfEmployer = Math.round(pfBase * 0.12);
-  
+
   if (pfEmployee === 0) pfEmployee = calculatedPfEmployee;
   if (pfEmployer === 0) pfEmployer = calculatedPfEmployer;
 
   const professionalTax = totalCTC > 300000 ? 2400 : (totalCTC > 180000 ? 1200 : 0);
-  
+
   const esiEnabled = totalCTC <= 252000;
   const esiDeduction = esiEnabled ? Math.round(totalCTC * 0.0075) : 0;
 
   // New Regime (FY 2024-25) Logic
   // Gross Salary for tax = CTC - Employer PF
   const grossSalary = totalCTC - pfEmployer;
-  
+
   // Use the unified tax calculation engine
   const incomeTax = calculateTaxForRegime(grossSalary, "new");
 
 
   const employeeDeductions = pfEmployee + professionalTax + esiDeduction + incomeTax;
-  
+
   // Take home = Gross Salary - (PF Employee + PT + ESI + Tax)
   // Which is CTC - PF Employer - PF Employee - PT - ESI - Tax
   const annualTakeHome = grossSalary - (pfEmployee + professionalTax + esiDeduction + incomeTax);
   const monthlyTakeHome = Math.round(annualTakeHome / 12);
   const grossMonthly = Math.round(totalCTC / 12);
-  
+
   // Total Deductions shown = PF Employer + PF Employee + PT + Tax (Everything that isn't take home)
   // Wait, if we want CTC - Deductions = TakeHome, then PF Employer MUST be included in deductions.
   const totalDeductions = totalCTC - annualTakeHome;

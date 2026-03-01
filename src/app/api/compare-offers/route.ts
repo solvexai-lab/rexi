@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
       };
     });
 
-    const prompt = `You are REXI - an expert career advisor specializing in Indian job market. Compare these job offers and respond with ONLY valid JSON (no markdown, no explanation).
+    const prompt = `You are REXI - an expert career advisor specializing Globallyn job market. Compare these job offers and respond with ONLY valid JSON (no markdown, no explanation).
 
 PERSPECTIVE: ${perspective}
 - balanced: Equal weight to all factors

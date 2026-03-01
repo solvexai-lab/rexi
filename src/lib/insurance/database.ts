@@ -18,7 +18,7 @@ export async function storeAnalysis(analysis: AnalysisResult): Promise<string> {
         scenarios: scenarios || [],
         risk_flags: riskFlags || [],
         extraction_confidence: extractionConfidence || 0.85,
-        raw_text: analysis.rawText || null, // Storing for Rexi Chat RAG
+        raw_text: analysis.rawText ? analysis.rawText.slice(0, 100000) : null, // Storing for Rexi Chat RAG (capped at 100K chars)
     };
 
     if (documentType !== 'brochure' && policyData) {
@@ -36,6 +36,9 @@ export async function storeAnalysis(analysis: AnalysisResult): Promise<string> {
         record.insurer_name = policyData.insurerName || 'Unknown';
         record.coverages = policyData.coverages || {};
         record.extracted_perils = extractedPerils || null;
+        record.compulsory_deductible = policyData.compulsoryDeductible || 0;
+        record.voluntary_deductible = policyData.voluntaryDeductible || 0;
+        record.ncb = policyData.ncb || 0;
     } else if (brochureData) {
         // Brochure data
         record.insurer_name = brochureData.insurerName;
@@ -53,7 +56,7 @@ export async function storeAnalysis(analysis: AnalysisResult): Promise<string> {
         .select('id')
         .single();
 
-    if (error) throw error;
+    if (error) throw new Error(error.message ?? 'Failed to store motor analysis');
     return data.id;
 }
 
@@ -67,7 +70,7 @@ export async function getAnalysis(id: string): Promise<AnalysisResult> {
         .eq('id', id)
         .single();
 
-    if (error) throw error;
+    if (error) throw new Error(error.message ?? 'Motor analysis not found');
 
     // Transform to AnalysisResult format
     const result: AnalysisResult = {
@@ -96,9 +99,9 @@ export async function getAnalysis(id: string): Promise<AnalysisResult> {
             expiryDate: data.expiry_date,
             validUntil: data.valid_until,
             coverages: data.coverages,
-            compulsoryDeductible: 0, // Not stored separately
-            voluntaryDeductible: 0,
-            ncb: 0,
+            compulsoryDeductible: parseFloat(data.compulsory_deductible) || 0,
+            voluntaryDeductible: parseFloat(data.voluntary_deductible) || 0,
+            ncb: parseFloat(data.ncb) || 0,
             insurerName: data.insurer_name,
         };
         result.extractedPerils = data.extracted_perils;
@@ -125,10 +128,23 @@ export async function createInsuranceTable() {
 /**
  * Update analysis result in database
  */
-export async function updateAnalysis(id: string, updates: Partial<any>): Promise<void> {
+const UPDATABLE_FIELDS = [
+    'document_type', 'scenarios', 'risk_flags', 'extraction_confidence',
+    'vehicle_make', 'vehicle_model', 'vehicle_registration', 'vehicle_year',
+    'idv', 'premium', 'policy_number', 'quotation_id', 'expiry_date',
+    'valid_until', 'insurer_name', 'coverages', 'extracted_perils',
+    'compulsory_deductible', 'voluntary_deductible', 'ncb', 'brochure_features'
+] as const;
+
+export async function updateAnalysis(id: string, updates: Record<string, unknown>): Promise<void> {
+    const safeUpdates = Object.fromEntries(
+        Object.entries(updates).filter(([k]) => UPDATABLE_FIELDS.includes(k as any))
+    );
+
+    if (Object.keys(safeUpdates).length === 0) return;
     const { error } = await supabase
         .from('insurance_analyses')
-        .update(updates)
+        .update(safeUpdates)
         .eq('id', id);
 
     if (error) throw error;

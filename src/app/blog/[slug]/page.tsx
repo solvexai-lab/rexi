@@ -5,20 +5,36 @@ import { Button } from "@/components/ui/button";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Script from "next/script";
+import { SEED_POSTS } from "@/data/seed-posts";
+import { BlogContent } from "@/components/blog/BlogContent";
+import { BreadcrumbSchema } from "@/components/BreadcrumbSchema";
 
 interface PostPageProps {
   params: Promise<{ slug: string }>;
 }
 
+// Pre-render seed article pages at build time for instant Google indexability
+export async function generateStaticParams() {
+  return SEED_POSTS.map(post => ({ slug: post.slug }));
+}
+
 async function getPost(slug: string) {
-  const supabase = await createClient();
-  const { data: post } = await supabase
-    .from("posts")
-    .select("*")
-    .eq("slug", slug)
-    .eq("published", true)
-    .single();
-  return post;
+  // Check seed posts first (always available, no DB dependency)
+  const seedPost = SEED_POSTS.find(p => p.slug === slug);
+
+  try {
+    const supabase = await createClient();
+    const { data: post } = await supabase
+      .from("posts")
+      .select("*")
+      .eq("slug", slug)
+      .eq("published", true)
+      .single();
+    // Supabase post takes priority over seed (allows overriding seed content)
+    return post || seedPost || null;
+  } catch {
+    return seedPost || null;
+  }
 }
 
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
@@ -29,6 +45,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   return {
     title: `${post.title} | REXI Safety Guides`,
     description: post.excerpt,
+    keywords: (post as { keywords?: string[] }).keywords || [],
     alternates: {
       canonical: `/blog/${slug}`,
     },
@@ -37,7 +54,15 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
       description: post.excerpt,
       type: "article",
       publishedTime: post.created_at,
+      modifiedTime: post.created_at,
       authors: [post.author],
+      url: `https://rexi.pro/blog/${slug}`,
+      images: [{ url: "https://rexi.pro/og-image.svg", width: 1200, height: 630, alt: post.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
     },
   };
 }
@@ -60,11 +85,16 @@ export default async function BlogPostPage({ params }: PostPageProps) {
       "name": post.author || "REXI Legal Team"
     },
     "datePublished": post.created_at,
-    "url": `https://rexilegal.com/blog/${slug}`
+    "url": `https://rexi.pro/blog/${slug}`
   };
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "/" },
+        { name: "Safety Guides", url: "/blog" },
+        { name: post.title, url: `/blog/${slug}` },
+      ]} />
       <Script
         id="article-json-ld"
         type="application/ld+json"
@@ -111,11 +141,9 @@ export default async function BlogPostPage({ params }: PostPageProps) {
             </p>
           </header>
 
-            <div className="prose prose-slate prose-sm md:prose-lg max-w-none text-slate-700 leading-relaxed md:leading-loose font-medium">
-              {post.content.split('\n').map((paragraph: string, i: number) => (
-                <p key={i} className="mb-4 md:mb-6">{paragraph}</p>
-              ))}
-            </div>
+          <div className="mt-2">
+            <BlogContent content={post.content} />
+          </div>
 
           <footer className="mt-12 md:mt-16 pt-8 border-t border-slate-100 flex items-center justify-between">
             <Button variant="outline" size="sm" className="rounded-full text-[10px] md:text-xs h-8 md:h-10 px-4">

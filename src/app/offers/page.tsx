@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import {
   Upload,
   FileText,
@@ -60,7 +61,9 @@ import {
   getClawbackRiskColor,
 } from "@/lib/salary-engine";
 import { ShareOfferButton } from "@/components/share-offer-button";
+import { formatCurrencyCompact } from "@/lib/utils/currency";
 import { RexiChatWidget } from "@/components/insurance/RexiChatWidget";
+import { StudioNav } from "@/components/layout/StudioNav";
 
 type ViewMode = "upload" | "single" | "compare";
 
@@ -160,7 +163,27 @@ export default function OffersPage() {
   const [commuteTime, setCommuteTime] = useState<number>(1); // hours per day
   const [simulatedValues, setSimulatedValues] = useState<Record<string, { base: number, bonus: number }>>({});
   const [currentAnalysisId, setCurrentAnalysisId] = useState<string | null>(null);
+  const [progressStep, setProgressStep] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const progressSteps = [
+    "Uploading Offer...",
+    "Extracting Math...",
+    "Risk Detection...",
+    "Benchmarking Pay..."
+  ];
+
+  useEffect(() => {
+    let interval: any;
+    if (isAnalyzing) {
+      interval = setInterval(() => {
+        setProgressStep((prev) => (prev < 3 ? prev + 1 : prev));
+      }, 7000);
+    } else {
+      setProgressStep(0);
+    }
+    return () => clearInterval(interval);
+  }, [isAnalyzing]);
 
   const updateSimulation = (offerId: string, type: 'base' | 'bonus', value: number) => {
     setSimulatedValues(prev => ({
@@ -299,7 +322,13 @@ export default function OffersPage() {
       setViewMode("single");
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Failed to process offer letter");
+      if (error.name === 'AbortError') {
+        toast.error("Analysis is taking longer than usual. Please try again.");
+      } else if (error.message.includes("fetch")) {
+        toast.error("Connection issue. Please check your internet and try again.");
+      } else {
+        toast.error("Rexi couldn't read this document. Try a clearer scan or different file.");
+      }
     } finally {
       setIsAnalyzing(false);
     }
@@ -320,7 +349,7 @@ export default function OffersPage() {
 
   const handleCompare = useCallback(async (selectedPerspective?: "balanced" | "money" | "stability" | "growth") => {
     if (offers.length < 2) {
-      alert("Please upload at least 2 offer letters to compare");
+      toast.error("Please upload at least 2 offer letters to compare");
       return;
     }
     const activePerspective = typeof selectedPerspective === "string" ? selectedPerspective : perspective;
@@ -340,7 +369,7 @@ export default function OffersPage() {
       setViewMode("compare");
     } catch (error: any) {
       console.error("Comparison error:", error);
-      alert(error.message || "Failed to compare offers");
+      toast.error("Failed to compare offers. Try again in a moment.");
     } finally {
       setIsComparing(false);
     }
@@ -357,12 +386,7 @@ export default function OffersPage() {
   }, [selectedOffer]);
 
   const formatCurrency = (amount: number, currency: string) => {
-    if (currency === "INR") {
-      if (amount >= 10000000) return `₹${(amount / 10000000).toFixed(2)} Cr`;
-      if (amount >= 100000) return `₹${(amount / 100000).toFixed(2)} LPA`;
-      return `₹${amount.toLocaleString("en-IN")}`;
-    }
-    return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount);
+    return formatCurrencyCompact(amount, currency, undefined);
   };
 
   const getSeverityConfig = (severity: string) => {
@@ -400,31 +424,7 @@ export default function OffersPage() {
   return (
     <div className="min-h-screen bg-[#FDFDFD] selection:bg-indigo-100 selection:text-indigo-900">
       {/* Premium Studio Navigation - Mobile Optimized */}
-      <nav className="fixed top-0 left-0 right-0 z-[60] px-2 sm:px-4 pt-2 sm:pt-4 pointer-events-none">
-        <div className="max-w-7xl mx-auto flex items-center justify-between pointer-events-auto">
-          <div className="flex items-center gap-2 sm:gap-3 bg-white/80 backdrop-blur-xl border border-white/40 shadow-sm rounded-xl sm:rounded-2xl px-2.5 sm:px-4 py-1.5 sm:py-2">
-            <Link href="/" className="flex items-center gap-2 group">
-              <Logo className="w-7 h-7 sm:w-8 sm:h-8" iconOnly />
-              <span className="font-semibold text-slate-900 tracking-tight text-sm sm:text-base">REXI <span className="text-indigo-500">STUDIO</span></span>
-            </Link>
-            <div className="h-4 w-px bg-slate-200 mx-0.5 sm:mx-1 hidden sm:block" />
-            <Link href="/" className="text-xs font-medium text-slate-500 hover:text-slate-900 transition-colors flex items-center gap-1 hidden sm:flex">
-              <ArrowLeft className="w-3 h-3" />
-              Exit
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3 bg-white/80 backdrop-blur-xl border border-white/40 shadow-sm rounded-xl sm:rounded-2xl px-2.5 sm:px-4 py-1.5 sm:py-2">
-            <div className="flex items-center gap-1.5 sm:gap-2 text-slate-500">
-              <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-500" />
-              <span className="text-[8px] sm:text-[10px] uppercase tracking-wider font-bold hidden xs:inline">Encrypted</span>
-              <span className="text-[8px] sm:text-[10px] uppercase tracking-wider font-bold xs:hidden">
-                <Lock className="w-3 h-3 text-emerald-500" />
-              </span>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <StudioNav />
 
       <main className="max-w-7xl mx-auto px-3 sm:px-6 pt-16 sm:pt-24 pb-24 sm:pb-20">
         {/* Hidden file input - always rendered */}
@@ -494,9 +494,6 @@ export default function OffersPage() {
         {viewMode === "upload" && offers.length === 0 && !isAnalyzing ? (
           <div className="max-w-4xl mx-auto pt-4 sm:pt-10">
             <div className="text-center mb-8 sm:mb-16 space-y-3 sm:space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest animate-in fade-in zoom-in duration-1000">
-                <Sparkles className="w-3 h-3" /> Gemini 2.0 Engine
-              </div>
               <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-slate-900 tracking-tight leading-[1.1] animate-in fade-in slide-in-from-bottom-4 duration-700 px-2">
                 Analyze your offer <br className="hidden sm:block" /> with <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Studio Precision.</span>
               </h1>
@@ -508,8 +505,11 @@ export default function OffersPage() {
             <div
               onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
               onDragLeave={() => setIsDragging(false)}
-              onDrop={handleDrop}
-              className={`group relative rounded-2xl sm:rounded-[2rem] p-1 text-center transition-all duration-500 ${isDragging ? "bg-gradient-to-r from-indigo-500 to-violet-500 scale-[1.02]" : "bg-slate-100 hover:bg-slate-200"
+              onDrop={(e) => {
+                setIsDragging(false);
+                handleDrop(e);
+              }}
+              className={`group relative rounded-2xl sm:rounded-[2rem] p-1 text-center transition-all duration-500 ${isDragging ? "bg-gradient-to-r from-indigo-500 to-violet-500 scale-[1.02] ring-4 ring-indigo-500/10" : "bg-slate-100 hover:bg-slate-200"
                 }`}
             >
               <div className="bg-white rounded-xl sm:rounded-[1.85rem] p-6 sm:p-16 border border-white/40 shadow-sm relative overflow-hidden">
@@ -575,6 +575,14 @@ export default function OffersPage() {
                 {" "}for NDAs, leases, and general documents.
               </p>
             </div>
+
+            {/* Legal Disclaimer */}
+            <div className="mt-4 mx-auto max-w-xl bg-amber-50 border border-amber-200 rounded-2xl px-5 py-3 flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs text-amber-800">
+              <span className="font-bold shrink-0">⚠️ Disclaimer:</span>
+              <span className="leading-relaxed">
+                REXI provides <strong>informational analysis only</strong>. This is not legal or financial advice. Salary calculations are estimates based on publicly available tax rules. Consult a tax professional or legal advisor before making employment decisions.
+              </span>
+            </div>
           </div>
         ) : isAnalyzing ? (
           <div className="max-w-md mx-auto text-center py-16 sm:py-32 space-y-6 sm:space-y-8 animate-pulse">
@@ -584,9 +592,22 @@ export default function OffersPage() {
                 <div className="w-8 h-8 sm:w-10 sm:h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
               </div>
             </div>
-            <div className="space-y-2 sm:space-y-3 px-4">
-              <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Studying Offer Details</h2>
-              <p className="text-slate-500 text-xs sm:text-sm">Parsing clauses, calculating benchmarks, and detecting red flags...</p>
+            <div className="space-y-4 sm:space-y-6 px-4">
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex gap-1.5">
+                  {[0, 1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className={`w-2 h-2 rounded-full transition-all duration-500 ${i <= progressStep ? "bg-indigo-600 scale-110" : "bg-slate-200"
+                        }`}
+                    />
+                  ))}
+                </div>
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                  {progressSteps[progressStep]}
+                </h2>
+              </div>
+              <p className="text-slate-500 text-xs sm:text-sm font-medium">Decoding salary components and benchmarks...</p>
             </div>
           </div>
         ) : viewMode === "single" && selectedOffer ? (

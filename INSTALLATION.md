@@ -804,12 +804,12 @@ supabase db reset --file backup.sql
 
 - **GitHub Issues**: Report bugs and request features
 - **Discussions**: Ask questions in GitHub Discussions
-- **Email**: dev@rexilegal.com
+- **Email**: dev@rexi.pro
 
 ### Commercial Support
 
 For enterprise installations or custom deployments:
-- Email: enterprise@rexilegal.com
+- Email: enterprise@rexi.pro
 
 ---
 
