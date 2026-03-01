@@ -18,7 +18,7 @@
 
 ### Accessing REXI
 
-1. **Navigate to**: [https://rexilegal.com](https://rexilegal.com)
+1. **Navigate to**: [https://rexi.pro](https://rexi.pro)
 2. **Choose your analysis type**:
    - **Documents** - For general contracts (rental, service agreements, NDAs, insurance)
    - **Offer Letters** - For employment offer letters with salary breakdown
@@ -587,7 +587,7 @@ REXI provides REST APIs for programmatic document analysis.
 
 ### Base URL
 ```
-https://rexilegal.com/api
+https://rexi.pro/api
 ```
 
 ### Authentication
@@ -730,7 +730,7 @@ Retry-After: 45 (if exceeded)
 
 ```javascript
 const analyzeContract = async (text) => {
-  const response = await fetch('https://rexilegal.com/api/analyze', {
+  const response = await fetch('https://rexi.pro/api/analyze', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text })
@@ -827,8 +827,8 @@ Database of:
 
 ### Report Issues
 - Incorrect analysis: Use "Report Issue" button in results
-- Missing features: Email feedback@rexilegal.com
-- Security concerns: security@rexilegal.com
+- Missing features: Email feedback@rexi.pro
+- Security concerns: security@rexi.pro
 
 ### Feature Requests
 - Vote on roadmap at /roadmap (coming soon)

@@ -8,8 +8,9 @@ import { cn } from "@/lib/utils";
 
 interface RexiChatWidgetProps {
     analysisId: string;
-    context: 'insurance' | 'offer' | 'contract';
+    context: 'insurance' | 'offer' | 'contract' | 'health-insurance';
     initialMessage?: string;
+    chatEndpoint?: string;
 }
 
 interface Message {
@@ -23,9 +24,10 @@ const PERSONAS = {
     insurance: { title: "Personal Policy Expert", placeholder: "Ask about coverage..." },
     offer: { title: "Salary Negotiation Coach", placeholder: "Ask about take-home pay..." },
     contract: { title: "Legal & Risk Analyst", placeholder: "Ask about liability..." },
+    'health-insurance': { title: "Medical Policy Expert", placeholder: "Ask about room rent, waiting periods..." },
 };
 
-export function RexiChatWidget({ analysisId, context, initialMessage }: RexiChatWidgetProps) {
+export function RexiChatWidget({ analysisId, context, initialMessage, chatEndpoint }: RexiChatWidgetProps) {
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -79,7 +81,8 @@ export function RexiChatWidget({ analysisId, context, initialMessage }: RexiChat
         setIsLoading(true);
 
         try {
-            const response = await fetch("/api/rexi/chat", { // Unified Endpoint
+            const apiEndpoint = chatEndpoint || "/api/rexi/chat"; // Unified Endpoint or Custom
+            const response = await fetch(apiEndpoint, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

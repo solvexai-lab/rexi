@@ -38,7 +38,7 @@ export default function InsuranceAnalyzePage() {
             }
 
             // Redirect to dashboard
-            router.push(`/insurance/dashboard/${data.analysisId}`);
+            router.push(`/insurance/dashboard/${data.id}`);
 
         } catch (err: any) {
             setError(err.message || "Failed to analyze document");
@@ -122,8 +122,8 @@ export default function InsuranceAnalyzePage() {
                             onDragOver={onDragOver}
                             onDragLeave={onDragLeave}
                             className={`relative border-2 border-dashed rounded-2xl p-16 transition-all ${isDragging
-                                    ? "border-blue-500 bg-blue-50"
-                                    : "border-slate-300 bg-slate-50/50 hover:border-slate-400 hover:bg-slate-50"
+                                ? "border-blue-500 bg-blue-50"
+                                : "border-slate-300 bg-slate-50/50 hover:border-slate-400 hover:bg-slate-50"
                                 }`}
                         >
                             <input

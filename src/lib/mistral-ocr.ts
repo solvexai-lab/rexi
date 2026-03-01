@@ -2,11 +2,13 @@ import { Mistral } from "@mistralai/mistralai";
 
 const apiKey = process.env.MISTRAL_API_KEY;
 
+const IMAGE_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/heic', 'image/heif', 'image/webp'];
+
 async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export async function extractTextWithMistral(fileBuffer: Buffer, retries = 3) {
+export async function extractTextWithMistral(fileBuffer: Buffer, mimeType = 'application/pdf', retries = 3) {
   if (!apiKey) {
     throw new Error("MISTRAL_API_KEY is not configured");
   }
@@ -18,13 +20,16 @@ export async function extractTextWithMistral(fileBuffer: Buffer, retries = 3) {
       // 1. Convert buffer to base64
       const base64Content = fileBuffer.toString("base64");
 
-      // 2. Run the OCR Model (mistral-ocr-latest)
+      // 2. Build document object — images use image_url, PDFs use document_url
+      const isImage = IMAGE_MIME_TYPES.includes(mimeType.toLowerCase());
+      const document = isImage
+        ? { type: "image_url" as const, imageUrl: `data:${mimeType};base64,${base64Content}` }
+        : { type: "document_url" as const, documentUrl: `data:application/pdf;base64,${base64Content}` };
+
+      // 3. Run the OCR Model (mistral-ocr-latest)
       const response = await client.ocr.process({
         model: "mistral-ocr-latest",
-        document: {
-          type: "document_url",
-          documentUrl: `data:application/pdf;base64,${base64Content}`,
-        }
+        document,
       });
 
       // 3. Combine all pages into a single Markdown document

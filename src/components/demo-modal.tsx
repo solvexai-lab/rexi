@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { 
-  FileText, 
-  ShieldCheck, 
-  AlertTriangle, 
-  XCircle, 
-  CheckCircle2, 
+import {
+  FileText,
+  ShieldCheck,
+  AlertTriangle,
+  XCircle,
+  CheckCircle2,
   ArrowRight,
   Info,
   Scale,
@@ -77,8 +77,8 @@ export function DemoModal({ children }: { children: React.ReactNode }) {
       <div onClick={() => setOpen(true)}>
         {children}
       </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 bg-white border-slate-200">
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 bg-white border-slate-200">
           <DialogHeader className="p-6 border-b border-slate-100 bg-slate-50/50">
             <div className="flex items-center gap-3 mb-1">
               <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center">
@@ -113,13 +113,13 @@ export function DemoModal({ children }: { children: React.ReactNode }) {
                   <div className="absolute top-4 right-4 opacity-10">
                     <Home className="w-12 h-12" />
                   </div>
-                  
+
                   <div className="mb-4 pb-3 border-b border-slate-200">
                     <p className="text-slate-800 font-bold text-center">RESIDENTIAL LEASE AGREEMENT</p>
                     <p className="text-slate-500 text-xs text-center mt-1">123 Main Street, Apt 4B</p>
                   </div>
-                  
-                  <div 
+
+                  <div
                     className="mb-6 p-2 rounded bg-emerald-50 border-l-4 border-emerald-400 cursor-help transition-all"
                   >
                     <p className="text-slate-800 font-medium italic text-xs">
@@ -130,8 +130,8 @@ export function DemoModal({ children }: { children: React.ReactNode }) {
                       <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-tight">Safe</span>
                     </div>
                   </div>
-                  
-                  <div 
+
+                  <div
                     className="mb-6 p-2 rounded bg-red-50 border-l-4 border-red-400 group cursor-help transition-all"
                   >
                     <p className="text-slate-800 font-medium italic text-xs">
@@ -143,7 +143,7 @@ export function DemoModal({ children }: { children: React.ReactNode }) {
                     </div>
                   </div>
 
-                  <div 
+                  <div
                     className="mb-6 p-2 rounded bg-amber-50 border-l-4 border-amber-400 cursor-help transition-all"
                   >
                     <p className="text-slate-800 font-medium italic text-xs">
@@ -155,7 +155,7 @@ export function DemoModal({ children }: { children: React.ReactNode }) {
                     </div>
                   </div>
 
-                  <div 
+                  <div
                     className="p-2 rounded bg-red-50 border-l-4 border-red-400 cursor-help transition-all"
                   >
                     <p className="text-slate-800 font-medium italic text-xs">
@@ -166,10 +166,10 @@ export function DemoModal({ children }: { children: React.ReactNode }) {
                       <span className="text-[10px] font-bold text-red-600 uppercase tracking-tight">Critical Risk</span>
                     </div>
                   </div>
-                  
+
                   <p className="text-slate-400 mt-6 text-xs">... (signature block omitted)</p>
                 </div>
-                
+
                 <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
                   <div className="flex items-start gap-3">
                     <Info className="w-4 h-4 text-blue-600 mt-0.5" />
@@ -181,62 +181,59 @@ export function DemoModal({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
 
-            {/* Right Column: Analysis Report */}
-            <div className="space-y-6">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                  <ShieldCheck className="w-3 h-3" />
-                  Risk Analysis
-                </span>
-                <div className="flex gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-red-400"></div>
-                  <div className="w-2 h-2 rounded-full bg-amber-400"></div>
-                  <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+              {/* Right Column: Analysis Report */}
+              <div className="space-y-6">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                    <ShieldCheck className="w-3 h-3" />
+                    Risk Analysis
+                  </span>
+                  <div className="flex gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-red-400"></div>
+                    <div className="w-2 h-2 rounded-full bg-amber-400"></div>
+                    <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-4">
-                {SAMPLE_RISKS.map((risk) => (
-                  <div
-                    key={risk.id}
-                    className={`p-5 rounded-2xl border ${
-                      risk.type === 'critical' ? 'bg-red-50/50 border-red-100' :
-                      risk.type === 'warning' ? 'bg-amber-50/50 border-amber-100' :
-                      'bg-emerald-50/50 border-emerald-100'
-                    }`}
-                  >
-                    <div className="flex items-start gap-3 mb-3">
-                      <div className={`mt-1 ${
-                        risk.type === 'critical' ? 'text-red-600' :
-                        risk.type === 'warning' ? 'text-amber-600' :
-                        'text-emerald-600'
-                      }`}>
-                        {risk.type === 'critical' && <XCircle className="w-5 h-5" />}
-                        {risk.type === 'warning' && <AlertTriangle className="w-5 h-5" />}
-                        {risk.type === 'safe' && <CheckCircle2 className="w-5 h-5" />}
+                <div className="space-y-4">
+                  {SAMPLE_RISKS.map((risk) => (
+                    <div
+                      key={risk.id}
+                      className={`p-5 rounded-2xl border ${risk.type === 'critical' ? 'bg-red-50/50 border-red-100' :
+                          risk.type === 'warning' ? 'bg-amber-50/50 border-amber-100' :
+                            'bg-emerald-50/50 border-emerald-100'
+                        }`}
+                    >
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className={`mt-1 ${risk.type === 'critical' ? 'text-red-600' :
+                            risk.type === 'warning' ? 'text-amber-600' :
+                              'text-emerald-600'
+                          }`}>
+                          {risk.type === 'critical' && <XCircle className="w-5 h-5" />}
+                          {risk.type === 'warning' && <AlertTriangle className="w-5 h-5" />}
+                          {risk.type === 'safe' && <CheckCircle2 className="w-5 h-5" />}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-slate-900 text-base">{risk.title}</h4>
+                          <p className="text-sm text-slate-600 mt-1 leading-relaxed">
+                            {risk.analysis}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-base">{risk.title}</h4>
-                        <p className="text-sm text-slate-600 mt-1 leading-relaxed">
-                          {risk.analysis}
+                      <div className={`mt-3 pt-3 border-t flex items-center gap-2 ${risk.type === 'critical' ? 'border-red-100' :
+                          risk.type === 'warning' ? 'border-amber-100' :
+                            'border-emerald-100'
+                        }`}>
+                        <Info className="w-3.5 h-3.5 text-slate-400" />
+                        <p className="text-[11px] font-bold text-slate-500 uppercase tracking-tight">
+                          <span className="text-slate-900">REXI Rec:</span> {risk.recommendation}
                         </p>
                       </div>
                     </div>
-                    <div className={`mt-3 pt-3 border-t flex items-center gap-2 ${
-                      risk.type === 'critical' ? 'border-red-100' :
-                      risk.type === 'warning' ? 'border-amber-100' :
-                      'border-emerald-100'
-                    }`}>
-                      <Info className="w-3.5 h-3.5 text-slate-400" />
-                      <p className="text-[11px] font-bold text-slate-500 uppercase tracking-tight">
-                        <span className="text-slate-900">REXI Rec:</span> {risk.recommendation}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
 
-              <div className="p-6 bg-slate-900 rounded-2xl text-white relative overflow-hidden">
+                <div className="p-6 bg-slate-900 rounded-2xl text-white relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-4 opacity-10">
                     <Home className="w-20 h-20" />
                   </div>
@@ -262,8 +259,6 @@ export function DemoModal({ children }: { children: React.ReactNode }) {
                 <ShieldCheck className="w-4 h-4 text-emerald-600" />
                 <span className="text-xs font-bold">Zero Data Stored</span>
               </div>
-              <span className="text-slate-300">|</span>
-              <span className="text-xs font-medium">Powered by Google Gemini</span>
             </div>
             <div className="flex items-center gap-3 w-full sm:w-auto">
               <Button variant="ghost" className="font-bold text-slate-600 hover:text-slate-900" onClick={handleNavigate}>

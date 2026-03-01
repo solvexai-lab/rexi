@@ -1,13 +1,11 @@
-// Insurance Document Data Extraction using Gemini
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getGenAI } from '../ai-clients';
 import { PolicyData, BrochureData, Coverage, RiskFlag } from './types';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 /**
  * Extract policy or quotation data from insurance document text
  */
 export async function extractPolicyData(text: string): Promise<PolicyData> {
+    const genAI = getGenAI();
     const model = genAI.getGenerativeModel({
         model: "gemini-2.0-flash",
         generationConfig: {
@@ -55,7 +53,7 @@ export async function extractPolicyData(text: string): Promise<PolicyData> {
     - If "Comprehensive" or "Package Policy", set hasOwnDamage = true and hasThirdPartyLiability = true.
     - If "Third Party Liability Only", set hasOwnDamage = false and hasThirdPartyLiability = true.
     
-    Document Text: ${text.slice(0, 12000)}`;
+    Document Text: ${text.slice(0, 80000)}`;
 
     try {
         const result = await model.generateContent(prompt);
@@ -160,6 +158,7 @@ function applyFallbacks(data: PolicyData, fullText: string): PolicyData {
  * Extract brochure or marketing material data
  */
 export async function extractBrochureData(text: string): Promise<BrochureData> {
+    const genAI = getGenAI();
     const model = genAI.getGenerativeModel({
         model: "gemini-2.0-flash",
         generationConfig: {
@@ -177,15 +176,27 @@ export async function extractBrochureData(text: string): Promise<BrochureData> {
     "exclusions": ["Wear and tear", "Consequential loss"]
   }
   
-  Brochure: ${text.slice(0, 8000)}`;
+  Brochure: ${text.slice(0, 60000)}`;
 
-    const result = await model.generateContent(prompt);
-    const data = JSON.parse(result.response.text());
+    try {
+        const result = await model.generateContent(prompt);
+        const data = JSON.parse(result.response.text());
 
-    return {
-        documentType: 'brochure',
-        ...data
-    };
+        return {
+            documentType: 'brochure',
+            ...data
+        };
+    } catch (e) {
+        console.error('Failed to parse brochure data:', e);
+        return {
+            documentType: 'brochure',
+            insurerName: 'Unknown',
+            productName: 'Unknown',
+            featuresOffered: [],
+            cashlessGarages: 0,
+            exclusions: []
+        };
+    }
 }
 
 /**
@@ -195,6 +206,7 @@ export async function extractCoveredPerils(policyText: string): Promise<{
     covered: string[];
     exclusions: string[];
 }> {
+    const genAI = getGenAI();
     const model = genAI.getGenerativeModel({
         model: "gemini-2.0-flash",
         generationConfig: {
@@ -213,7 +225,7 @@ export async function extractCoveredPerils(policyText: string): Promise<{
     "exclusions": ["Wear and tear", "Consequential loss", ...]
   }
   
-  Policy text: ${policyText.slice(0, 8000)}`;
+  Policy text: ${policyText.slice(0, 80000)}`;
 
     const result = await model.generateContent(prompt);
     return JSON.parse(result.response.text());

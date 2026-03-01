@@ -97,10 +97,9 @@ export default function InsuranceStudio() {
         } catch (err: any) {
             console.error("Upload error:", err);
             if (err.message === "Failed to fetch") {
-                setError(`Network Error: ${window.location.origin} unreachable. ${isConnected === false ? '(Health Check Failed)' : ''}
-                Try renaming your file to 'debug.pdf' to test connection.`);
+                setError("Connection error. Please check your internet connection and try again.");
             } else {
-                setError(err.message || "An unexpected error occurred.");
+                setError("Analysis failed. Please try again or use a different file.");
             }
             setAnalyzing(false);
         }
@@ -194,6 +193,17 @@ export default function InsuranceStudio() {
                             </div>
                         )}
                     </div>
+                </div>
+
+                {/* Compare shortcut */}
+                <div className="text-center">
+                    <Link
+                        href="/insurance/compare"
+                        className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-slate-900 transition-colors group"
+                    >
+                        <span>Compare with another insurer</span>
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
                 </div>
 
                 {/* Recent Scans */}

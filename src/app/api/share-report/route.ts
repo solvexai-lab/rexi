@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Pool } from "pg";
 import { nanoid } from "nanoid";
+import {
+  getClientIP,
+  checkRateLimit,
+  rateLimitedResponse,
+  addSecurityHeaders,
+  validateRequestOrigin,
+  logSecurityEvent,
+} from "@/lib/security";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 // Create a PostgreSQL pool for direct database access (bypasses PostgREST schema cache)
 const pool = new Pool({
@@ -12,6 +21,22 @@ const pool = new Pool({
 
 // Generate a shareable link by storing the report
 export async function POST(request: NextRequest) {
+  // Bug #2 fix: add origin validation + rate limiting
+  const clientIP = getClientIP(request);
+
+  if (!validateRequestOrigin(request)) {
+    logSecurityEvent("INVALID_ORIGIN_SHARE_REPORT", { ip: clientIP });
+    return addSecurityHeaders(
+      NextResponse.json({ error: "Invalid request origin" }, { status: 403 })
+    );
+  }
+
+  const rateLimit = await checkRateLimit(clientIP);
+  if (!rateLimit.allowed) {
+    logSecurityEvent("RATE_LIMIT_SHARE_REPORT", { ip: clientIP });
+    return rateLimitedResponse(rateLimit.resetIn);
+  }
+
   try {
     const body = await request.json();
     const { reportType, reportData } = body;
@@ -56,27 +81,38 @@ export async function POST(request: NextRequest) {
     // Generate the shareable URL
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
       request.headers.get("origin") ||
-      "https://rexilegal.com";
+      "https://rexi.pro";
 
     const shareUrl = `${baseUrl}/shared/${id}`;
 
-    return NextResponse.json({
-      success: true,
-      id,
-      url: shareUrl,
-      expiresAt: expiresAt.toISOString(),
-    });
+    return addSecurityHeaders(
+      NextResponse.json({
+        success: true,
+        id,
+        url: shareUrl,
+        expiresAt: expiresAt.toISOString(),
+      })
+    );
   } catch (error) {
     console.error("Error in share-report API:", error);
-    return NextResponse.json(
-      { error: "Internal server error: " + (error instanceof Error ? error.message : "Unknown error") },
-      { status: 500 }
+    return addSecurityHeaders(
+      NextResponse.json(
+        { error: "Internal server error: " + (error instanceof Error ? error.message : "Unknown error") },
+        { status: 500 }
+      )
     );
   }
 }
 
 // Retrieve a shared report by ID
 export async function GET(request: NextRequest) {
+  // Rate limit GETs too to prevent report enumeration
+  const clientIP = getClientIP(request);
+  const rateLimit = await checkRateLimit(clientIP);
+  if (!rateLimit.allowed) {
+    return rateLimitedResponse(rateLimit.resetIn);
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

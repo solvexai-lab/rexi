@@ -240,7 +240,7 @@ Return this exact JSON structure:
       "duration": "X months", 
       "scope": "description", 
       "concerns": ["concern1"],
-      "enforceability": "likely unenforceable in India"
+      "enforceability": "likely unenforceable Globally"
     },
     "signingBonus": 0,
     "relocation": "details",

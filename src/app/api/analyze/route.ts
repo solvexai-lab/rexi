@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { analyzeDocumentStageByStage } from "@/lib/orchestrator";
 import { createClient } from "@/lib/supabase/server";
 import {
   getClientIP,
@@ -18,7 +19,7 @@ export const runtime = 'nodejs';
 
 const DISCLAIMER = "This is not legal advice - think of it as a helpful friend pointing out things you might want to look at. For important contracts, always have a real lawyer review them.";
 
-const MAX_TEXT_LENGTH = 100000;
+const MAX_TEXT_LENGTH = 200000;
 const MIN_TEXT_LENGTH = 50;
 
 export async function POST(req: NextRequest) {
@@ -79,8 +80,7 @@ export async function POST(req: NextRequest) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const supabase = await createClient();
 
-    // New multi-stage engine integration
-    const { analyzeDocumentStageByStage } = await import("@/lib/orchestrator");
+    // Multi-stage engine integration
     const stageResult = await analyzeDocumentStageByStage(sanitizedText);
 
     let vectorMatches: { name: string; description: string }[] = [];
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
 
     try {
       const embedModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
-      const embeddingResult = await embedModel.embedContent(sanitizedText.slice(0, 10000));
+      const embeddingResult = await embedModel.embedContent(sanitizedText.slice(0, 30000));
       const embedding = embeddingResult.embedding.values;
 
       const [patternsResult, lawsResult] = await Promise.all([
@@ -180,7 +180,7 @@ JSON STRUCTURE:
 }
 
 CONTRACT TEXT:
-${sanitizedText.slice(0, 12000)}
+${sanitizedText.slice(0, 80000)}
 `;
 
     const result = await model.generateContent(prompt);
@@ -211,7 +211,12 @@ ${sanitizedText.slice(0, 12000)}
 
         parsedResponse = JSON.parse(repairedText);
       } catch {
-        throw new Error("Failed to parse AI response");
+        console.error("AI response truncated or malformed:", responseText.slice(-200));
+        return addSecurityHeaders(
+          NextResponse.json({
+            error: "The document is too complex for a single analysis. Try uploading a shorter contract (< 20 pages)."
+          }, { status: 422 })
+        );
       }
     }
 

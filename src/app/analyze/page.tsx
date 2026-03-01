@@ -37,6 +37,8 @@ import { ShareReportButton } from "@/components/share-report-button";
 import { toast } from "sonner";
 import type { ContractAnalysisResult, ContractClause, LegalCitation } from "@/lib/types/contract-analysis";
 import { RexiChatWidget } from "@/components/insurance/RexiChatWidget";
+import { StudioNav } from "@/components/layout/StudioNav";
+import posthog from "posthog-js";
 
 type ViewMode = "upload" | "workspace";
 type MobileTab = "document" | "analysis";
@@ -100,6 +102,9 @@ export default function AnalyzePage() {
 
   const handleFileUpload = useCallback(async (file: File) => {
     setIsAnalyzing(true);
+    const startTime = performance.now();
+    posthog.capture('file_upload_initiated', { file_type: file.type, file_size: file.size });
+
     try {
       let extractedText = "";
       const isBinaryFile = file.type === "application/pdf" ||
@@ -161,6 +166,9 @@ export default function AnalyzePage() {
       }
       setViewMode("workspace");
 
+      const latencyMs = Math.round(performance.now() - startTime);
+      posthog.capture('file_upload_success', { file_type: file.type, file_size: file.size, latency_ms: latencyMs });
+
       try {
         const storeResponse = await fetch("/api/store-analysis", {
           method: "POST",
@@ -189,7 +197,9 @@ export default function AnalyzePage() {
       }
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Failed to process document");
+      const latencyMs = Math.round(performance.now() - startTime);
+      posthog.capture('file_upload_error', { error: error.message, file_type: file.type, file_size: file.size, latency_ms: latencyMs });
+      toast.error(error.message || "Something went wrong reading your document. Please try again.");
     } finally {
       setIsAnalyzing(false);
     }
@@ -538,29 +548,11 @@ export default function AnalyzePage() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] selection:bg-indigo-100 selection:text-indigo-900">
-      <nav className="fixed top-0 left-0 right-0 z-[60] px-3 sm:px-4 pt-2 sm:pt-3 pointer-events-none">
-        <div className="max-w-[1800px] mx-auto flex items-center justify-between pointer-events-auto">
-          <div className="flex items-center gap-2 sm:gap-3 bg-white/90 backdrop-blur-xl border border-slate-200/60 shadow-sm rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2">
-            <Link href="/" className="flex items-center gap-2 group">
-              <Logo className="w-7 h-7 sm:w-8 sm:h-8" iconOnly />
-              <span className="font-semibold text-slate-900 tracking-tight text-sm sm:text-base">REXI <span className="text-indigo-500">STUDIO</span></span>
-            </Link>
-            <div className="h-4 w-px bg-slate-200 mx-1 hidden sm:block" />
-            <Link href="/" className="text-xs font-medium text-slate-500 hover:text-slate-900 transition-colors hidden sm:flex items-center gap-1">
-              <ArrowLeft className="w-3 h-3" />
-              Home
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3 bg-white/90 backdrop-blur-xl border border-slate-200/60 shadow-sm rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2">
-            <div className="flex items-center gap-2 text-slate-500">
-              <Shield className="w-3.5 h-3.5 text-emerald-500" />
-              <span className="text-[10px] uppercase tracking-wider font-bold hidden sm:inline">End-to-End Encrypted</span>
-              <Lock className="w-3 h-3 text-emerald-500 sm:hidden" />
-            </div>
-          </div>
-        </div>
-      </nav>
+      <StudioNav
+        exitLabel="Home"
+        maxWidthClass="max-w-[1800px]"
+        paddingClass="px-3 sm:px-4"
+      />
 
       <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} accept=".pdf,.docx,.txt" />
 

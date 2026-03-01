@@ -1,23 +1,20 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { createClient } from "@supabase/supabase-js";
+import {
+    getClientIP,
+    checkRateLimit,
+    rateLimitedResponse,
+    validateRequestOrigin,
+    logSecurityEvent,
+    CHAT_RATE_LIMIT,
+} from "@/lib/security";
 
-// Initialize Supabase Client
+// Initialize Supabase Client (safe at module level — no API keys needed from env here)
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
-
-// Initialize Gemini Client
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash",
-    generationConfig: {
-        temperature: 0.2, // Low temp for factual answers
-        maxOutputTokens: 1000, // Allow longer responses for detailed breakdowns
-    }
-});
 
 type ChatContext = 'insurance' | 'offer' | 'contract';
 
@@ -28,6 +25,31 @@ function truncate(text: string, maxLength: number): string {
 }
 
 export async function POST(req: NextRequest) {
+    // Bug #1 fix: origin validation + rate limiting (100/hr for chat sessions)
+    const clientIP = getClientIP(req);
+
+    if (!validateRequestOrigin(req)) {
+        logSecurityEvent("INVALID_ORIGIN_REXI_CHAT", { ip: clientIP });
+        return NextResponse.json({ error: "Invalid request origin" }, { status: 403 });
+    }
+
+    const rateLimit = await checkRateLimit(clientIP, CHAT_RATE_LIMIT);
+    if (!rateLimit.allowed) {
+        logSecurityEvent("RATE_LIMIT_REXI_CHAT", { ip: clientIP });
+        return rateLimitedResponse(rateLimit.resetIn);
+    }
+
+    // Bug #8 fix: initialise Gemini client INSIDE the handler so GEMINI_API_KEY
+    // is guaranteed to be resolved from env at request time, not at cold-start.
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+    const model = genAI.getGenerativeModel({
+        model: "gemini-2.0-flash",
+        generationConfig: {
+            temperature: 0.2,
+            maxOutputTokens: 1000,
+        },
+    });
+
     try {
         const { message, analysisId, context } = await req.json();
 
@@ -139,9 +161,9 @@ FORMATTING:
             return NextResponse.json({ error: "Invalid context" }, { status: 400 });
         }
 
-        // --- 2. PROMPT CONSTRUCTION ---
-        // Context Window Safety: Limit raw text to ~15k chars (approx 4k tokens) to leave room for JSON and response
-        const safeRawText = truncate(rawText, 15000);
+        // Context Window Safety: Gemini 2.0 Flash has 1M token context.
+        // 100k chars ≈ 25k tokens — safe for full policy documents.
+        const safeRawText = truncate(rawText, 100000);
 
         const finalPrompt = `
 ${systemPrompt}
@@ -171,6 +193,6 @@ ANSWER:
 
     } catch (error: any) {
         console.error("Rexi Unified Chat Error:", error);
-        return NextResponse.json({ error: error.message || "Failed to generate response" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to generate response. Please try again." }, { status: 500 });
     }
 }

@@ -4,10 +4,24 @@ import { classifyDocument } from "@/lib/insurance/classifier";
 import { extractPolicyData, extractBrochureData, generateRiskFlags, extractCoveredPerils } from "@/lib/insurance/extractor";
 import { calculateScenarios } from "@/lib/insurance/calculator";
 import { storeAnalysis } from "@/lib/insurance/database";
+import { getClientIP, checkRateLimit, validateRequestOrigin, logSecurityEvent, rateLimitedResponse } from "@/lib/security";
 
 export const maxDuration = 60; // 1 minute timeout
 
 export async function POST(req: NextRequest) {
+    const clientIP = getClientIP(req);
+
+    if (!validateRequestOrigin(req)) {
+        logSecurityEvent("INVALID_ORIGIN_MOTOR_ANALYZE", { ip: clientIP });
+        return NextResponse.json({ error: "Invalid request origin" }, { status: 403 });
+    }
+
+    const rateLimit = await checkRateLimit(clientIP);
+    if (!rateLimit.allowed) {
+        logSecurityEvent("RATE_LIMIT_MOTOR_ANALYZE", { ip: clientIP });
+        return rateLimitedResponse(rateLimit.resetIn);
+    }
+
     try {
         const formData = await req.formData();
         const file = formData.get("file") as File;
@@ -15,17 +29,6 @@ export async function POST(req: NextRequest) {
         if (!file) {
             console.error("No file provided in request");
             return NextResponse.json({ error: "No file provided" }, { status: 400 });
-        }
-
-        console.log(`[Analyze API] Analyzing file: ${file.name}, Size: ${file.size} bytes`);
-
-        if (file.name.toLowerCase().includes("debug")) {
-            console.log("DEBUG mode triggered");
-            return NextResponse.json({
-                success: true,
-                redirectTo: `/insurance/dashboard/test-id`,
-                id: 'test-id'
-            });
         }
 
         // Check file size again on server side (redundancy)
@@ -58,19 +61,14 @@ export async function POST(req: NextRequest) {
             const brochureData = await extractBrochureData(text);
             analysisResult.brochureData = brochureData;
         } else {
-            // Policy or Quotation
-            const policyData = await extractPolicyData(text);
+            const [policyData, extractedPerils] = await Promise.all([
+                extractPolicyData(text),
+                extractCoveredPerils(text)
+            ]);
 
             // Generate derived data
             const scenarios = calculateScenarios(policyData);
             const riskFlags = generateRiskFlags(policyData);
-
-            // Extract Plain English coverage details (Parallelize?)
-            // const perils = await extractCoveredPerils(text); 
-            // Skipping perils for now to save time/tokens unless critical?
-            // "Zone C: Plain English accordion" is in the plan.
-            // Let's include it.
-            const extractedPerils = await extractCoveredPerils(text);
 
             analysisResult.policyData = policyData;
             analysisResult.scenarios = scenarios;
@@ -89,7 +87,7 @@ export async function POST(req: NextRequest) {
         });
 
     } catch (error: any) {
-        console.error("Analysis failed:", error);
-        return NextResponse.json({ error: error.message || "Analysis failed" }, { status: 500 });
+        console.error("Motor analysis failed:", error);
+        return NextResponse.json({ error: "Analysis failed. Please try again." }, { status: 500 });
     }
 }
