@@ -148,9 +148,9 @@ export async function POST(req: NextRequest) {
                     rawText,
                     createdAt: new Date().toISOString(),
                 });
-            } catch (dbError) {
+            } catch (dbError: any) {
                 console.error('[Health Analyze] Database store failed:', dbError);
-                return NextResponse.json({ error: 'Could not save analysis. Please try again in a moment.' }, { status: 503 });
+                return NextResponse.json({ error: `DB Error: ${dbError?.message || String(dbError)}` }, { status: 503 });
             }
         } else {
             // 3b. Policy / certificate path
@@ -185,9 +185,9 @@ export async function POST(req: NextRequest) {
                     rawText,
                     createdAt: new Date().toISOString(),
                 });
-            } catch (dbError) {
+            } catch (dbError: any) {
                 console.error('[Health Analyze] Database store failed:', dbError);
-                return NextResponse.json({ error: 'Could not save analysis. Please try again in a moment.' }, { status: 503 });
+                return NextResponse.json({ error: `DB Error: ${dbError?.message || String(dbError)}` }, { status: 503 });
             }
         }
 
