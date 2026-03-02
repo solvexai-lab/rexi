@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
         // 1. Extract Text (Mistral OCR)
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
-        const text = await extractTextWithMistral(buffer);
+        const text = await extractTextWithMistral(buffer, file.type || 'application/pdf');
 
         if (!text || text.length < 100) {
             return NextResponse.json({ error: "Failed to extract text from document" }, { status: 400 });

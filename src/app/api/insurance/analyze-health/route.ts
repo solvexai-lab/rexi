@@ -60,9 +60,18 @@ export async function POST(req: NextRequest) {
         }
 
         // 1. OCR
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        const rawText = await extractTextWithMistral(buffer);
+        let rawText: string;
+        try {
+            const bytes = await file.arrayBuffer();
+            const buffer = Buffer.from(bytes);
+            rawText = await extractTextWithMistral(buffer, file.type || 'application/pdf');
+        } catch (ocrError: any) {
+            console.error('[Health Analyze] OCR failed:', ocrError);
+            const msg = ocrError?.message?.includes('Too many requests')
+                ? 'Our document reader is busy. Please wait a moment and try again.'
+                : 'Could not read the document. Try a clearer scan or a different file.';
+            return NextResponse.json({ error: msg }, { status: 422 });
+        }
 
         if (!rawText || rawText.length < 100) {
             return NextResponse.json({ error: 'Could not extract text from document. Try a clearer scan.' }, { status: 400 });
@@ -70,27 +79,38 @@ export async function POST(req: NextRequest) {
 
         console.log(`[Health Analyze] Extracted ${rawText.length} chars`);
 
-        // 2. Classify - Use LLM for health as regex is too unreliable for distinguishing brochure vs policy
-        const documentType = await classifyHealthDocumentWithLLM(rawText);
+        // 2. Classify
+        let documentType: Awaited<ReturnType<typeof classifyHealthDocumentWithLLM>>;
+        try {
+            documentType = await classifyHealthDocumentWithLLM(rawText);
+        } catch (classifyError) {
+            console.error('[Health Analyze] Classification failed:', classifyError);
+            documentType = 'policy'; // safe default
+        }
         console.log(`[Health Analyze] Document type: ${documentType}`);
 
         let id: string;
 
         if (documentType === 'brochure') {
-            // 3a. Brochure path — now calculating risk flags too!
-            const [brochureData, conditions] = await Promise.all([
-                extractHealthBrochureData(rawText),
-                extractHealthConditions(rawText),
-            ]);
+            // 3a. Brochure path
+            let brochureData, conditions;
+            try {
+                [brochureData, conditions] = await Promise.all([
+                    extractHealthBrochureData(rawText),
+                    extractHealthConditions(rawText),
+                ]);
+            } catch (extractError) {
+                console.error('[Health Analyze] Brochure extraction failed:', extractError);
+                return NextResponse.json({ error: 'AI extraction failed. The document may be too complex. Please try again.' }, { status: 422 });
+            }
 
-            // Create a pseudo-policy for risk calculation
             const pseudoPolicy: any = {
                 documentType: 'brochure',
                 insurerName: brochureData.insurerName,
                 productName: brochureData.productName,
                 policyNumber: null,
                 coverageType: 'individual',
-                sumInsured: 0, // Not fixed in brochures
+                sumInsured: 0,
                 premium: 0,
                 policyStart: null,
                 policyEnd: null,
@@ -114,26 +134,36 @@ export async function POST(req: NextRequest) {
                 restorationBenefit: false,
             };
 
-            // Enhance with fallbacks just in case
             const policyData = applyHealthFallbacks(pseudoPolicy, rawText);
             const riskFlags = generateHealthRiskFlags(policyData);
 
-            id = await storeHealthAnalysis({
-                id: '',
-                documentType: 'brochure',
-                policyData,
-                riskFlags,
-                extractedConditions: conditions,
-                extractionConfidence: 0.7,
-                rawText,
-                createdAt: new Date().toISOString(),
-            });
+            try {
+                id = await storeHealthAnalysis({
+                    id: '',
+                    documentType: 'brochure',
+                    policyData,
+                    riskFlags,
+                    extractedConditions: conditions,
+                    extractionConfidence: 0.7,
+                    rawText,
+                    createdAt: new Date().toISOString(),
+                });
+            } catch (dbError) {
+                console.error('[Health Analyze] Database store failed:', dbError);
+                return NextResponse.json({ error: 'Could not save analysis. Please try again in a moment.' }, { status: 503 });
+            }
         } else {
             // 3b. Policy / certificate path
-            const [rawPolicyData, conditions] = await Promise.all([
-                extractHealthPolicyData(rawText),
-                extractHealthConditions(rawText),
-            ]);
+            let rawPolicyData, conditions;
+            try {
+                [rawPolicyData, conditions] = await Promise.all([
+                    extractHealthPolicyData(rawText),
+                    extractHealthConditions(rawText),
+                ]);
+            } catch (extractError) {
+                console.error('[Health Analyze] Policy extraction failed:', extractError);
+                return NextResponse.json({ error: 'AI extraction failed. The document may be too complex. Please try again.' }, { status: 422 });
+            }
 
             const policyData = applyHealthFallbacks(rawPolicyData, rawText);
             const [scenarios, riskFlags] = await Promise.all([
@@ -143,17 +173,22 @@ export async function POST(req: NextRequest) {
 
             const confidence = calculateHealthConfidence(policyData);
 
-            id = await storeHealthAnalysis({
-                id: '',
-                documentType,
-                policyData,
-                scenarios,
-                riskFlags,
-                extractedConditions: conditions,
-                extractionConfidence: confidence,
-                rawText,
-                createdAt: new Date().toISOString(),
-            });
+            try {
+                id = await storeHealthAnalysis({
+                    id: '',
+                    documentType,
+                    policyData,
+                    scenarios,
+                    riskFlags,
+                    extractedConditions: conditions,
+                    extractionConfidence: confidence,
+                    rawText,
+                    createdAt: new Date().toISOString(),
+                });
+            } catch (dbError) {
+                console.error('[Health Analyze] Database store failed:', dbError);
+                return NextResponse.json({ error: 'Could not save analysis. Please try again in a moment.' }, { status: 503 });
+            }
         }
 
         console.log(`[Health Analyze] Stored with ID: ${id}`);
@@ -165,7 +200,7 @@ export async function POST(req: NextRequest) {
         });
 
     } catch (error: any) {
-        console.error('[Health Analyze] Failed:', error);
+        console.error('[Health Analyze] Unexpected failure:', error);
         return NextResponse.json({ error: 'Health analysis failed. Please try again.' }, { status: 500 });
     }
 }

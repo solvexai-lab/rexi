@@ -65,7 +65,18 @@ export async function middleware(request: NextRequest) {
     return new NextResponse('Not Found', { status: 404 });
   }
 
-  const response = await updateSession(request);
+  let response: NextResponse;
+  try {
+    response = await Promise.race([
+      updateSession(request),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Supabase unreachable')), 3000)
+      ),
+    ]);
+  } catch {
+    // Supabase blocked (e.g. India ISP ban) — skip session refresh, let request proceed
+    response = NextResponse.next({ request });
+  }
 
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'DENY');
