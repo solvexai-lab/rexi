@@ -138,7 +138,7 @@ export default function HealthInsuranceUploadPage() {
                     "Connection issue. Please check your internet and try again."
                 );
             } else {
-                setError("Rexi couldn't process this file. Please try again or use a different file.");
+                setError(err.message || "Rexi couldn't process this file. Please try again or use a different file.");
             }
             setAnalyzing(false);
         }
