@@ -396,7 +396,7 @@ Here are the 5 clauses that show up most often in freelance contracts and most c
 
 ## The Fastest Way to Check Your Contract
 
-Upload any contract to REXI — our AI surfaces all of these clauses instantly and tells you exactly what's risky and what to negotiate.`
+Upload any contract to [REXI's Free Freelance Contract Analyzer](/freelancers) — our AI surfaces all of these clauses instantly and tells you exactly what's risky and what to negotiate.`
     },
     {
         id: "seed-8",
@@ -450,7 +450,7 @@ Many freelancers unknowingly sign away code libraries or templates they've devel
 - [ ] Is the assignment contingent on full payment?
 - [ ] Do you have portfolio rights preserved?
 
-Upload your contract to REXI to check all of these automatically in 30 seconds.`
+Upload your contract to [REXI's Free Freelance Contract Analyzer](/freelancers) to check all of these automatically in 30 seconds.`
     },
     {
         id: "seed-9",
@@ -564,7 +564,7 @@ Which country or state's law applies? You don't want to have to go to a foreign 
 
 ---
 
-Upload your contract to REXI for an instant automated review — free, 30 seconds, no account needed.`
+Upload your contract to [REXI's Free Freelance Contract Analyzer](/freelancers) for an instant automated review — free, 30 seconds, no account needed.`
     },
     {
         id: "seed-11",
@@ -639,7 +639,7 @@ This is acceptable if the NDA is narrow and time-limited. It is **not** acceptab
 
 ---
 
-Upload your NDA to REXI to flag undefined scope, missing carve-outs, and any IP language that shouldn't be in an NDA. Free and instant.`
+Upload your NDA to [REXI's Free Freelance Contract Analyzer](/freelancers) to flag undefined scope, missing carve-outs, and any IP language that shouldn't be in an NDA. Free and instant.`
     }
 ];
 

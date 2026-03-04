@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: "%s | REXI",
   },
   description:
-    "Don't sign without scanning. REXI is your AI-powered everyday legal companion. Analyze insurance policies, rent agreements, employment contracts, and offer letters to see if they're safe to sign — in seconds, for free.",
+    "Don't sign without scanning. REXI is your AI-powered everyday legal companion. Analyze freelance contracts, insurance policies, rent agreements, and offer letters to find unfair clauses in seconds — for free.",
   keywords: [
     "legal document analysis",
     "document safety review",
