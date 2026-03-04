@@ -301,6 +301,9 @@ export default function HomePage() {
             <div onClick={() => handleNavigate("/offers", "job-offer")} className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide cursor-pointer">
               Offer Letters
             </div>
+            <Link href="/freelancers" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide cursor-pointer">
+              Freelancers
+            </Link>
             <Link href="/blog" className="text-slate-600 hover:text-black transition-colors text-sm font-semibold tracking-wide">
               Blog
             </Link>
@@ -357,6 +360,12 @@ export default function HomePage() {
                   </div>
                   Documents
                 </div>
+                <Link href="/freelancers" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 py-3 px-4 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all text-sm font-semibold group cursor-pointer">
+                  <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-colors">
+                    <Scale className="w-4 h-4" />
+                  </div>
+                  Freelancers
+                </Link>
                 <div onClick={() => { setMobileMenuOpen(false); handleNavigate("/offers", "job-offer"); }} className="flex items-center gap-3 py-3 px-4 rounded-xl text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all text-sm font-semibold group cursor-pointer">
                   <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-colors">
                     <Briefcase className="w-4 h-4" />
@@ -719,9 +728,9 @@ export default function HomePage() {
               </div>
             </motion.div>
 
-            {/* Feature 3 - Documents */}
+            {/* Feature 3 - Freelancers */}
             <div
-              onClick={() => handleNavigate("/analyze", "general-document")}
+              onClick={() => handleNavigate("/freelancers", "freelancers-page")}
               className="md:col-span-4 md:row-span-1 group cursor-pointer"
             >
               <motion.div
@@ -735,8 +744,8 @@ export default function HomePage() {
                   <ArrowRight className="w-6 h-6 text-slate-300 group-hover:text-slate-950 group-hover:translate-x-1 transition-all" />
                 </div>
                 <div>
-                  <h3 className="font-serif text-3xl font-bold text-slate-950 mb-3 tracking-tight">General Legal</h3>
-                  <p className="text-slate-500 font-medium text-base text-balance leading-relaxed">Risk detection for NDAs, leases, and service agreements.</p>
+                  <h3 className="font-serif text-3xl font-bold text-slate-950 mb-3 tracking-tight">Freelancers</h3>
+                  <p className="text-slate-500 font-medium text-base text-balance leading-relaxed">Risk detection for NDAs, client contracts, and IP clauses.</p>
                 </div>
               </motion.div>
             </div>
@@ -1217,6 +1226,7 @@ export default function HomePage() {
               <h4 className="font-bold text-sm uppercase tracking-widest text-white mb-5">Product</h4>
               <ul className="space-y-3">
                 <li><a href="#how-it-works" className="text-slate-400 hover:text-white transition-colors text-sm font-medium">How it Works</a></li>
+                <li><Link href="/freelancers" className="text-slate-400 hover:text-white transition-colors text-sm font-medium">For Freelancers</Link></li>
                 <li><Link href="/analyze" className="text-slate-400 hover:text-white transition-colors text-sm font-medium">Document Analysis</Link></li>
                 <li><Link href="/offers" className="text-slate-400 hover:text-white transition-colors text-sm font-medium">Offer Letters</Link></li>
               </ul>
