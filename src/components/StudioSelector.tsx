@@ -260,7 +260,7 @@ export function StudioSelector({ isOpen, onClose }: StudioSelectorProps) {
               Select Your <span className="italic">Analysis Studio</span>
             </h2>
             <p id="modal-desc" className="text-sm md:text-base text-slate-500 font-medium max-w-xl mx-auto">
-              Rexi uses specialized AI models for document types to provide maximum accuracy.
+              Rexi uses specialized advanced models for document types to provide maximum accuracy.
             </p>
           </div>
 

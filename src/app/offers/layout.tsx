@@ -3,13 +3,13 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
     title: "Offer Letter Analyser | REXI — Know What Your Job Offer Really Pays",
     description:
-        "Upload your job offer letter. REXI's AI breaks down take-home pay, variable pay risks, leave policy traps, non-compete clauses, and compares your offer to market rates — before you sign.",
+        "Upload your job offer letter. REXI's smart analyzer breaks down take-home pay, variable pay risks, leave policy traps, non-compete clauses, and compares your offer to market rates — before you sign.",
     keywords: [
         "offer letter analysis",
         "job offer letter review",
         "salary breakdown calculator",
         "CTC vs take-home salary",
-        "offer letter AI",
+        "offer letter smart analysis",
         "variable pay risk",
         "non-compete clause analysis",
         "employment contract review",

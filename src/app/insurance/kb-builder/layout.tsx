@@ -13,13 +13,13 @@ export const metadata: Metadata = {
         "NCB protection",
         "engine protection cover",
         "car insurance India",
-        "motor insurance AI",
+        "motor insurance automated",
     ],
     alternates: { canonical: "/insurance/kb-builder" },
     openGraph: {
         title: "Motor Insurance Analyser | REXI",
         description:
-            "Upload your car insurance document and get instant AI analysis: IDV, exclusions, real claim scenarios, and risk flags.",
+            "Upload your car insurance document and get instant automated analysis: IDV, exclusions, real claim scenarios, and risk flags.",
         url: "https://rexi.pro/insurance/kb-builder",
         images: [{ url: "https://rexi.pro/og-image.svg", width: 1200, height: 630, alt: "REXI Motor Insurance Analysis" }],
         type: "website",

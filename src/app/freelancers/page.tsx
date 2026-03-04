@@ -8,7 +8,7 @@ import { LegalDisclaimer } from "@/components/legal-disclaimer";
 
 export const metadata: Metadata = {
     title: "Freelance Contract Analyzer — Review Any Client Contract Free | REXI",
-    description: "Upload your freelance contract and REXI's AI instantly flags red flags: IP grabs, non-competes, payment traps, and unfair termination clauses. Used by freelancers worldwide.",
+    description: "Upload your freelance contract and REXI's smart analyzer instantly flags red flags: IP grabs, non-competes, payment traps, and unfair termination clauses. Used by freelancers worldwide.",
     keywords: [
         "freelance contract analyzer",
         "freelance contract review",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     ],
     alternates: { canonical: "/freelancers" },
     openGraph: {
-        title: "Freelance Contract Analyzer — Free AI Review for Freelancers",
+        title: "Freelance Contract Analyzer — Free Smart Review for Freelancers",
         description: "Stop signing contracts you don't understand. REXI instantly surfaces hidden clauses, IP traps, and unfair payment terms in any freelance agreement.",
         url: "https://rexi.pro/freelancers",
         type: "website",
@@ -46,7 +46,7 @@ const schema = [
             {
                 "@type": "Question",
                 "name": "How do I check if my freelance contract has red flags?",
-                "acceptedAnswer": { "@type": "Answer", "text": "Upload your contract to REXI's free analyzer. It instantly checks for: unlimited IP assignment, unilateral termination without pay, non-compete clauses, late payment penalties on your side but not the client's, and scope creep enablers." }
+                "acceptedAnswer": { "@type": "Answer", "text": "Upload your contract to REXI's free smart analyzer. It instantly checks for: unlimited IP assignment, unilateral termination without pay, non-compete clauses, late payment penalties on your side but not the client's, and scope creep enablers." }
             }
         ]
     },
@@ -57,7 +57,7 @@ const schema = [
         "applicationCategory": "LegalTech",
         "operatingSystem": "Web",
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-        "description": "AI-powered tool that instantly analyzes freelance contracts to surface red flags, unfair clauses, and IP traps.",
+        "description": "Automated tool that instantly analyzes freelance contracts to surface red flags, unfair clauses, and IP traps.",
         "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "320" }
     }
 ];

@@ -1659,7 +1659,7 @@ Looking forward to your thoughts.`,
                 <div>
                   <h5 className="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-widest mb-1 sm:mb-2">Notice</h5>
                   <p className="text-[10px] sm:text-xs text-slate-500 leading-relaxed font-medium">
-                    {selectedOffer.metadata.disclaimer} Rexi uses experimental AI models which may occasionally misinterpret specific legal terminology. Please consult with a professional attorney for final document reviews.
+                    {selectedOffer.metadata.disclaimer} Rexi uses experimental advanced models which may occasionally misinterpret specific legal terminology. Please consult with a professional attorney for final document reviews.
                   </p>
                 </div>
               </div>

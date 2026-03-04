@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
     title: "Health Insurance Policy Review | REXI — Room Rent Traps & Claim Reality",
     description:
-        "Upload your health insurance policy. REXI's AI reveals room-rent proportionate deduction traps, sub-limit shocks, waiting period gotchas, and real ₹ claim scenarios — so you know the truth before you need to claim.",
+        "Upload your health insurance policy. REXI's smart analyzer reveals room-rent proportionate deduction traps, sub-limit shocks, waiting period gotchas, and real ₹ claim scenarios — so you know the truth before you need to claim.",
     keywords: [
         "health insurance review",
         "health insurance policy analysis",
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
         "proportionate deduction trap",
         "waiting period health insurance India",
         "health insurance sub-limits",
-        "health insurance AI",
+        "health insurance smart analyzer",
         "mediclaim policy review",
         "co-payment health insurance",
         "floater vs individual health plan",

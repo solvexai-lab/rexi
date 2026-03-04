@@ -120,7 +120,7 @@ export default function HomePage() {
       "name": "REXI",
       "alternateName": "REXI Legal",
       "url": "https://rexi.pro",
-      "description": "AI-powered legal document review for everyone. Analyze insurance policies, rent agreements, employment contracts, and offer letters.",
+      "description": "Smart legal document review for everyone. Analyze insurance policies, rent agreements, employment contracts, and offer letters.",
       "potentialAction": {
         "@type": "SearchAction",
         "target": {
@@ -137,7 +137,7 @@ export default function HomePage() {
       "name": "REXI Legal",
       "url": "https://rexi.pro",
       "logo": "https://rexi.pro/logo.svg",
-      "description": "AI-powered everyday legal document review. We help ordinary people understand what they are signing.",
+      "description": "Smart everyday legal document review. We help ordinary people understand what they are signing.",
       "foundingDate": "2025",
       "email": "legal@rexi.pro",
       "areaServed": "Worldwide",
@@ -176,7 +176,7 @@ export default function HomePage() {
           "name": "What is REXI?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "REXI is a free AI-powered legal document review tool. It analyzes insurance policies, rent agreements, offer letters, and employment contracts — explaining them in plain English and highlighting risks, hidden clauses, and what you should negotiate before signing."
+            "text": "REXI is a free smart legal document review tool. It analyzes insurance policies, rent agreements, offer letters, and employment contracts — explaining them in plain English and highlighting risks, hidden clauses, and what you should negotiate before signing."
           }
         },
         {
@@ -184,7 +184,7 @@ export default function HomePage() {
           "name": "How does REXI analyze insurance policies?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "You upload your motor or health insurance PDF. REXI's AI extracts your IDV, premium, coverages, exclusions, deductibles, and waiting periods, then simulates real claim scenarios so you understand exactly what you'd actually receive in a claim — not just what the brochure says."
+            "text": "You upload your motor or health insurance PDF. REXI extracts your IDV, premium, coverages, exclusions, deductibles, and waiting periods, then simulates real claim scenarios so you understand exactly what you'd actually receive in a claim — not just what the brochure says."
           }
         },
         {
@@ -440,12 +440,11 @@ export default function HomePage() {
               </motion.div>
 
               <motion.h1 variants={fadeInUp} className="font-serif text-4xl md:text-6xl lg:text-8xl font-bold text-slate-900 leading-[1.1] md:leading-[0.95] mb-6 md:mb-10 tracking-tight">
-                AI Legal Document Review: Know <span className="shimmer-text">exactly</span> what you're signing.
+                Automated Legal Document Review: Know <span className="shimmer-text">exactly</span> what you're signing.
               </motion.h1>
-
-              <motion.p variants={fadeInUp} className="text-lg md:text-2xl text-slate-600 mb-8 md:mb-12 leading-relaxed max-w-xl font-medium">
-                Stop guessing what the fine print means. REXI uses AI to scan your contracts, policies, and offers to expose hidden risks in plain English—instantly.
-              </motion.p>
+              <p className="text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed font-medium">
+                Stop guessing what the fine print means. REXI uses advanced analysis to scan your contracts, policies, and offers to expose hidden risks in plain English—instantly.
+              </p>
 
               <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 md:gap-5">
                 <div onClick={() => setShowSelector(true)} className="cursor-pointer">
@@ -877,7 +876,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Trust & Transparency - AI Section */}
+      {/* Trust & Transparency Section */}
       <section className="py-20 md:py-32 px-6 bg-gradient-to-b from-white to-slate-50/50">
         <div className="max-w-7xl mx-auto">
           <motion.div

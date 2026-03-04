@@ -14,18 +14,18 @@ export const metadata: Metadata = {
     template: "%s | REXI",
   },
   description:
-    "Don't sign without scanning. REXI is your AI-powered everyday legal companion. Analyze freelance contracts, insurance policies, rent agreements, and offer letters to find unfair clauses in seconds — for free.",
+    "Don't sign without scanning. REXI is your smart everyday legal companion. Analyze freelance contracts, insurance policies, rent agreements, and offer letters to find unfair clauses in seconds — for free.",
   keywords: [
     "legal document analysis",
     "document safety review",
     "is it safe to sign",
-    "contract review AI",
+    "contract review software",
     "insurance document review",
     "rent agreement analysis",
     "employment contract review",
     "offer letter analysis",
     "document risk detection",
-    "legal AI software",
+    "smart legal software",
     "free legal document checker",
     "health insurance policy review",
     "motor insurance IDV check",
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "REXI | Know If It's Safe To Sign Before You Do",
     description:
-      "AI-powered legal document review for everyone. From insurance to rent agreements — REXI decodes the fine print in plain English.",
+      "Smart legal document review for everyone. From insurance to rent agreements — REXI decodes the fine print in plain English.",
     url: "https://rexi.pro",
     siteName: "REXI",
     images: [
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
         url: "https://rexi.pro/og-image.png",
         width: 1200,
         height: 630,
-        alt: "REXI AI Legal Assistant screening an employment contract for hidden risks",
+        alt: "REXI Smart Legal Assistant screening an employment contract for hidden risks",
       }
     ],
     locale: "en_US",
@@ -106,7 +106,7 @@ export default function RootLayout({
       "https://twitter.com/rexilegal",
       "https://linkedin.com/company/rexi-legal"
     ],
-    "description": "AI-powered legal document analysis and safety guide for everyday documents."
+    "description": "Smart legal document analysis and safety guide for everyday documents."
   };
 
   return (
@@ -130,7 +130,7 @@ export default function RootLayout({
               "@type": "WebSite",
               "url": "https://rexi.pro",
               "name": "REXI Legal",
-              "description": "AI-powered legal document analysis and insurance safety guides for everyone.",
+              "description": "Smart legal document analysis and insurance safety guides for everyone.",
               "potentialAction": {
                 "@type": "SearchAction",
                 "target": {

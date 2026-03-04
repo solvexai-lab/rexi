@@ -185,7 +185,7 @@ export default function HealthComparePage() {
             setStage("results");
         } catch (err: any) {
             setStage("upload");
-            setError(err.message || "AI comparison failed. Please try again.");
+            setError(err.message || "Smart comparison failed. Please try again.");
         }
     };
 
@@ -230,7 +230,7 @@ export default function HealthComparePage() {
                                 Compare Health Policies
                             </h1>
                             <p className="text-lg text-slate-500 font-medium mt-2">
-                                Upload 2–4 health insurance documents for an AI side-by-side breakdown.
+                                Upload 2–4 health insurance documents for a smart side-by-side breakdown.
                             </p>
                         </div>
                         {stage === "results" && (
@@ -280,7 +280,7 @@ export default function HealthComparePage() {
                     </div>
                 )}
 
-                {/* ── AI Analysis Spinner ────────────────────────────────────────────────── */}
+                {/* ── Smart Analysis Spinner ────────────────────────────────────────────────── */}
                 {stage === "analysing" && (
                     <div className="glass-panel-heavy rounded-3xl p-10 shadow-dreamy flex flex-col items-center gap-5">
                         <div className="w-16 h-16 bg-slate-950 rounded-2xl flex items-center justify-center">
@@ -306,11 +306,11 @@ export default function HealthComparePage() {
                             </div>
                         )}
 
-                        {/* AI Summary */}
+                        {/* Smart Summary */}
                         {compareResult.summary && (
                             <div className="glass-panel-heavy rounded-3xl p-6 shadow-dreamy">
                                 <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
-                                    AI Summary
+                                    Smart Summary
                                 </p>
                                 <p className="text-lg text-slate-700 font-medium leading-relaxed">
                                     {compareResult.summary}

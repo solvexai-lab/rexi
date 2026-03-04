@@ -57,7 +57,7 @@ export default function InsuranceHubPage() {
         {
             id: "compare",
             title: "Compare Motor Policies",
-            description: "Upload 2–4 motor policies side-by-side. AI ranks best value, coverage, and risk.",
+            description: "Upload 2–4 motor policies side-by-side. Automated tool ranks best value, coverage, and risk.",
             icon: GitCompareArrows,
             active: true,
             path: "/insurance/compare",
@@ -66,7 +66,7 @@ export default function InsuranceHubPage() {
         {
             id: "health-compare",
             title: "Compare Health Policies",
-            description: "Upload 2–4 health policies. AI compares room rent, co-pay, and claim scenarios.",
+            description: "Upload 2–4 health policies. Smart analysis compares room rent, co-pay, and claim scenarios.",
             icon: HeartPulse,
             active: true,
             path: "/insurance/health/compare",
@@ -103,7 +103,7 @@ export default function InsuranceHubPage() {
                         Choose Your <br /> Policy Check
                     </h1>
                     <p className="text-lg md:text-xl text-slate-500 font-medium leading-relaxed max-w-xl">
-                        Rexi uses specialized AI models for different insurance types to find hidden risks and coverage gaps.
+                        Rexi uses specialized automated models for different insurance types to find hidden risks and coverage gaps.
                     </p>
                 </div>
 
