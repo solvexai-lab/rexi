@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { CookieBanner } from "@/components/cookie-banner";
 import { CSPostHogProvider } from "@/components/providers/posthog-provider";
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -138,6 +139,20 @@ export default function RootLayout({
             <CookieBanner />
           </ThemeProvider>
         </CSPostHogProvider>
+
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-3L99FL4F63"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-3L99FL4F63');
+          `}
+        </Script>
       </body>
     </html>
   );
