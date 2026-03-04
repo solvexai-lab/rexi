@@ -1,9 +1,10 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ArrowRight, CheckCircle, XCircle, FileText, Shield, Zap, Globe, Star, AlertTriangle, Scale, ChevronRight } from "lucide-react";
+import { ArrowRight, CheckCircle, XCircle, FileText, Shield, Zap, Globe, Star, AlertTriangle, Scale, ChevronRight, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { BreadcrumbSchema } from "@/components/BreadcrumbSchema";
+import { LegalDisclaimer } from "@/components/legal-disclaimer";
 
 export const metadata: Metadata = {
     title: "Freelance Contract Analyzer — Review Any Client Contract Free | REXI",
@@ -355,11 +356,61 @@ export default function FreelancersPage() {
                 </section>
             </main>
 
-            <footer className="bg-slate-900 text-white py-12 px-6">
-                <div className="max-w-7xl mx-auto text-center">
-                    <p className="text-slate-400 text-sm">
-                        © 2026 REXI Legal. Smart contract analysis for freelancers worldwide.
-                    </p>
+            <footer className="bg-slate-950 text-white py-16 md:py-20 px-6 relative border-t border-slate-900">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid md:grid-cols-12 gap-12 md:gap-8 mb-12 md:mb-16">
+                        <div className="md:col-span-5">
+                            <Link href="/" className="inline-block mb-6 group">
+                                <Logo variant="light" />
+                            </Link>
+                            <p className="text-slate-400 font-medium max-w-xs leading-relaxed text-sm md:text-base">
+                                Smart legal document review for everyone. Know what you're signing before you sign.
+                            </p>
+                        </div>
+                        <div className="md:col-span-3">
+                            <h4 className="font-bold text-sm uppercase tracking-widest text-white mb-5">Product</h4>
+                            <ul className="space-y-3">
+                                <li><Link href="/" className="text-slate-400 hover:text-white transition-colors text-sm font-medium">Home</Link></li>
+                                <li><Link href="/freelancers" className="text-slate-400 hover:text-white transition-colors text-sm font-medium">For Freelancers</Link></li>
+                                <li><Link href="/analyze" className="text-slate-400 hover:text-white transition-colors text-sm font-medium">Document Analysis</Link></li>
+                                <li><Link href="/offers" className="text-slate-400 hover:text-white transition-colors text-sm font-medium">Offer Letters</Link></li>
+                            </ul>
+                        </div>
+                        <div className="md:col-span-2">
+                            <h4 className="font-bold text-sm uppercase tracking-widest text-white mb-5">Company</h4>
+                            <ul className="space-y-3">
+                                <li><Link href="/about" className="text-slate-400 hover:text-white transition-colors text-sm font-medium">About</Link></li>
+                                <li><Link href="/blog" className="text-slate-400 hover:text-white transition-colors text-sm font-medium">Blog</Link></li>
+                            </ul>
+                        </div>
+                        <div className="md:col-span-2">
+                            <h4 className="font-bold text-sm uppercase tracking-widest text-white mb-5">Legal</h4>
+                            <ul className="space-y-3">
+                                <li><Link href="/privacy" className="text-slate-400 hover:text-white transition-colors text-sm font-medium">Privacy</Link></li>
+                                <li><Link href="/terms" className="text-slate-400 hover:text-white transition-colors text-sm font-medium">Terms</Link></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <p className="text-slate-500 text-sm font-medium">
+                            © 2026 REXI Legal Safety. All rights reserved.
+                        </p>
+                        <div className="flex items-center gap-4 text-slate-500 text-xs">
+                            <span className="flex items-center gap-1.5">
+                                <Shield className="w-3.5 h-3.5" />
+                                GDPR Compliant
+                            </span>
+                            <span className="w-px h-4 bg-slate-700" />
+                            <span className="flex items-center gap-1.5">
+                                <Lock className="w-3.5 h-3.5" />
+                                256-bit Encrypted
+                            </span>
+                        </div>
+                    </div>
+                    <div className="mt-6 text-center">
+                        <LegalDisclaimer />
+                    </div>
                 </div>
             </footer>
         </div>
