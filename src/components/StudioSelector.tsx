@@ -150,7 +150,7 @@ export function StudioSelector({ isOpen, onClose }: StudioSelectorProps) {
       const handleTab = (e: KeyboardEvent) => {
         if (e.key === "Tab" && modalRef.current) {
           const focusableElements = modalRef.current.querySelectorAll(
-            'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select'
+            'a[href], button, textarea, input[type="text"], input[type="email"], input[type="radio"], input[type="checkbox"], select'
           );
           const firstElement = focusableElements[0] as HTMLElement;
           const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;

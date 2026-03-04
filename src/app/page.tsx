@@ -43,9 +43,50 @@ import { StudioSelector } from "@/components/StudioSelector";
 import { Logo } from "@/components/logo";
 import { LeadCaptureModal, shouldShowLeadCapture } from "@/components/ui/LeadCaptureModal";
 
+const scanSteps = [
+  { title: "Analyzing Clauses...", progress: 30 },
+  { title: "Checking for Predatory Language...", progress: 60 },
+  { title: "Risk Report Generated", progress: 100 },
+];
+
+function ScanAnimation() {
+  const [activeScanIndex, setActiveScanIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveScanIndex((prev) => (prev + 1) % scanSteps.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={activeScanIndex}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        className="space-y-3 md:space-y-4"
+      >
+        <div className="flex justify-between items-center mb-1">
+          <span className="text-xs md:text-sm font-bold text-slate-700">{scanSteps[activeScanIndex].title}</span>
+          <span className="text-xs md:text-sm font-bold text-slate-900">{scanSteps[activeScanIndex].progress}%</span>
+        </div>
+        <div className="h-2 md:h-3 bg-slate-100 rounded-full overflow-hidden p-0.5">
+          <motion.div
+            className="h-full bg-slate-900 rounded-full"
+            initial={{ width: 0 }}
+            animate={{ width: `${scanSteps[activeScanIndex].progress}%` }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+          />
+        </div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 export default function HomePage() {
   const [isDragging, setIsDragging] = useState(false);
-  const [activeScanIndex, setActiveScanIndex] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSelector, setShowSelector] = useState(false);
   const [pendingPath, setPendingPath] = useState<string | null>(null);
@@ -70,19 +111,6 @@ export default function HomePage() {
   const handleLeadClose = () => {
     setPendingPath(null);
   };
-
-  const scanSteps = [
-    { title: "Analyzing Clauses...", progress: 30 },
-    { title: "Checking for Predatory Language...", progress: 60 },
-    { title: "Risk Report Generated", progress: 100 },
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveScanIndex((prev) => (prev + 1) % scanSteps.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
 
   const schemas = [
     // WebSite schema — enables Google Sitelinks Search Box
@@ -491,28 +519,7 @@ export default function HomePage() {
                   </div>
 
                   <div className="space-y-4 md:space-y-6 mb-8 md:mb-12">
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={activeScanIndex}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="space-y-3 md:space-y-4"
-                      >
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-xs md:text-sm font-bold text-slate-700">{scanSteps[activeScanIndex].title}</span>
-                          <span className="text-xs md:text-sm font-bold text-slate-900">{scanSteps[activeScanIndex].progress}%</span>
-                        </div>
-                        <div className="h-2 md:h-3 bg-slate-100 rounded-full overflow-hidden p-0.5">
-                          <motion.div
-                            className="h-full bg-slate-900 rounded-full"
-                            initial={{ width: 0 }}
-                            animate={{ width: `${scanSteps[activeScanIndex].progress}%` }}
-                            transition={{ duration: 1.5, ease: "easeInOut" }}
-                          />
-                        </div>
-                      </motion.div>
-                    </AnimatePresence>
+                    <ScanAnimation />
 
                     <div className="grid grid-cols-2 gap-3 md:gap-4">
                       <div className="h-20 md:h-24 rounded-xl md:rounded-2xl bg-slate-50 border border-slate-100 p-3 md:p-4 flex flex-col justify-between">

@@ -36,6 +36,9 @@ export const metadata: Metadata = {
   authors: [{ name: "REXI Legal", url: "https://rexi.pro" }],
   creator: "REXI Legal",
   publisher: "REXI Legal",
+  verification: {
+    google: "bX4b8go3NyFiwv6WXUYxQCEevI94CTYqTc5BE2X3srE",
+  },
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
     apple: "/favicon.svg",

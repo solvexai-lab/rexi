@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Mail, ArrowRight, Loader2, Sparkles, X } from "lucide-react";
 import { captureLeadAction } from "@/app/actions";
 
@@ -15,7 +15,7 @@ interface LeadCaptureModalProps {
     onClose: () => void;
 }
 
-export function LeadCaptureModal({
+export const LeadCaptureModal = React.memo(function LeadCaptureModal({
     sourceContext,
     onContinue,
     onClose,
@@ -176,7 +176,7 @@ export function LeadCaptureModal({
             </div>
         </div>
     );
-}
+});
 
 /**
  * Hook to check if lead capture is needed.
