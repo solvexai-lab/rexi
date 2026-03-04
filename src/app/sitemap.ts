@@ -3,7 +3,7 @@ import { SEED_POSTS } from '@/data/seed-posts'
 import { INSURER_DATA } from '@/data/insurers'
 
 const BASE_URL = 'https://rexi.pro'
-const NOW = new Date('2026-02-24')
+const NOW = new Date('2026-03-04')
 
 export default function sitemap(): MetadataRoute.Sitemap {
   // Static pages
