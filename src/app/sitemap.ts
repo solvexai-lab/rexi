@@ -19,6 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/blog`, lastModified: NOW, changeFrequency: 'weekly', priority: 0.85 },
     { url: `${BASE_URL}/about`, lastModified: NOW, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${BASE_URL}/contact`, lastModified: NOW, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${BASE_URL}/freelancers`, lastModified: NOW, changeFrequency: 'weekly', priority: 0.9 },
     // Pillar content pages — topic hub anchors
     { url: `${BASE_URL}/insurance/guide/motor`, lastModified: NOW, changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/insurance/guide/health`, lastModified: NOW, changeFrequency: 'monthly', priority: 0.85 },

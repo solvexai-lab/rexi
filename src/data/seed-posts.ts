@@ -323,5 +323,323 @@ You might still win, but you'll have to pay a "penalty" (often 10x the missing s
 
 ## Conclusion
 Use an 11-month agreement for convenience, but for expensive properties or long-term stays, **Insist on Registration**. It is the only way to have the law fully on your side.`
+    },
+    // FREELANCER BLOG POSTS - Global Audience
+    {
+        id: "seed-7",
+        slug: "freelance-contract-red-flags",
+        title: "5 Freelance Contract Clauses That Will Cost You Money (And How to Fix Them)",
+        excerpt: "Most freelancers sign contracts without reading them fully. Then they work 3 months, get partially paid, lose portfolio rights, and can't compete in their industry. These 5 clauses are responsible for most of those disasters.",
+        author: "REXI Legal Team",
+        created_at: "2026-03-04T00:00:00Z",
+        published: true,
+        keywords: ["freelance contract red flags", "freelance contract clauses", "freelancer contract advice", "client contract review"],
+        content: `## Why Most Freelancers Get Burned
+
+Before you read this, ask yourself: when did you last actually read a client contract line by line?
+
+If you're like most freelancers, you scanned it, confirmed the rate and deadline, and signed. That's exactly what clients — and their lawyers — count on.
+
+Here are the 5 clauses that show up most often in freelance contracts and most commonly result in lost money, lost rights, or lost work opportunities.
+
+## 1. Unlimited IP Assignment
+
+**What it sounds like:**
+> "All work product, inventions, discoveries, and developments created by Contractor, including those made outside of normal working hours, are the exclusive property of the Company."
+
+**What it actually means:** Everything you create — whether for this client or not — potentially belongs to them. This includes side projects, personal tools, open-source contributions. Courts rarely enforce the "outside working hours" part against freelancers, but you'll spend money proving that.
+
+**How to fix it:** Narrow the clause specifically to the deliverables listed in the contract:
+> "IP assignment applies solely to the specific deliverables defined in Schedule A of this agreement and only upon full payment."
+
+## 2. Termination Without Compensation
+
+**What it sounds like:**
+> "Client may terminate this agreement at any time, for any reason, with immediate effect."
+
+**What it actually means:** They can fire you after 90 days of work, after you've delivered 10 out of 12 milestones, and owe you nothing for the incomplete project — unless you have milestone payment clauses.
+
+**How to fix it:** Always define what happens on termination:
+> "Upon termination, Client shall compensate Freelancer for all work completed to the termination date, calculated on a pro-rata basis of the project fee, payable within 14 days."
+
+## 3. Unlimited Revisions
+
+**What it sounds like:**
+> "Freelancer shall revise the deliverables until the Client is satisfied."
+
+**What it actually means:** 'Satisfied' is subjective and undefined. This clause has no end condition. You can be asked to revise indefinitely with no right to refuse or charge extra.
+
+**How to fix it:** Define rounds and escalation:
+> "This contract includes 2 rounds of revisions per deliverable. Additional revision rounds are billed at [rate] per hour, invoiced separately."
+
+## 4. No Portfolio Rights
+
+**What it sounds like:**
+> "Freelancer shall not disclose, display, or publish any work created under this agreement without prior written approval."
+
+**What it actually means:** You built something great. You cannot show any future client — ever. Your best work is buried.
+
+**How to fix it:** Negotiate explicit portfolio rights:
+> "Freelancer may reference this engagement in their professional portfolio as a general description. No confidential client data or unreleased product content shall be disclosed."
+
+## 5. One-Way Late Payment Penalty
+
+**What it sounds like:**
+> "Freelancer agrees to complete deliverables by [date]. Late delivery shall incur a penalty of 5% of the project fee per week."
+
+**What it actually means:** You're penalized for being late but there's no equivalent clause making them pay you on time. They can delay payment for 90 days with no consequence.
+
+**How to fix it:** Make it symmetrical:
+> "If Client fails to make payment within 14 days of invoice date, a late fee of 1.5% per month applies to the outstanding balance."
+
+---
+
+## The Fastest Way to Check Your Contract
+
+Upload any contract to REXI — our AI surfaces all of these clauses instantly and tells you exactly what's risky and what to negotiate.`
+    },
+    {
+        id: "seed-8",
+        slug: "what-is-ip-assignment-clause-freelancer",
+        title: "IP Assignment Clauses in Freelance Contracts: What You're Actually Signing Away",
+        excerpt: "An IP assignment clause can transfer ownership of your code, designs, or writing to a client — including work you created on your own time. Here is exactly what to look for and what to insist on changing.",
+        author: "REXI Legal Team",
+        created_at: "2026-03-04T00:00:00Z",
+        published: true,
+        keywords: ["ip assignment clause freelancer", "intellectual property freelance contract", "work for hire freelancer", "ip ownership freelancer"],
+        content: `## What is Intellectual Property (IP)?
+
+As a freelancer, your IP is your business. It includes:
+- **Code** you write (functions, libraries, entire applications)
+- **Designs** you create (logos, UI, illustrations)
+- **Writing** you produce (copy, articles, documentation)
+- **Inventions and methods** you develop (algorithms, processes)
+
+When you create something for a client, the contract determines who **owns** it. By default in most countries (US, UK, EU), the creator owns the IP unless they have signed it away.
+
+## The Three Types of IP Clauses
+
+### 1. Work-for-Hire (Assignment of All Rights)
+The most extreme form. Once created and paid for, the IP belongs entirely to the client. You cannot reuse the work, reference it publicly, or build on it.
+
+> **Typical wording:** "All deliverables shall constitute 'work made for hire' as defined under applicable copyright law, and all rights therein are assigned to Client."
+
+### 2. Exclusive License (Client Has Full Use, You Retain Ownership)
+You technically own the IP, but the client has the exclusive right to use it — meaning nobody else can use it, including you in other projects.
+
+> **Typical wording:** "Client is granted an exclusive, worldwide, royalty-free license to use the deliverables."
+
+### 3. Non-Exclusive License (Best for Freelancers)
+You retain full ownership. The client can use the work but so can you — reuse components, build similar work for other clients, show it in your portfolio.
+
+> **Ideal wording:** "Freelancer grants Client a perpetual, non-exclusive license to use the deliverables for Client's internal and commercial purposes."
+
+## The Pre-Existing IP Trap
+
+Many freelancers unknowingly sign away code libraries or templates they've developed over years.
+
+**High-risk contract language:** "IP assignment includes all work used or incorporated into the deliverables, whether created before or after this contract."
+
+**What to add:**
+> "IP assignment expressly excludes any pre-existing materials, open-source components, or tools owned by Freelancer prior to this engagement. Client is granted a license to use pre-existing IP solely as incorporated in the final deliverables."
+
+## Quick Checklist Before Signing
+
+- [ ] Does IP assignment specifically list only deliverables in this contract?
+- [ ] Are your pre-existing tools and libraries excluded?
+- [ ] Is the assignment contingent on full payment?
+- [ ] Do you have portfolio rights preserved?
+
+Upload your contract to REXI to check all of these automatically in 30 seconds.`
+    },
+    {
+        id: "seed-9",
+        slug: "non-compete-clause-freelancer-guide",
+        title: "Non-Compete Clauses for Freelancers: What's Enforceable and What Isn't",
+        excerpt: "A non-compete clause in a freelance contract can lock you out of an entire industry for years. The good news: most are unenforceable. The bad news: defending yourself costs money anyway. Here's the complete guide.",
+        author: "REXI Legal Team",
+        created_at: "2026-03-04T00:00:00Z",
+        published: true,
+        keywords: ["non-compete clause freelancer", "non-compete freelance contract", "non-solicitation freelancer", "freelance contract restrictions"],
+        content: `## What is a Non-Compete Clause?
+
+A non-compete clause restricts what work you can do after your engagement ends. They come in these forms:
+
+| Type | What it restricts | Typical Enforcement |
+|---|---|---|
+| Non-Compete | Working in the same industry | Rarely enforced for freelancers |
+| Non-Solicitation | Approaching client's customers | Often enforceable if reasonable |
+| Non-Poaching | Hiring client's employees | Usually enforceable |
+| Exclusivity | Working for competitors during the contract | Can be enforceable |
+
+## Are Non-Competes Legal? (By Country)
+
+- **United States:** State-by-state. California, Minnesota, and North Dakota essentially ban them. Other states enforce them only if "reasonable."
+- **United Kingdom:** Enforceable but courts apply strict tests — must protect a legitimate interest and go no further than necessary.
+- **European Union:** Generally restrictive for self-employed individuals. Germany and France often require compensation during the non-compete period.
+- **India:** Section 27 of the Indian Contract Act makes post-employment restraints largely void. Clauses operative during the contract may be enforced.
+- **Australia:** Similar to UK — enforceable only if reasonable in scope and duration.
+
+**The practical problem:** Even an unenforceable clause can cost you significant legal fees to have declared unenforceable. Clients know this.
+
+## The 4-Part Test Courts Apply
+
+1. **Does it protect a legitimate interest?** (Customer relationships, trade secrets — yes. General competition — no.)
+2. **Is the geographic scope reasonable?** (City — maybe. Entire globe — almost never.)
+3. **Is the time period reasonable?** (6–12 months — possibly. 3 years — unlikely.)
+4. **Is the industry scope reasonable?** ("Software development" is too broad. Specific niche — might be acceptable.)
+
+## What to Replace It With
+
+**Too broad (push back):**
+> "Freelancer shall not engage in any work for any company in the technology sector for 24 months after contract termination."
+
+**Reasonable alternative:**
+> "Freelancer shall not directly solicit Client's identified customers listed in Schedule B for 6 months following contract end. This clause does not restrict Freelancer from working in any industry or for any client that approaches Freelancer independently."
+
+This protects their genuine interest without blocking your career.`
+    },
+    {
+        id: "seed-10",
+        slug: "how-to-review-client-contract-freelancer",
+        title: "How to Review a Client Contract in 10 Minutes (A Freelancer's Checklist)",
+        excerpt: "You don't need a law degree to protect yourself from a bad contract. You need a systematic process. This checklist covers the 8 sections every freelance contract must have — and the 5 questions to ask before signing.",
+        author: "REXI Legal Team",
+        created_at: "2026-03-04T00:00:00Z",
+        published: true,
+        keywords: ["how to review freelance contract", "freelance contract checklist", "client contract review", "freelancer legal tips"],
+        content: `## The 8 Sections Every Contract Must Have
+
+A contract missing any of these is incomplete — and the gaps will be filled against you in a dispute.
+
+### 1. Scope of Work
+A specific, measurable list of deliverables. Not "design the website" — but "design 5 web pages as outlined in Appendix A."
+
+**Red flag:** Vague descriptions that could expand ("and any other related tasks the Client may require").
+
+### 2. Payment Terms
+- Total project fee OR hourly rate
+- Deposit amount (30–50% upfront is standard)
+- Milestone payment schedule
+- Due date for final payment
+- Late payment penalty
+
+**Red flag:** "Payment upon completion" with no defined completion criteria.
+
+### 3. Timeline and Deadlines
+Specific dates for deliverables AND client feedback windows. If you deliver on time but the client takes 3 weeks to give feedback, can they penalize you for "missing" a deadline?
+
+**Add this:** "Client feedback required within [X] business days of delivery. Delay in feedback extends subsequent deadlines by an equal period."
+
+### 4. Revision Policy
+A fixed number of revision rounds. "Until satisfied" or "as needed" is open-ended and dangerous.
+
+**Standard terms:** 2–3 rounds of revisions per deliverable. Additional rounds at your hourly rate.
+
+### 5. IP and Ownership
+Who owns the work? When does ownership transfer? Do you retain portfolio rights?
+
+**Standard:** IP transfers to client upon full payment only.
+
+### 6. Termination Clause
+What happens if the client cancels? Are you paid for completed work? What's the notice period?
+
+**Minimum standard:** Any work completed before termination is paid within 14 days, regardless of reason.
+
+### 7. Confidentiality (NDA)
+Is what's "confidential" clearly defined? Does it expire?
+
+### 8. Governing Law and Dispute Resolution
+Which country or state's law applies? You don't want to have to go to a foreign court to resolve a payment dispute.
+
+---
+
+## The 5 Questions to Ask Before Signing
+
+1. **"Can I see it with the changes I've requested?"** — If they refuse to negotiate any terms, that's a red flag.
+2. **"Who is the legal entity I'm contracting with?"** — Know who you can actually enforce against.
+3. **"What counts as project completion?"** — Get a written definition.
+4. **"What happens if payment is late?"** — If they have no process, take that as a warning.
+5. **"What happens to the IP if the project is cancelled halfway?"** — Their answer reveals their values.
+
+---
+
+Upload your contract to REXI for an instant automated review — free, 30 seconds, no account needed.`
+    },
+    {
+        id: "seed-11",
+        slug: "freelance-nda-guide-what-to-sign",
+        title: "Freelance NDA Guide: What to Sign, What to Refuse, and What to Change",
+        excerpt: "Non-disclosure agreements are almost universal in freelancing. Most are heavily client-favored. Here is exactly what a fair NDA looks like — and the 4 clauses you should always push back on.",
+        author: "REXI Legal Team",
+        created_at: "2026-03-04T00:00:00Z",
+        published: true,
+        keywords: ["freelance nda guide", "nda freelancer what to look for", "non-disclosure agreement freelancer", "freelance confidentiality agreement"],
+        content: `## What is an NDA and Why Freelancers Sign Them
+
+A Non-Disclosure Agreement (NDA) prevents you from sharing a client's confidential information with third parties. As a freelancer, you'll sign NDAs before: starting a new engagement, attending discovery calls, or receiving access to codebases, data, or unreleased products.
+
+NDAs serve a legitimate function. But one-sided, overly broad NDAs can seriously limit your ability to work freely.
+
+## The 3 Types of NDAs
+
+| Type | Direction | Common in freelancing? |
+|---|---|---|
+| Unilateral (One-way) | Only you are bound | Very common |
+| Mutual (Two-way) | Both parties are bound | Less common but fairer |
+| Multilateral | Three or more parties | Rare |
+
+## The 4 Clauses You Should Always Challenge
+
+### 1. Undefined Scope of "Confidential"
+
+**Risky wording:**
+> "Confidential Information means all information disclosed by Client, whether oral or written, regardless of whether it is marked as 'Confidential'."
+
+**The problem:** Under this definition, anything the client says to you — even a casual message — is legally confidential. You can't reference general project experience.
+
+**Better:**
+> "Confidential Information means specifically designated materials marked as 'CONFIDENTIAL' or identified as such in writing within 5 business days of disclosure."
+
+### 2. Perpetual Duration
+
+**Risky wording:**
+> "Freelancer's obligations shall survive indefinitely."
+
+**Better:**
+> "This Agreement shall remain in effect for 2 years from the date of last disclosure of Confidential Information."
+
+2–3 years is professionally reasonable and standard.
+
+### 3. Restrictions on General Skill Development
+
+**Risky wording:**
+> "Freelancer shall not use any knowledge gained during this engagement for any other purpose."
+
+**Better:**
+> "The non-use obligation applies only to specific proprietary information identified as Confidential. This Agreement does not restrict Freelancer's use of general knowledge, skills, or expertise retained in unaided memory."
+
+### 4. No Standard Carve-Outs
+
+A properly drafted NDA must exclude:
+- Information already publicly known
+- Information you knew before the engagement
+- Information you develop independently without using their confidential info
+- Information received from a third party lawfully
+
+If these carve-outs are absent, insist they be added.
+
+## Red Line: The Pre-Signature NDA
+
+Sometimes clients send an NDA before they'll even discuss the project — before you know the rate or scope.
+
+This is acceptable if the NDA is narrow and time-limited. It is **not** acceptable if the NDA contains non-solicit or IP assignment clauses that activate before you've agreed to any commercial terms.
+
+**Rule:** Never sign an NDA that contains anything other than confidentiality obligations. Payment, IP, and non-compete terms belong only in the main contract.
+
+---
+
+Upload your NDA to REXI to flag undefined scope, missing carve-outs, and any IP language that shouldn't be in an NDA. Free and instant.`
     }
 ];
+
