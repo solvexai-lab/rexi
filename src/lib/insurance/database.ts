@@ -2,10 +2,16 @@
 import { createClient } from '@supabase/supabase-js';
 import { AnalysisResult, PolicyData, BrochureData } from './types';
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+let _supabase: any = null;
+function getSupabase() {
+    if (!_supabase) {
+        _supabase = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.SUPABASE_SERVICE_ROLE_KEY!
+        );
+    }
+    return _supabase;
+}
 
 /**
  * Store analysis result in database
@@ -50,7 +56,7 @@ export async function storeAnalysis(analysis: AnalysisResult): Promise<string> {
         };
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
         .from('insurance_analyses')
         .insert(record)
         .select('id')
@@ -64,7 +70,7 @@ export async function storeAnalysis(analysis: AnalysisResult): Promise<string> {
  * Retrieve analysis by ID
  */
 export async function getAnalysis(id: string): Promise<AnalysisResult> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
         .from('insurance_analyses')
         .select('*')
         .eq('id', id)
@@ -120,7 +126,7 @@ export async function getAnalysis(id: string): Promise<AnalysisResult> {
  * Create the insurance_analyses table (run once)
  */
 export async function createInsuranceTable() {
-    const { error } = await supabase.rpc('create_insurance_table_if_not_exists', {});
+    const { error } = await getSupabase().rpc('create_insurance_table_if_not_exists', {});
     if (error) console.error('Table creation error:', error);
     else console.log('✅ Insurance table ready');
 }
@@ -142,7 +148,7 @@ export async function updateAnalysis(id: string, updates: Record<string, unknown
     );
 
     if (Object.keys(safeUpdates).length === 0) return;
-    const { error } = await supabase
+    const { error } = await getSupabase()
         .from('insurance_analyses')
         .update(safeUpdates)
         .eq('id', id);

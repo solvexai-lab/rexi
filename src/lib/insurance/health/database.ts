@@ -7,17 +7,23 @@
 import { createClient } from '@supabase/supabase-js';
 import { HealthAnalysisResult, HealthPolicyData, HealthRiskFlag, HealthClaimScenario } from '../types';
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+let _supabase: any = null;
+function getSupabase() {
+    if (!_supabase) {
+        _supabase = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.SUPABASE_SERVICE_ROLE_KEY!
+        );
+    }
+    return _supabase;
+}
 
 // ─── Store a new health analysis ──────────────────────────────────────────────
 
 export async function storeHealthAnalysis(analysis: HealthAnalysisResult): Promise<string> {
     const p = analysis.policyData;
 
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
         .from('health_insurance_analyses')
         .insert({
             document_type: analysis.documentType,
@@ -58,7 +64,7 @@ export async function storeHealthAnalysis(analysis: HealthAnalysisResult): Promi
 // ─── Fetch a health analysis by ID ───────────────────────────────────────────
 
 export async function getHealthAnalysis(id: string): Promise<HealthAnalysisResult> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
         .from('health_insurance_analyses')
         .select('*')
         .eq('id', id)
@@ -117,7 +123,7 @@ export async function updateHealthAnalysis(
     id: string,
     updates: Record<string, unknown>
 ): Promise<void> {
-    const { error } = await supabase
+    const { error } = await getSupabase()
         .from('health_insurance_analyses')
         .update(updates)
         .eq('id', id);
@@ -135,7 +141,7 @@ export async function listRecentHealthAnalyses(limit = 5): Promise<{
     documentType: string;
     createdAt: string;
 }[]> {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
         .from('health_insurance_analyses')
         .select('id, insurer_name, product_name, sum_insured, document_type, created_at')
         .order('created_at', { ascending: false })
@@ -143,7 +149,7 @@ export async function listRecentHealthAnalyses(limit = 5): Promise<{
 
     if (error) return [];
 
-    return (data ?? []).map(r => ({
+    return (data ?? []).map((r: any) => ({
         id: r.id,
         insurerName: r.insurer_name,
         productName: r.product_name ?? 'Health Policy',
