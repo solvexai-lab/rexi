@@ -10,11 +10,6 @@ import {
   logSecurityEvent,
 } from "@/lib/security";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 function generateDocumentHash(text: string): string {
   const normalized = text.trim().toLowerCase().replace(/\s+/g, " ");
   return crypto.createHash("sha256").update(normalized).digest("hex");
@@ -36,6 +31,11 @@ export async function POST(req: NextRequest) {
     logSecurityEvent("RATE_LIMIT_STORE_ANALYSIS", { ip: clientIP });
     return rateLimitedResponse(rateLimit.resetIn);
   }
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
   try {
     const body = await req.json();

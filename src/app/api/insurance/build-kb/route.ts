@@ -18,12 +18,6 @@ export const maxDuration = 300;
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-// ─── Supabase client ──────────────────────────────────────────────────────────
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface FieldPattern {
     field: string;

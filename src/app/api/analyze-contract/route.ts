@@ -20,12 +20,7 @@ const DISCLAIMER = "This analysis is for informational purposes only and does no
 const MAX_TEXT_LENGTH = 200000;
 const MIN_TEXT_LENGTH = 100;
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
-async function fetchRelevantLaws(categories: string[]): Promise<any[]> {
+async function fetchRelevantLaws(supabase: any, categories: string[]): Promise<any[]> {
   try {
     const { data, error } = await supabase
       .from("indian_laws")
@@ -98,7 +93,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const relevantLaws = await fetchRelevantLaws([]);
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    const relevantLaws = await fetchRelevantLaws(supabase, []);
     const lawsContext = relevantLaws.map(law =>
       `- ${law.law_name}: ${law.contract_relevance}\n  Violations: ${law.common_violations}\n  Penalties: ${law.penalties}`
     ).join("\n\n");

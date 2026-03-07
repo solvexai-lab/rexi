@@ -11,10 +11,7 @@ import {
 } from "@/lib/security";
 
 // Initialize Supabase Client (safe at module level — no API keys needed from env here)
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// MOVED inside POST handler to avoid build-time env var resolution issues
 
 type ChatContext = 'insurance' | 'offer' | 'contract';
 
@@ -39,8 +36,11 @@ export async function POST(req: NextRequest) {
         return rateLimitedResponse(rateLimit.resetIn);
     }
 
-    // Bug #8 fix: initialise Gemini client INSIDE the handler so GEMINI_API_KEY
-    // is guaranteed to be resolved from env at request time, not at cold-start.
+    // Initialize clients inside handler so env vars are resolved at runtime, not build time
+    const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
     const model = genAI.getGenerativeModel({
         model: "gemini-2.0-flash",
