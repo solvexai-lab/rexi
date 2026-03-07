@@ -39,11 +39,12 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: https://*.supabase.co https://*.supabase.in https://lh3.googleusercontent.com https://eu.i.posthog.com",
-              "connect-src 'self' https://*.supabase.co https://*.supabase.in https://generativelanguage.googleapis.com https://eu.i.posthog.com ws://localhost:* wss://localhost:*",
+              "img-src 'self' data: https://*.supabase.co https://*.supabase.in https://lh3.googleusercontent.com https://eu.i.posthog.com https://www.googletagmanager.com",
+              "connect-src 'self' https://*.supabase.co https://*.supabase.in https://generativelanguage.googleapis.com https://eu.i.posthog.com ws://localhost:* wss://localhost:* https://www.google-analytics.com",
+              "frame-src 'self' https://www.googletagmanager.com",
               "frame-ancestors 'none'",
             ].join('; '),
           }
