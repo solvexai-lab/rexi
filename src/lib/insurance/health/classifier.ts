@@ -63,7 +63,7 @@ export function classifyHealthDocument(text: string): HealthDocumentType {
 
 export async function classifyHealthDocumentWithLLM(text: string): Promise<HealthDocumentType> {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-preview-05-20' });
 
     const result = await model.generateContent(`
 Classify this health insurance document. Reply with ONLY one word: "policy", "certificate", or "brochure".

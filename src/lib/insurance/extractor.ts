@@ -7,7 +7,7 @@ import { PolicyData, BrochureData, Coverage, RiskFlag } from './types';
 export async function extractPolicyData(text: string): Promise<PolicyData> {
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({
-        model: "gemini-2.0-flash",
+        model: "gemini-2.5-flash-preview-05-20",
         generationConfig: {
             responseMimeType: "application/json",
             temperature: 0.1,
@@ -160,7 +160,7 @@ function applyFallbacks(data: PolicyData, fullText: string): PolicyData {
 export async function extractBrochureData(text: string): Promise<BrochureData> {
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({
-        model: "gemini-2.0-flash",
+        model: "gemini-2.5-flash-preview-05-20",
         generationConfig: {
             responseMimeType: "application/json",
             temperature: 0.1,
@@ -208,7 +208,7 @@ export async function extractCoveredPerils(policyText: string): Promise<{
 }> {
     const genAI = getGenAI();
     const model = genAI.getGenerativeModel({
-        model: "gemini-2.0-flash",
+        model: "gemini-2.5-flash-preview-05-20",
         generationConfig: {
             responseMimeType: "application/json",
             temperature: 0.1,

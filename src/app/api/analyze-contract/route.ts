@@ -308,7 +308,7 @@ CRITICAL REQUIREMENTS:
       metadata: {
         analysisDate: new Date().toISOString(),
         disclaimer: DISCLAIMER,
-        modelUsed: "gemini-2.0-flash",
+        modelUsed: "gemini-2.5-flash-preview-05-20",
       },
     };
 
