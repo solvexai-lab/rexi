@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
         // 2. Initialize Gemini (inside handler to avoid cold-start env issues)
         const genAI = getGenAI();
         const model = genAI.getGenerativeModel({
-            model: "gemini-2.5-flash-preview-05-20",
+            model: "gemini-2.5-flash",
             generationConfig: {
                 temperature: 0.2,
                 maxOutputTokens: 500,

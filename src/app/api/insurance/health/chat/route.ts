@@ -18,7 +18,7 @@ export const runtime = 'nodejs';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 const model = genAI.getGenerativeModel({
-    model: 'gemini-2.5-flash-preview-05-20',
+    model: 'gemini-2.5-flash',
     generationConfig: {
         temperature: 0.2,       // Low temp for factual, grounded answers
         maxOutputTokens: 700,

@@ -47,7 +47,7 @@ function defaultSubLimits(): HealthSubLimits {
 
 export async function extractHealthPolicyData(text: string): Promise<HealthPolicyData> {
     const model = genAI.getGenerativeModel({
-        model: 'gemini-2.5-flash-preview-05-20',
+        model: 'gemini-2.5-flash',
         generationConfig: { temperature: 0.1, responseMimeType: 'application/json' },
     });
 
@@ -285,7 +285,7 @@ export async function extractHealthConditions(
     text: string
 ): Promise<{ covered: string[]; excluded: string[] }> {
     const model = genAI.getGenerativeModel({
-        model: 'gemini-2.5-flash-preview-05-20',
+        model: 'gemini-2.5-flash',
         generationConfig: { temperature: 0.2, responseMimeType: 'application/json' },
     });
 
@@ -341,7 +341,7 @@ export async function extractHealthBrochureData(text: string): Promise<{
     excluded: string[];
 }> {
     const model = genAI.getGenerativeModel({
-        model: 'gemini-2.5-flash-preview-05-20',
+        model: 'gemini-2.5-flash',
         generationConfig: { temperature: 0.2, responseMimeType: 'application/json' },
     });
 
