@@ -22,34 +22,49 @@ export async function nvidiaChatCompletion(options: NvidiaCompletionOptions): Pr
   }
 
   const model = options.model || process.env.NVIDIA_MODEL || DEFAULT_MODEL;
+  const timeoutMs = 45000; // 45s timeout to stay under Vercel's 60s limit
 
-  const response = await fetch(API_BASE, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model,
-      messages: options.messages,
-      temperature: options.temperature ?? 0.1,
-      max_tokens: options.maxTokens ?? 8192,
-    }),
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`NVIDIA API error ${response.status}: ${errorText}`);
+  try {
+    const response = await fetch(API_BASE, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        messages: options.messages,
+        temperature: options.temperature ?? 0.1,
+        max_tokens: options.maxTokens ?? 4096,
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`NVIDIA API error ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+
+    if (!content) {
+      throw new Error("NVIDIA API returned empty content");
+    }
+
+    return content;
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    if (error.name === "AbortError") {
+      throw new Error(`NVIDIA API timed out after ${timeoutMs}ms`);
+    }
+    throw error;
   }
-
-  const data = await response.json();
-  const content = data.choices?.[0]?.message?.content;
-
-  if (!content) {
-    throw new Error("NVIDIA API returned empty content");
-  }
-
-  return content;
 }
 
 /**

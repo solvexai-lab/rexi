@@ -188,7 +188,7 @@ CRITICAL REQUIREMENTS:
         prompt,
         systemPrompt: "You are REXI - an expert Indian contract attorney. Return ONLY valid JSON.",
         temperature: 0.1,
-        maxTokens: 16384,
+        maxTokens: 4096,
       });
       responseText = responseText.trim();
     } catch (aiError: any) {
