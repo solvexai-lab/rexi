@@ -124,6 +124,7 @@ EXAMPLE of good aiAnalysis format:
    - Automatic renewals without telling you
    - Giving up your legal rights
 5. Also find good clauses that protect you
+6. CRITICAL: You MUST analyze and return EVERY distinct clause in the document. Do not skip any clauses. Do not merge multiple clauses into one. Each separate clause gets its own object in the "clauses" array.
 
 Return this EXACT JSON structure:
 {
@@ -177,7 +178,7 @@ CRITICAL REQUIREMENTS:
 1. COPY EXACT TEXT: The "text" field must have the EXACT words from the contract
 2. SIMPLE ENGLISH: Write like you're explaining to a friend, not a lawyer
 3. ALWAYS include "For example:" in aiAnalysis with a specific real situation
-4. FIND ALL important clauses, good and bad
+4. ANALYZE EVERY CLAUSE: You must return one clause object for EACH distinct clause in the document. Do not skip clauses. Do not merge clauses.
 5. GIVE SPECIFIC ADVICE on what to change
 6. SCORE: 0-100 (100 = very safe, 0 = very risky)
 7. RETURN ONLY VALID JSON. NO MARKDOWN.`;
@@ -188,7 +189,7 @@ CRITICAL REQUIREMENTS:
         prompt,
         systemPrompt: "You are REXI - an expert Indian contract attorney. Return ONLY valid JSON.",
         temperature: 0.1,
-        maxTokens: 8192,
+        maxTokens: 16384,
       });
       responseText = responseText.trim();
     } catch (aiError: any) {
