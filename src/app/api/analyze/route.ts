@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { analyzeDocumentStageByStage } from "@/lib/orchestrator";
+import { safeGeminiText, DEFAULT_SAFETY_SETTINGS } from "@/lib/gemini-utils";
 import { createClient } from "@/lib/supabase/server";
 import {
   getClientIP,
@@ -131,6 +132,7 @@ export async function POST(req: NextRequest) {
         maxOutputTokens: 8192,
         responseMimeType: "application/json",
       },
+      safetySettings: DEFAULT_SAFETY_SETTINGS,
     });
 
     const prompt = `
@@ -184,8 +186,20 @@ ${sanitizedText.slice(0, 80000)}
 `;
 
     const result = await model.generateContent(prompt);
-    const response = await result.response;
-    let responseText = response.text().trim();
+    const response = result.response;
+    const geminiResult = safeGeminiText(response);
+
+    if (geminiResult.blocked) {
+      console.error("Gemini response blocked:", geminiResult.reason);
+      return addSecurityHeaders(
+        NextResponse.json(
+          { error: "Analysis blocked due to content safety settings. Try a shorter or differently formatted document." },
+          { status: 422 }
+        )
+      );
+    }
+
+    let responseText = geminiResult.text.trim();
 
     if (responseText.startsWith("```json")) {
       responseText = responseText.replace(/^```json\n?/, "").replace(/\n?```$/, "");

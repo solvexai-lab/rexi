@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { createClient } from "@supabase/supabase-js";
+import { unifiedGenerateContent } from "@/lib/nvidia-client";
 import {
   getClientIP,
   checkRateLimit,
@@ -86,13 +86,6 @@ export async function POST(req: NextRequest) {
 
     const sanitizedText = sanitizeText(text);
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return addSecurityHeaders(
-        NextResponse.json({ error: "Service temporarily unavailable" }, { status: 503 })
-      );
-    }
-
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -102,16 +95,6 @@ export async function POST(req: NextRequest) {
     const lawsContext = relevantLaws.map(law =>
       `- ${law.law_name}: ${law.contract_relevance}\n  Violations: ${law.common_violations}\n  Penalties: ${law.penalties}`
     ).join("\n\n");
-
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
-      generationConfig: {
-        temperature: 0.1,
-        maxOutputTokens: 16384,
-        responseMimeType: "application/json",
-      },
-    });
 
     const prompt = `You are REXI - an expert contract attorney. Analyze this contract and explain findings in VERY SIMPLE language that a 10th grader can understand.
 
@@ -199,9 +182,24 @@ CRITICAL REQUIREMENTS:
 6. SCORE: 0-100 (100 = very safe, 0 = very risky)
 7. RETURN ONLY VALID JSON. NO MARKDOWN.`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    let responseText = response.text().trim();
+    let responseText: string;
+    try {
+      responseText = await unifiedGenerateContent({
+        prompt,
+        systemPrompt: "You are REXI - an expert Indian contract attorney. Return ONLY valid JSON.",
+        temperature: 0.1,
+        maxTokens: 16384,
+      });
+      responseText = responseText.trim();
+    } catch (aiError: any) {
+      console.error("AI generation failed:", aiError);
+      return addSecurityHeaders(
+        NextResponse.json(
+          { error: aiError.message || "Failed to analyze contract. Please try again." },
+          { status: 503 }
+        )
+      );
+    }
 
     if (responseText.startsWith("```json")) {
       responseText = responseText.replace(/^```json\n?/, "").replace(/\n?```$/, "");
