@@ -10,7 +10,7 @@ import {
   validateRequestOrigin,
   logSecurityEvent,
 } from "@/lib/security";
-import type { ContractAnalysisResult, ContractClause, LegalCitation } from "@/lib/types/contract-analysis";
+import type { ContractAnalysisResult, ContractClause } from "@/lib/types/contract-analysis";
 
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
@@ -19,6 +19,7 @@ export const runtime = 'nodejs';
 const DISCLAIMER = "This analysis is for informational purposes only and does not constitute legal advice. Always consult with a qualified attorney before signing any legal document.";
 const MAX_TEXT_LENGTH = 200000;
 const MIN_TEXT_LENGTH = 100;
+const PROMPT_TEXT_LIMIT = 120000;
 
 async function fetchRelevantLaws(supabase: any, categories: string[]): Promise<any[]> {
   try {
@@ -28,18 +29,98 @@ async function fetchRelevantLaws(supabase: any, categories: string[]): Promise<a
       .limit(10);
 
     if (error) {
-      console.error("Error fetching laws:", error);
+      console.error("[analyze-contract] Error fetching laws:", error);
       return [];
     }
     return data || [];
   } catch (e) {
-    console.error("Failed to fetch laws:", e);
+    console.error("[analyze-contract] Failed to fetch laws:", e);
     return [];
   }
 }
 
+function buildFallbackAnalysis(text: string, fileName: string, errorMessage?: string): ContractAnalysisResult {
+  const lowerText = text.toLowerCase();
+  const clauses: ContractClause[] = [];
+  let id = 0;
+
+  const checks = [
+    { keyword: "termination", title: "Termination Clause", severity: "medium" as const, category: "termination" as const },
+    { keyword: "liability", title: "Liability Clause", severity: "high" as const, category: "liability" as const },
+    { keyword: "confidential", title: "Confidentiality", severity: "medium" as const, category: "confidentiality" as const },
+    { keyword: "intellectual property", title: "IP Clause", severity: "high" as const, category: "ip" as const },
+    { keyword: "indemnif", title: "Indemnification", severity: "high" as const, category: "liability" as const },
+    { keyword: "non-compete", title: "Non-Compete", severity: "critical" as const, category: "general" as const },
+    { keyword: "penalty", title: "Penalty Clause", severity: "high" as const, category: "payment" as const },
+    { keyword: "auto-renew", title: "Auto-Renewal", severity: "medium" as const, category: "termination" as const },
+    { keyword: "governing law", title: "Governing Law", severity: "low" as const, category: "general" as const },
+    { keyword: "arbitration", title: "Arbitration", severity: "medium" as const, category: "general" as const },
+    { keyword: "force majeure", title: "Force Majeure", severity: "low" as const, category: "general" as const },
+    { keyword: "exclusiv", title: "Exclusivity", severity: "medium" as const, category: "scope" as const },
+    { keyword: "warranty", title: "Warranty", severity: "medium" as const, category: "general" as const },
+    { keyword: "limitation of liability", title: "Liability Cap", severity: "high" as const, category: "liability" as const },
+  ];
+
+  for (const check of checks) {
+    const idx = lowerText.indexOf(check.keyword);
+    if (idx !== -1) {
+      const snippet = text.slice(Math.max(0, idx - 40), idx + check.keyword.length + 100);
+      clauses.push({
+        id: `clause-${++id}`,
+        title: check.title,
+        text: snippet,
+        startIndex: idx,
+        endIndex: idx + snippet.length,
+        severity: check.severity,
+        category: check.category,
+        aiAnalysis: `This clause mentions "${check.title}". Please review it carefully as it may affect your rights or obligations.`,
+        legalCitations: [],
+        suggestion: "Consider having a lawyer review this clause.",
+        negotiationTip: "Ask for clearer language or more balanced terms.",
+      });
+    }
+  }
+
+  const criticalCount = clauses.filter(c => c.severity === "critical").length;
+  const highCount = clauses.filter(c => c.severity === "high").length;
+  const mediumCount = clauses.filter(c => c.severity === "medium").length;
+  const lowCount = clauses.filter(c => c.severity === "low").length;
+  const safeCount = Math.max(2, Math.floor(clauses.length / 3));
+
+  const score = Math.max(10, Math.min(90, 70 - criticalCount * 15 - highCount * 10 + safeCount * 5));
+
+  return {
+    id: `contract-${Date.now()}`,
+    fileName: fileName || "Uploaded Document",
+    rawText: text,
+    summary: {
+      parties: [],
+      type: "Unknown Contract Type",
+      keyObligations: [],
+      overallAssessment: errorMessage 
+        ? `AI analysis failed: ${errorMessage}. We performed a basic keyword scan instead.` 
+        : "Our AI service experienced an issue, so we performed a basic keyword-based scan instead. For a full AI analysis, please try again in a few minutes.",
+    },
+    clauses,
+    overallScore: score,
+    riskSummary: { critical: criticalCount, high: highCount, medium: mediumCount, low: lowCount, safe: safeCount },
+    strengths: ["Document was successfully parsed and scanned."],
+    concerns: [
+      errorMessage ? `AI Error: ${errorMessage}` : "AI service unavailable - basic scan only.",
+      ...(criticalCount + highCount > 0 ? [`Found ${criticalCount + highCount} potentially risky clauses.`] : []),
+    ],
+    negotiationStrategy: ["Request a full AI analysis when the service is available.", "Consult a lawyer for critical contracts."],
+    metadata: {
+      analysisDate: new Date().toISOString(),
+      disclaimer: DISCLAIMER,
+      modelUsed: "fallback-deterministic",
+    },
+  };
+}
+
 export async function POST(req: NextRequest) {
   const clientIP = getClientIP(req);
+  console.log(`[analyze-contract] Request started from IP: ${clientIP}`);
 
   if (!validateRequestOrigin(req)) {
     logSecurityEvent("INVALID_ORIGIN", { ip: clientIP, origin: req.headers.get("origin") });
@@ -85,21 +166,26 @@ export async function POST(req: NextRequest) {
     }
 
     const sanitizedText = sanitizeText(text);
+    console.log(`[analyze-contract] Text length: ${sanitizedText.length}, fileName: ${fileName || "unknown"}`);
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
+    console.log("[analyze-contract] Fetching relevant laws...");
     const relevantLaws = await fetchRelevantLaws(supabase, []);
+    console.log(`[analyze-contract] Fetched ${relevantLaws.length} laws`);
+
     const lawsContext = relevantLaws.map(law =>
       `- ${law.law_name}: ${law.contract_relevance}\n  Violations: ${law.common_violations}\n  Penalties: ${law.penalties}`
     ).join("\n\n");
 
+    const promptText = sanitizedText.slice(0, PROMPT_TEXT_LIMIT);
     const prompt = `You are REXI - an expert contract attorney. Analyze this contract and explain findings in VERY SIMPLE language that a 10th grader can understand.
 
 CONTRACT TEXT:
-${sanitizedText}
+${promptText}${sanitizedText.length > PROMPT_TEXT_LIMIT ? '\n\n[Document truncated for analysis]' : ''}
 
 INDIAN LEGAL FRAMEWORK (for citations):
 ${lawsContext}
@@ -185,6 +271,7 @@ CRITICAL REQUIREMENTS:
 
     let responseText: string;
     try {
+      console.log("[analyze-contract] Calling unifiedGenerateContent...");
       responseText = await unifiedGenerateContent({
         prompt,
         systemPrompt: "You are REXI - an expert Indian contract attorney. Return ONLY valid JSON.",
@@ -192,14 +279,14 @@ CRITICAL REQUIREMENTS:
         maxTokens: 16384,
       });
       responseText = responseText.trim();
+      console.log(`[analyze-contract] AI response received, length: ${responseText.length}`);
     } catch (aiError: any) {
-      console.error("AI generation failed:", aiError);
-      return addSecurityHeaders(
-        NextResponse.json(
-          { error: aiError.message || "Failed to analyze contract. Please try again." },
-          { status: 503 }
-        )
-      );
+      const errMsg = aiError?.message || String(aiError);
+      console.error("[analyze-contract] AI generation failed:", errMsg);
+      // Return fallback analysis instead of hard 503
+      const fallback = buildFallbackAnalysis(sanitizedText, fileName, errMsg);
+      console.log("[analyze-contract] Returning fallback analysis with", fallback.clauses.length, "clauses");
+      return addSecurityHeaders(NextResponse.json(fallback));
     }
 
     if (responseText.startsWith("```json")) {
@@ -213,7 +300,7 @@ CRITICAL REQUIREMENTS:
     try {
       parsedResponse = JSON.parse(responseText);
     } catch (parseError) {
-      console.error("JSON parse failed, attempting repair. Raw response:", responseText.substring(0, 500));
+      console.error("[analyze-contract] JSON parse failed. Raw preview:", responseText.substring(0, 500));
 
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
@@ -236,14 +323,14 @@ CRITICAL REQUIREMENTS:
 
           parsedResponse = JSON.parse(repairedJson);
         } catch (repairError) {
-          console.error("JSON repair also failed:", repairError);
+          console.error("[analyze-contract] JSON repair also failed:", repairError);
           parsedResponse = {
             summary: { parties: [], type: "Unknown", keyObligations: [], overallAssessment: "Analysis could not be completed due to response format error." },
             clauses: [],
             overallScore: 0,
             riskSummary: { critical: 0, high: 0, medium: 0, low: 0, safe: 0 },
             strengths: [],
-            concerns: ["Analysis incomplete - please try again"],
+            concerns: ["Analysis incomplete - AI response format error"],
             negotiationStrategy: [],
           };
         }
@@ -254,7 +341,7 @@ CRITICAL REQUIREMENTS:
           overallScore: 0,
           riskSummary: { critical: 0, high: 0, medium: 0, low: 0, safe: 0 },
           strengths: [],
-          concerns: ["Analysis failed - please try again"],
+          concerns: ["Analysis failed - AI response unparseable"],
           negotiationStrategy: [],
         };
       }
@@ -313,9 +400,10 @@ CRITICAL REQUIREMENTS:
       },
     };
 
+    console.log("[analyze-contract] Success. Returning analysis with", clauses.length, "clauses.");
     return addSecurityHeaders(NextResponse.json(finalResponse));
-  } catch (error) {
-    console.error("Contract analysis error:", error);
+  } catch (error: any) {
+    console.error("[analyze-contract] UNCAUGHT error:", error?.message || error, error?.stack || '');
     return addSecurityHeaders(
       NextResponse.json(
         { error: "Failed to analyze contract. Please try again." },

@@ -47,6 +47,7 @@ export async function nvidiaChatCompletion(options: NvidiaCompletionOptions): Pr
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error(`[nvidia-client] NVIDIA API error ${response.status}:`, errorText);
       throw new Error(`NVIDIA API error ${response.status}: ${errorText}`);
     }
 
@@ -83,6 +84,7 @@ export async function unifiedGenerateContent({
   maxTokens?: number;
 }): Promise<string> {
   const useNvidia = process.env.USE_NVIDIA === "true";
+  console.log(`[nvidia-client] USE_NVIDIA=${useNvidia}, promptLength=${prompt.length}, maxTokens=${maxTokens}`);
 
   if (useNvidia) {
     try {
@@ -92,15 +94,20 @@ export async function unifiedGenerateContent({
       }
       messages.push({ role: "user", content: prompt });
 
+      console.log("[nvidia-client] Trying NVIDIA...");
       const text = await nvidiaChatCompletion({ messages, temperature, maxTokens });
+      console.log(`[nvidia-client] NVIDIA success, response length: ${text.length}`);
       return text;
-    } catch (nvidiaError) {
-      console.error("NVIDIA failed, falling back to Gemini:", nvidiaError);
+    } catch (nvidiaError: any) {
+      console.error("[nvidia-client] NVIDIA failed:", nvidiaError?.message || nvidiaError);
       // Fall through to Gemini
     }
+  } else {
+    console.log("[nvidia-client] Skipping NVIDIA (USE_NVIDIA !== true)");
   }
 
   // Gemini fallback
+  console.log("[nvidia-client] Trying Gemini fallback...");
   const { GoogleGenerativeAI } = await import("@google/generative-ai");
   const { DEFAULT_SAFETY_SETTINGS } = await import("./gemini-utils");
 
@@ -127,5 +134,6 @@ export async function unifiedGenerateContent({
     throw new Error(`Gemini blocked: ${geminiResult.reason}`);
   }
 
+  console.log(`[nvidia-client] Gemini success, response length: ${geminiResult.text.length}`);
   return geminiResult.text;
 }
